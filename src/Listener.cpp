@@ -1,5 +1,6 @@
 #include "Listener.h"
 
+#include "BeginRequestRecord.h"
 #include "EnumHelpers.h"
 #include "RecordHeader.h"
 
@@ -94,8 +95,8 @@ namespace FastCgiQt
 			return;
 		}
 
-		char* data = new char[header.payloadLength()];
-		qint64 bytesRead = m_socket->read(data, header.payloadLength());
+		QByteArray data = m_socket->read(header.payloadLength());
+		qint64 bytesRead = data.length();
 
 		if(bytesRead != header.payloadLength())
 		{
@@ -103,10 +104,19 @@ namespace FastCgiQt
 		}
 		switch(header.type())
 		{
+			case RecordHeader::BeginRequestRecord:
+				beginRequest(header, data);
+				break;
 			default:
 				qFatal("Don't know how to deal with payload for type %s", ENUM_DEBUG_STRING(RecordHeader,RecordType,header.type()));
 		}
-		delete data;
+	}
+
+	void Listener::beginRequest(const RecordHeader& header, const QByteArray& data)
+	{
+		Q_ASSERT(header.type() == RecordHeader::BeginRequestRecord);
+		BeginRequestRecord record(header, *reinterpret_cast<const FCGI_BeginRequestBody*>(data.constData()));
+		qDebug() << "Got new begin request with id" << record.requestId() << "role" << record.role() << "flags" << record.flags();
 	}
 
 	void Listener::processNewRecord(int socket)

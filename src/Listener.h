@@ -12,6 +12,7 @@ class QSignalMapper;
 
 namespace FastCgiQt
 {
+	class RecordHeader;
 	class Listener : public QObject
 	{
 		Q_OBJECT
@@ -22,6 +23,8 @@ namespace FastCgiQt
 		private:
 			void processNewRecord(int socket);
 			void processRecordData(int socket);
+			void beginRequest(const RecordHeader& header, const QByteArray& data);
+
 			void lockSocket(int socket);
 			void releaseSocket(int socket);
 			QLocalSocket* m_socket;
