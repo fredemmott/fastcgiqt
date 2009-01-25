@@ -118,6 +118,7 @@ namespace FastCgiQt
 				loadParameters(header, data);
 				break;
 			default:
+				qDebug() << m_requests.value(header.requestId()).serverData();
 				qFatal("Don't know how to deal with payload for type %s", ENUM_DEBUG_STRING(RecordHeader,RecordType,header.type()));
 		}
 		m_socketHeaders.remove(socket);
@@ -127,8 +128,9 @@ namespace FastCgiQt
 	void Listener::loadParameters(const RecordHeader& header, const QByteArray& data)
 	{
 		Q_ASSERT(header.type() == RecordHeader::ParametersRecord);
+		Q_ASSERT(m_requests.value(header.requestId()).isValid());
 		ParametersRecord record(header, data);
-		qDebug() << "Got parameters record with id" << record.requestId() << "and data" << record.parameters();
+		m_requests[header.requestId()].addServerData(record.parameters());
 	}
 
 	void Listener::beginRequest(const RecordHeader& header, const QByteArray& data)

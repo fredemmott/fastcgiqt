@@ -34,6 +34,7 @@ namespace FastCgiQt
 			QSignalMapper* m_socketMapper;
 			QStringList m_allowedAddresses;
 
+			// FastCGI spec says request IDs will be tightly backed near zero.
 			QVector<Request> m_requests;
 			QHash<int, RecordHeader> m_socketHeaders;
 	};
