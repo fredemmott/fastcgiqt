@@ -10,6 +10,7 @@ namespace FastCgiQt
 			m_requestId(requestId),
 			m_socket(socket)
 	{
+		open(QIODevice::WriteOnly);
 	}
 
 	qint64 OutputDevice::readData(char* data, qint64 maxSize)
