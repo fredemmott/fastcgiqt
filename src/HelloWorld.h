@@ -6,4 +6,6 @@ class HelloWorld : public FastCgiQt::Responder
 	RESPONDER(HelloWorld);
 	public:
 		void respond();
+	private:
+		void dumpHash(const QString& label, const QHash<QString, QString>& data);
 };
