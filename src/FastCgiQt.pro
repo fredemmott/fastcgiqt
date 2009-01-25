@@ -10,5 +10,18 @@ QT -= gui
 QT += network
 
 # Input
-HEADERS += fastcgi.h Listener.h DebugHandler.h RecordHeader.h EnumHelpers.h
-SOURCES += DebugHandler.cpp Listener.cpp RecordHeader.cpp main.cpp
+HEADERS += \
+	BeginRequestRecord.h \
+	DebugHandler.h \
+	EnumHelpers.h \
+	Listener.h \
+	RecordHeader.h \
+	fastcgi.h \
+
+SOURCES += \
+	BeginRequestRecord.cpp \
+	DebugHandler.cpp \
+	Listener.cpp \
+	RecordHeader.cpp \
+	main.cpp
+
