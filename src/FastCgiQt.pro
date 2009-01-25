@@ -15,10 +15,12 @@ HEADERS += \
 	DebugHandler.h \
 	EnumHelpers.h \
 	Listener.h \
+	OutputDevice.h \
 	ParametersRecord.h \
 	RecordHeader.h \
 	Request.h \
 	StandardInputRecord.h \
+	StandardOutputRecord.h \
 	fastcgi.h \
 
 SOURCES += \
@@ -26,8 +28,10 @@ SOURCES += \
 	DebugHandler.cpp \
 	Listener.cpp \
 	ParametersRecord.cpp \
+	OutputDevice.cpp \
 	RecordHeader.cpp \
 	Request.cpp \
 	StandardInputRecord.cpp \
+	StandardOutputRecord.cpp \
 	main.cpp
 
