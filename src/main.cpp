@@ -11,7 +11,8 @@ int main(int argc, char** argv)
 	QCoreApplication application(argc, argv);
 	application.setApplicationName("FastCgiQt");
 
-	FastCgiQt::DebugHandler handler;
+	FastCgiQt::DebugHandler handler; // not neccessary - redirects q{Debug,Fatal,Critical} to syslog
+
 	FastCgiQt::Manager manager(&HelloWorld::instance);
 
 	return application.exec();
