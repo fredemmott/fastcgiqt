@@ -15,6 +15,7 @@ HEADERS += \
 	DebugHandler.h \
 	EnumHelpers.h \
 	Listener.h \
+	ParametersRecord.h \
 	RecordHeader.h \
 	fastcgi.h \
 
@@ -22,6 +23,7 @@ SOURCES += \
 	BeginRequestRecord.cpp \
 	DebugHandler.cpp \
 	Listener.cpp \
+	ParametersRecord.cpp \
 	RecordHeader.cpp \
 	main.cpp
 

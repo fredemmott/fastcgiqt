@@ -24,6 +24,7 @@ namespace FastCgiQt
 			bool processNewRecord(int socket);
 			bool processRecordData(int socket);
 			void beginRequest(const RecordHeader& header, const QByteArray& data);
+			void loadParameters(const RecordHeader& header, const QByteArray& data);
 
 			void lockSocket(int socket);
 			void releaseSocket(int socket);
