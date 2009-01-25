@@ -13,6 +13,7 @@ QT += network
 HEADERS += \
 	BeginRequestRecord.h \
 	DebugHandler.h \
+	EndRequestRecord.h \
 	EnumHelpers.h \
 	HelloWorld.h \
 	Manager.h \
@@ -28,6 +29,7 @@ HEADERS += \
 SOURCES += \
 	BeginRequestRecord.cpp \
 	DebugHandler.cpp \
+	EndRequestRecord.cpp \
 	HelloWorld.cpp \
 	Manager.cpp \
 	OutputDevice.cpp \
