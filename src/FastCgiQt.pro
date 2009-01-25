@@ -19,6 +19,7 @@ HEADERS += \
 	ParametersRecord.h \
 	RecordHeader.h \
 	Request.h \
+	Responder.h \
 	StandardInputRecord.h \
 	StandardOutputRecord.h \
 	fastcgi.h \
@@ -31,6 +32,7 @@ SOURCES += \
 	OutputDevice.cpp \
 	RecordHeader.cpp \
 	Request.cpp \
+	Responder.cpp \
 	StandardInputRecord.cpp \
 	StandardOutputRecord.cpp \
 	main.cpp
