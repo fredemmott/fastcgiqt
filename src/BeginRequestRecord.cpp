@@ -31,3 +31,5 @@ namespace FastCgiQt
 		return m_flags;
 	}
 }
+
+DEFINE_DEBUG_ENUM(FastCgiQt::BeginRequestRecord, Role);

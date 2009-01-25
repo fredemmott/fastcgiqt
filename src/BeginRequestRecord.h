@@ -1,10 +1,11 @@
 #ifndef _FASTCGI_QT_BEGIN_REQUEST_RECORD_H
 #define _FASTCGI_QT_BEGIN_REQUEST_RECORD_H
 
-#include <QFlags>
-#include <QObject>
+#include "EnumHelpers.h"
 #include "fastcgi.h"
 
+#include <QFlags>
+#include <QObject>
 
 namespace FastCgiQt
 {
@@ -44,6 +45,7 @@ namespace FastCgiQt
 	};
 };
 
+DECLARE_DEBUG_ENUM(FastCgiQt::BeginRequestRecord, Role);
 Q_DECLARE_OPERATORS_FOR_FLAGS(FastCgiQt::BeginRequestRecord::Flags);
 
 #endif
