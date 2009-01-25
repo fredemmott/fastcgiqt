@@ -27,6 +27,8 @@ namespace FastCgiQt
 			QTextStream m_outputStream;
 			const Request m_request;
 	};
+	typedef Responder* (*ResponderGenerator)(const Request&, QIODevice*, QObject*);
 }
+
 
 #endif
