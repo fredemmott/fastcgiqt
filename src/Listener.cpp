@@ -4,6 +4,7 @@
 #include "EnumHelpers.h"
 #include "ParametersRecord.h"
 #include "RecordHeader.h"
+#include "StandardInputRecord.h"
 
 #include "fastcgi.h"
 
@@ -117,6 +118,9 @@ namespace FastCgiQt
 			case RecordHeader::ParametersRecord:
 				loadParameters(header, data);
 				break;
+			case RecordHeader::StandardInputRecord:
+				readStandardInput(header, data);
+				break;
 			default:
 				qDebug() << "Got query string data" << m_requests[header.requestId()].getData();
 				qFatal("Don't know how to deal with payload for type %s", ENUM_DEBUG_STRING(RecordHeader,RecordType,header.type()));
@@ -133,9 +137,19 @@ namespace FastCgiQt
 		m_requests[header.requestId()].addServerData(record.parameters());
 	}
 
+	void Listener::readStandardInput(const RecordHeader& header, const QByteArray& data)
+	{
+		Q_ASSERT(header.type() == RecordHeader::StandardInputRecord);
+		Q_ASSERT(m_requests.value(header.requestId()).isValid());
+		StandardInputRecord record(header, data);
+		m_requests[header.requestId()].appendContent(record.streamData());
+		qDebug() << "Read standard input - done?" << m_requests.value(header.requestId()).haveContent();
+	}
+
 	void Listener::beginRequest(const RecordHeader& header, const QByteArray& data)
 	{
 		Q_ASSERT(header.type() == RecordHeader::BeginRequestRecord);
+		Q_ASSERT(!m_requests.value(header.requestId()).isValid());
 		BeginRequestRecord record(header, *reinterpret_cast<const FCGI_BeginRequestBody*>(data.constData()));
 		qDebug() << "Got new begin request with id" << record.requestId() << "role" << record.role() << "flags" << record.flags();
 		Q_ASSERT(record.role() == BeginRequestRecord::ResponderRole);

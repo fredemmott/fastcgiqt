@@ -14,8 +14,31 @@ namespace FastCgiQt
 	Request::Request(quint16 requestId)
 		:
 			m_isValid(true),
-			m_requestId(requestId)
+			m_requestId(requestId),
+			m_contentLength(0)
 	{
+	}
+
+	QString Request::contentType() const
+	{
+		return m_contentType;
+	}
+
+	quint64 Request::contentLength() const
+	{
+		return m_contentLength;
+	}
+
+	QByteArray Request::content() const
+	{
+		// If this fails, still waiting for some STDIN records
+		Q_ASSERT(m_content.length() == m_contentLength);
+		return m_content;
+	}
+
+	bool Request::haveContent() const
+	{
+		return contentLength() == m_content.length();
 	}
 
 	bool Request::isValid() const
@@ -65,6 +88,21 @@ namespace FastCgiQt
 				m_getData.insert(name, value);
 			}
 		}
+		if(data.contains("CONTENT_TYPE"))
+		{
+			m_contentType = data.value("CONTENT_TYPE");
+		}
+		if(data.contains("CONTENT_LENGTH"))
+		{
+			m_contentLength = data.value("CONTENT_LENGTH").toULongLong();
+		}
+
 		m_serverData.unite(data);
+	}
+
+	void Request::appendContent(const QByteArray& data)
+	{
+		Q_ASSERT(data.length() + m_content.length() <= m_contentLength);
+		m_content.append(data);
 	}
 }

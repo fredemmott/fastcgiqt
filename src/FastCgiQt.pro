@@ -18,6 +18,7 @@ HEADERS += \
 	ParametersRecord.h \
 	RecordHeader.h \
 	Request.h \
+	StandardInputRecord.h \
 	fastcgi.h \
 
 SOURCES += \
@@ -27,5 +28,6 @@ SOURCES += \
 	ParametersRecord.cpp \
 	RecordHeader.cpp \
 	Request.cpp \
+	StandardInputRecord.cpp \
 	main.cpp
 
