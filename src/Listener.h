@@ -21,8 +21,8 @@ namespace FastCgiQt
 		private slots:
 			void processSocketData(int socket);
 		private:
-			void processNewRecord(int socket);
-			void processRecordData(int socket);
+			bool processNewRecord(int socket);
+			bool processRecordData(int socket);
 			void beginRequest(const RecordHeader& header, const QByteArray& data);
 
 			void lockSocket(int socket);

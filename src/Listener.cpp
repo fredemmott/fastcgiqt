@@ -77,22 +77,28 @@ namespace FastCgiQt
 
 	void Listener::processSocketData(int socket)
 	{
-		if(!m_socketHeaders.contains(socket))
+		bool success;
+		do
 		{
-			processNewRecord(socket);
+			if(!m_socketHeaders.contains(socket))
+			{
+				success = processNewRecord(socket);
+			}
+			else
+			{
+				success = processRecordData(socket);
+			}
 		}
-		else
-		{
-			processRecordData(socket);
-		}
+		while(success && m_socket->bytesAvailable() > 0);
 	}
 
-	void Listener::processRecordData(int socket)
+	bool Listener::processRecordData(int socket)
 	{
+		qDebug() << "Payload on socket" << socket;
 		const RecordHeader header(m_socketHeaders.value(socket));
 		if(m_socket->bytesAvailable() < header.payloadLength())
 		{
-			return;
+			return false;
 		}
 
 		QByteArray data = m_socket->read(header.payloadLength());
@@ -110,6 +116,8 @@ namespace FastCgiQt
 			default:
 				qFatal("Don't know how to deal with payload for type %s", ENUM_DEBUG_STRING(RecordHeader,RecordType,header.type()));
 		}
+		m_socketHeaders.remove(socket);
+		return true;
 	}
 
 	void Listener::beginRequest(const RecordHeader& header, const QByteArray& data)
@@ -119,11 +127,12 @@ namespace FastCgiQt
 		qDebug() << "Got new begin request with id" << record.requestId() << "role" << record.role() << "flags" << record.flags();
 	}
 
-	void Listener::processNewRecord(int socket)
+	bool Listener::processNewRecord(int socket)
 	{
+		qDebug() << "New record on socket" << socket;
 		if(m_socket->bytesAvailable() < FCGI_HEADER_LEN)
 		{
-			return;
+			return false;
 		}
 
 		FCGI_Header fcgiHeader;
@@ -139,5 +148,6 @@ namespace FastCgiQt
 		{
 			processRecordData(socket);
 		}
+		return true;
 	}
 }
