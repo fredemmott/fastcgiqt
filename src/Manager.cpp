@@ -144,6 +144,10 @@ namespace FastCgiQt
 		Q_ASSERT(m_requests.value(header.requestId()).isValid());
 		StandardInputRecord record(header, data);
 		m_requests[header.requestId()].appendContent(record.streamData());
+		if(m_requests[header.requestId()].haveContent())
+		{
+			respond(header.requestId());
+		}
 		qDebug() << "Read standard input - done?" << m_requests.value(header.requestId()).haveContent();
 	}
 
@@ -160,6 +164,19 @@ namespace FastCgiQt
 			m_requests.resize((record.requestId() + 1) + 2);
 			m_requests[record.requestId()] = Request(record.requestId());
 		}
+	}
+
+	void Manager::respond(quint16 requestId)
+	{
+		Responder* responder = (*m_responderGenerator)(
+			m_requests.at(requestId),
+			m_socket,
+			this
+		);
+		responder->respond();
+		qDebug() << "responded";
+		///@todo send end request
+		delete responder;
 	}
 
 	bool Manager::processNewRecord(int socket)

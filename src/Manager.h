@@ -27,6 +27,7 @@ namespace FastCgiQt
 			void beginRequest(const RecordHeader& header, const QByteArray& data);
 			void loadParameters(const RecordHeader& header, const QByteArray& data);
 			void readStandardInput(const RecordHeader& header, const QByteArray& data);
+			void respond(quint16 requestId);
 
 			void lockSocket(int socket);
 			void releaseSocket(int socket);
