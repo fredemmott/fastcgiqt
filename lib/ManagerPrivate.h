@@ -23,18 +23,18 @@ namespace FastCgiQt
 			void processSocketData(int socket);
 			void listen();
 		private:
-			bool processNewRecord(int socket);
-			bool processRecordData(int socket);
+			bool processNewRecord(QLocalSocket* socket, int socketId);
+			bool processRecordData(QLocalSocket* socket, int socketId);
 			void beginRequest(const RecordHeader& header, const QByteArray& data);
 			void loadParameters(const RecordHeader& header, const QByteArray& data);
 			void readStandardInput(const RecordHeader& header, const QByteArray& data);
-			void respond(quint16 requestId);
+			void respond(QLocalSocket* socket, quint16 requestId);
 
 			void lockSocket(int socket);
 			void releaseSocket(int socket);
 
 			ResponderGenerator m_responderGenerator;
-			QLocalSocket* m_socket;
+			QHash<int, QLocalSocket*> m_sockets;
 
 			/// Used to map readyRead signals to processSocketData(int socket)
 			QSignalMapper* m_socketMapper;
