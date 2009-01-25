@@ -1,7 +1,7 @@
 
-#include "DebugHandler.h"
 #include "HelloWorld.h"
-#include "Manager.h"
+#include <FastCgiQt/DebugHandler.h>
+#include <FastCgiQt/Manager.h>
 
 #include <QCoreApplication>
 #include <QDebug>

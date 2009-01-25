@@ -1,4 +1,4 @@
-#include "Responder.h"
+#include <FastCgiQt/Responder.h>
 
 class HelloWorld : public FastCgiQt::Responder
 {
