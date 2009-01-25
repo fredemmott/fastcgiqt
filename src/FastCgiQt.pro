@@ -14,6 +14,7 @@ HEADERS += \
 	BeginRequestRecord.h \
 	DebugHandler.h \
 	EnumHelpers.h \
+	HelloWorld.h \
 	Manager.h \
 	OutputDevice.h \
 	ParametersRecord.h \
@@ -27,6 +28,7 @@ HEADERS += \
 SOURCES += \
 	BeginRequestRecord.cpp \
 	DebugHandler.cpp \
+	HelloWorld.cpp \
 	Manager.cpp \
 	OutputDevice.cpp \
 	ParametersRecord.cpp \

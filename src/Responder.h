@@ -15,10 +15,10 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
-			virtual void run() = 0;
+			virtual void respond() = 0;
+			virtual ~Responder();
 		protected:
 			Responder(const Request& request, QIODevice* socket, QObject* parent = NULL);
-			virtual ~Responder();
 
 			const Request& request() const;
 			QTextStream& out();
@@ -30,5 +30,10 @@ namespace FastCgiQt
 	typedef Responder* (*ResponderGenerator)(const Request&, QIODevice*, QObject*);
 }
 
-
+#define RESPONDER(x) \
+	public: \
+		x(const FastCgiQt::Request& request, QIODevice* socket, QObject* parent = NULL) \
+			: Responder(request, socket, parent) {} \
+		static Responder* instance(const FastCgiQt::Request& request, QIODevice* socket, QObject* parent) \
+			{ return new x(request, socket, parent); }
 #endif

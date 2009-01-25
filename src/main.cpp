@@ -1,5 +1,6 @@
 
 #include "DebugHandler.h"
+#include "HelloWorld.h"
 #include "Manager.h"
 
 #include <QCoreApplication>
@@ -11,7 +12,7 @@ int main(int argc, char** argv)
 	application.setApplicationName("FastCgiQt");
 
 	FastCgiQt::DebugHandler handler;
-	FastCgiQt::Manager manager;
+	FastCgiQt::Manager manager(&HelloWorld::instance);
 
 	return application.exec();
 }

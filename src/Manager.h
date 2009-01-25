@@ -2,6 +2,7 @@
 #define _FASTCGI_QT_MANAGER_H
 
 #include "RecordHeader.h"
+#include "Responder.h"
 #include "Request.h"
 
 #include <QHash>
@@ -17,7 +18,7 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
-			Manager(QObject* parent = NULL);
+			Manager(ResponderGenerator responderGenerator, QObject* parent = NULL);
 		private slots:
 			void processSocketData(int socket);
 		private:
@@ -29,6 +30,8 @@ namespace FastCgiQt
 
 			void lockSocket(int socket);
 			void releaseSocket(int socket);
+
+			ResponderGenerator m_responderGenerator;
 			QLocalSocket* m_socket;
 
 			/// Used to map readyRead signals to processSocketData(int socket)

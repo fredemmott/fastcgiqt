@@ -21,9 +21,10 @@
 
 namespace FastCgiQt
 {
-	Manager::Manager(QObject* parent)
+	Manager::Manager(ResponderGenerator responderGenerator, QObject* parent)
 		:
 			QObject(parent),
+			m_responderGenerator(responderGenerator),
 			m_socket(new QLocalSocket(this)),
 			m_socketMapper(new QSignalMapper(this))
 	{
