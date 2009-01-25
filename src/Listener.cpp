@@ -118,7 +118,7 @@ namespace FastCgiQt
 				loadParameters(header, data);
 				break;
 			default:
-				qDebug() << m_requests.value(header.requestId()).serverData();
+				qDebug() << "Got query string data" << m_requests[header.requestId()].getData();
 				qFatal("Don't know how to deal with payload for type %s", ENUM_DEBUG_STRING(RecordHeader,RecordType,header.type()));
 		}
 		m_socketHeaders.remove(socket);
