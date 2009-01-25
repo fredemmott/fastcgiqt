@@ -5,8 +5,8 @@ INCLUDEPATH += . ../../include/
 QT -= gui
 
 include(../../lib/lib.pri)
-QMAKE_LFLAGS_SHAPP += -Wl,-rpath,../../lib
 LIBS += -L../../lib
+QMAKE_RPATHDIR += $$(PWD)/../../lib/
 
 # Input
 HEADERS += HelloWorld.h
