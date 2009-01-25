@@ -19,7 +19,7 @@ namespace FastCgiQt
 				BeginRequestRecord    = FCGI_BEGIN_REQUEST,
 				AbortRequestRecord    = FCGI_ABORT_REQUEST,
 				EndRequestRecord      = FCGI_END_REQUEST,
-				ParamsRecord          = FCGI_PARAMS,
+				ParametersRecord      = FCGI_PARAMS,
 				StdInRecord           = FCGI_STDIN,
 				StdOutRecord          = FCGI_STDOUT,
 				StdErrRecord          = FCGI_STDERR,
