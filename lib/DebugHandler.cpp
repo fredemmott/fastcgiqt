@@ -12,7 +12,7 @@ namespace FastCgiQt
 		:
 			m_name(QCoreApplication::applicationName().toUtf8())
 	{
-		::openlog(m_name.constData(), /*LOG_PERROR |*/ LOG_PID, LOG_USER);
+		::openlog(m_name.constData(), LOG_PERROR | LOG_PID, LOG_USER);
 		qInstallMsgHandler(syslogHandler);
 	}
 
