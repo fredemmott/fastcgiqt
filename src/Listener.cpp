@@ -1,5 +1,6 @@
 #include "Listener.h"
 
+#include "EnumHelpers.h"
 #include "RecordHeader.h"
 
 #include "fastcgi.h"
@@ -92,6 +93,20 @@ namespace FastCgiQt
 		{
 			return;
 		}
+
+		char* data = new char[header.payloadLength()];
+		qint64 bytesRead = m_socket->read(data, header.payloadLength());
+
+		if(bytesRead != header.payloadLength())
+		{
+			qFatal("Couldn't read payload - tried to read %d bytes, got %d", header.payloadLength(), bytesRead);
+		}
+		switch(header.type())
+		{
+			default:
+				qFatal("Don't know how to deal with payload for type %s", ENUM_DEBUG_STRING(RecordHeader,RecordType,header.type()));
+		}
+		delete data;
 	}
 
 	void Listener::processNewRecord(int socket)
