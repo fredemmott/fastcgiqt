@@ -34,10 +34,12 @@ namespace FastCgiQt
 			RecordType type() const;
 			quint16 requestId() const;
 			quint16 contentLength() const;
+			quint16 payloadLength() const;
 		private:
 			RecordType m_type;
 			quint16 m_requestId;
 			quint16 m_contentLength;
+			quint16 m_payloadLength;
 	};
 }
 

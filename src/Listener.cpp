@@ -89,6 +89,6 @@ namespace FastCgiQt
 			qFatal("Couldn't read FCGI header - tried to read %d bytes, got %d", FCGI_HEADER_LEN, bytesRead);
 		}
 		RecordHeader header(fcgiHeader);
-		qDebug() << "Got header with record type" << header.type();
+		qDebug() << "Got header with record type" << header.type() << "id" << header.requestId() << "payload size" << header.payloadLength() << "content size" << header.contentLength();
 	}
 }

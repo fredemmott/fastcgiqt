@@ -18,6 +18,7 @@ namespace FastCgiQt
 		m_type = static_cast<RecordType>(record.type);
 		m_requestId = (record.requestIdB1 << 8) | record.requestIdB0;
 		m_contentLength = (record.contentLengthB1 << 8) | record.contentLengthB0;
+		m_payloadLength = m_contentLength + record.paddingLength;
 	}
 
 	RecordHeader::RecordType RecordHeader::type() const
@@ -33,6 +34,11 @@ namespace FastCgiQt
 	quint16 RecordHeader::contentLength() const
 	{
 		return m_contentLength;
+	}
+
+	quint16 RecordHeader::payloadLength() const
+	{
+		return m_payloadLength;
 	}
 }
 QDebug operator<<(QDebug dbg, FastCgiQt::RecordHeader::RecordType type)
