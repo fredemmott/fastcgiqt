@@ -4,12 +4,11 @@
 #include <FastCgiQt/Manager.h>
 
 #include <QCoreApplication>
-#include <QDebug>
 
 int main(int argc, char** argv)
 {
 	QCoreApplication application(argc, argv);
-	application.setApplicationName("FastCgiQt");
+	application.setApplicationName("HelloWorld");
 
 	FastCgiQt::DebugHandler handler; // not neccessary - redirects q{Debug,Fatal,Critical} to syslog
 
