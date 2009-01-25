@@ -11,6 +11,7 @@
 
 class QLocalSocket;
 class QSignalMapper;
+class QSocketNotifier;
 
 namespace FastCgiQt
 {
@@ -33,6 +34,7 @@ namespace FastCgiQt
 			void lockSocket(int socket);
 			void releaseSocket(int socket);
 
+			QSocketNotifier* m_socketNotifier;
 			ResponderGenerator m_responderGenerator;
 			QHash<int, QLocalSocket*> m_sockets;
 

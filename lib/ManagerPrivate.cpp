@@ -15,6 +15,7 @@
 #include <QHostAddress>
 #include <QLocalSocket>
 #include <QSignalMapper>
+#include <QSocketNotifier>
 #include <QTimer>
 
 #include <errno.h>
@@ -27,6 +28,7 @@ namespace FastCgiQt
 	ManagerPrivate::ManagerPrivate(ResponderGenerator responderGenerator, QObject* parent)
 		:
 			QObject(parent),
+			m_socketNotifier(new QSocketNotifier(FCGI_LISTENSOCK_FILENO, QSocketNotifier::Read, this)),
 			m_responderGenerator(responderGenerator),
 			m_socketMapper(new QSignalMapper(this))
 	{
@@ -36,8 +38,15 @@ namespace FastCgiQt
 			this,
 			SLOT(processSocketData(int))
 		);
+		connect(
+			m_socketNotifier,
+			SIGNAL(activated(int)),
+			this,
+			SLOT(listen())
+		);
 		QTimer::singleShot(0, this, SLOT(listen()));
 	}
+
 	void ManagerPrivate::listen()
 	{
 		// Initialise socket address structure
