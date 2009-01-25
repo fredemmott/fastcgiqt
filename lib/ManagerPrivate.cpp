@@ -56,14 +56,12 @@ namespace FastCgiQt
 		}
 
 		// Listen on the socket
-		qDebug() << "Accepting socket";
 		lockSocket(FCGI_LISTENSOCK_FILENO);
 		int newSocket = ::accept(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
 		releaseSocket(FCGI_LISTENSOCK_FILENO);
 		::close(FCGI_LISTENSOCK_FILENO);
 
 		// We're connected, setup a QAbstractSocket
-		qDebug() << "New socket:" << newSocket;
 		m_socket->setSocketDescriptor(newSocket, QLocalSocket::ConnectedState, QIODevice::ReadWrite);
 		// Map readyReady to processSocketData(newSocket)
 		connect(
@@ -104,7 +102,6 @@ namespace FastCgiQt
 
 	bool ManagerPrivate::processRecordData(int socket)
 	{
-		qDebug() << "Payload on socket" << socket;
 		const RecordHeader header(m_socketHeaders.value(socket));
 		if(m_socket->bytesAvailable() < header.payloadLength())
 		{
@@ -162,7 +159,6 @@ namespace FastCgiQt
 		Q_ASSERT(header.type() == RecordHeader::BeginRequestRecord);
 		Q_ASSERT(!m_requests.value(header.requestId()).isValid());
 		BeginRequestRecord record(header, *reinterpret_cast<const FCGI_BeginRequestBody*>(data.constData()));
-		qDebug() << "Got new begin request with id" << record.requestId() << "role" << record.role() << "flags" << record.flags();
 		Q_ASSERT(record.role() == BeginRequestRecord::ResponderRole);
 
 		if(m_requests.size() -1 < record.requestId())
@@ -181,13 +177,11 @@ namespace FastCgiQt
 		);
 		responder->respond();
 		m_socket->write(EndRequestRecord::create(requestId));
-		qDebug() << "responded";
 		delete responder;
 	}
 
 	bool ManagerPrivate::processNewRecord(int socket)
 	{
-		qDebug() << "New record on socket" << socket;
 		if(m_socket->bytesAvailable() < FCGI_HEADER_LEN)
 		{
 			return false;
@@ -200,7 +194,6 @@ namespace FastCgiQt
 			qFatal("Couldn't read FCGI header - tried to read %d bytes, got %d", FCGI_HEADER_LEN, bytesRead);
 		}
 		RecordHeader header(fcgiHeader);
-		qDebug() << "Got header with record type" << header.type() << "id" << header.requestId() << "payload size" << header.payloadLength() << "content size" << header.contentLength();
 		m_socketHeaders.insert(socket, header);
 		if(m_socket->bytesAvailable() >= header.payloadLength())
 		{
