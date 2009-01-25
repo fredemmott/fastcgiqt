@@ -52,6 +52,25 @@ namespace FastCgiQt
 	{
 		return m_payloadLength;
 	}
+	
+	QByteArray RecordHeader::create(quint16 requestId, RecordType type, const QByteArray& data)
+	{
+		FCGI_Header header;
+		::memset(&header, 0, FCGI_HEADER_LEN);
+
+		header.version = 1;
+		header.type = type;
+		///@todo deal with data.length >= 2^16
+		Q_ASSERT(data.length() < 2^16);
+		header.requestIdB1 = requestId >> 8;
+		header.requestIdB0 = requestId & 0xff;
+		header.contentLengthB1 = data.length() >> 8;
+		header.contentLengthB0 = data.length() & 0xff;
+
+		QByteArray returnData(QByteArray::fromRawData(reinterpret_cast<const char*>(&header), FCGI_HEADER_LEN));
+		returnData.append(data);
+		return returnData;
+	}
 }
 
 DEFINE_DEBUG_ENUM(FastCgiQt::RecordHeader, RecordType);

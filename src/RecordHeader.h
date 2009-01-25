@@ -40,6 +40,9 @@ namespace FastCgiQt
 			quint16 requestId() const;
 			quint16 contentLength() const;
 			quint16 payloadLength() const;
+		
+			/// Actually creates the entire record
+			static QByteArray create(quint16 requestId, RecordType type, const QByteArray& data);
 		private:
 			RecordType m_type;
 			quint16 m_requestId;
