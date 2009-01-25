@@ -1,6 +1,9 @@
 #ifndef _FASTCGI_QT_LISTENER_H
 #define _FASTCGI_QT_LISTENER_H
 
+#include "RecordHeader.h"
+
+#include <QHash>
 #include <QObject>
 #include <QStringList>
 
@@ -17,6 +20,8 @@ namespace FastCgiQt
 		private slots:
 			void processSocketData(int socket);
 		private:
+			void processNewRecord(int socket);
+			void processRecordData(int socket);
 			void lockSocket(int socket);
 			void releaseSocket(int socket);
 			QLocalSocket* m_socket;
@@ -24,6 +29,8 @@ namespace FastCgiQt
 			/// Used to map readyRead signals to processSocketData(int socket)
 			QSignalMapper* m_socketMapper;
 			QStringList m_allowedAddresses;
+
+			QHash<int, RecordHeader> m_socketHeaders;
 	};
 };
 

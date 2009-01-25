@@ -75,8 +75,27 @@ namespace FastCgiQt
 
 	void Listener::processSocketData(int socket)
 	{
-		Q_UNUSED(socket);
-		qDebug() << "Reading data" << m_socket->bytesAvailable();
+		if(!m_socketHeaders.contains(socket))
+		{
+			processNewRecord(socket);
+		}
+		else
+		{
+			processRecordData(socket);
+		}
+	}
+
+	void Listener::processRecordData(int socket)
+	{
+		const RecordHeader header(m_socketHeaders.value(socket));
+		if(m_socket->bytesAvailable() < header.payloadLength())
+		{
+			return;
+		}
+	}
+
+	void Listener::processNewRecord(int socket)
+	{
 		if(m_socket->bytesAvailable() < FCGI_HEADER_LEN)
 		{
 			return;
@@ -90,5 +109,10 @@ namespace FastCgiQt
 		}
 		RecordHeader header(fcgiHeader);
 		qDebug() << "Got header with record type" << header.type() << "id" << header.requestId() << "payload size" << header.payloadLength() << "content size" << header.contentLength();
+		m_socketHeaders.insert(socket, header);
+		if(m_socket->bytesAvailable() >= header.payloadLength())
+		{
+			processRecordData(socket);
+		}
 	}
 }
