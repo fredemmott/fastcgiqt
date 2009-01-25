@@ -8,29 +8,32 @@
 
 namespace FastCgiQt
 {
-	class RecordHeader : public QObject
+	class RecordHeader
 	{
-		Q_OBJECT
+		Q_GADGET
 		public:
 			enum RecordType
 			{
-				BeginRequestRecord = 1,
-				AbortRequestRecord = 2,
-				EndRequestRecord = 3,
-				ParamsRecord = 4,
-				StdInRecord = 5,
-				StdOutRecord = 6,
-				StdErrRecord = 7,
-				DataRecord = 8,
-				GetValuesRecord = 9,
-				GetValuesResultRecord = 10,
-				UnknownRecordType = 11,
-				FirstRecordType = BeginRequestRecord
+				BeginRequestRecord    = FCGI_BEGIN_REQUEST,
+				AbortRequestRecord    = FCGI_ABORT_REQUEST,
+				EndRequestRecord      = FCGI_END_REQUEST,
+				ParamsRecord          = FCGI_PARAMS,
+				StdInRecord           = FCGI_STDIN,
+				StdOutRecord          = FCGI_STDOUT,
+				StdErrRecord          = FCGI_STDERR,
+				DataRecord            = FCGI_DATA,
+				GetValuesRecord       = FCGI_GET_VALUES,
+				GetValuesResultRecord = FCGI_GET_VALUES_RESULT,
+				UnknownRecordType     = FCGI_UNKNOWN_TYPE,
+
+				FirstRecordType       = BeginRequestRecord
 			};
 			Q_ENUMS(RecordType);
 
+			RecordHeader();
 			RecordHeader(const FCGI_Header& record);
 
+			bool isValid() const;
 			RecordType type() const;
 			quint16 requestId() const;
 			quint16 contentLength() const;
@@ -40,6 +43,7 @@ namespace FastCgiQt
 			quint16 m_requestId;
 			quint16 m_contentLength;
 			quint16 m_payloadLength;
+			bool m_isValid;
 	};
 }
 

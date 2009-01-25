@@ -5,7 +5,15 @@
 
 namespace FastCgiQt
 {
+	RecordHeader::RecordHeader()
+		:
+			m_isValid(false)
+	{
+	}
+
 	RecordHeader::RecordHeader(const FCGI_Header& record)
+		:
+			m_isValid(true)
 	{
 		if(record.version != 1)
 		{
@@ -19,6 +27,11 @@ namespace FastCgiQt
 		m_requestId = (record.requestIdB1 << 8) | record.requestIdB0;
 		m_contentLength = (record.contentLengthB1 << 8) | record.contentLengthB0;
 		m_payloadLength = m_contentLength + record.paddingLength;
+	}
+
+	bool RecordHeader::isValid() const
+	{
+		return m_isValid;
 	}
 
 	RecordHeader::RecordType RecordHeader::type() const
