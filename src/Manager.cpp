@@ -1,6 +1,7 @@
 #include "Manager.h"
 
 #include "BeginRequestRecord.h"
+#include "EndRequestRecord.h"
 #include "EnumHelpers.h"
 #include "ParametersRecord.h"
 #include "RecordHeader.h"
@@ -148,7 +149,6 @@ namespace FastCgiQt
 		{
 			respond(header.requestId());
 		}
-		qDebug() << "Read standard input - done?" << m_requests.value(header.requestId()).haveContent();
 	}
 
 	void Manager::beginRequest(const RecordHeader& header, const QByteArray& data)
@@ -174,8 +174,8 @@ namespace FastCgiQt
 			this
 		);
 		responder->respond();
+		m_socket->write(EndRequestRecord::create(requestId));
 		qDebug() << "responded";
-		///@todo send end request
 		delete responder;
 	}
 
