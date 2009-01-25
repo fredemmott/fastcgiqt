@@ -21,6 +21,7 @@ namespace FastCgiQt
 			ManagerPrivate(ResponderGenerator responderGenerator, QObject* parent = NULL);
 		private slots:
 			void processSocketData(int socket);
+			void listen();
 		private:
 			bool processNewRecord(int socket);
 			bool processRecordData(int socket);

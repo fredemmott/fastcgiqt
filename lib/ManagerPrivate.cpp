@@ -9,11 +9,13 @@
 
 #include "fastcgi.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
 #include <QHostAddress>
 #include <QLocalSocket>
 #include <QSignalMapper>
+#include <QTimer>
 
 #include <errno.h>
 #include <sys/file.h>
@@ -35,7 +37,10 @@ namespace FastCgiQt
 			this,
 			SLOT(processSocketData(int))
 		);
-
+		QTimer::singleShot(0, this, SLOT(listen()));
+	}
+	void ManagerPrivate::listen()
+	{
 		// Initialise socket address structure
 		sockaddr_un sa;
 		socklen_t len = sizeof(sa);
@@ -46,6 +51,7 @@ namespace FastCgiQt
 		if(error == -1 && errno != ENOTCONN)
 		{
 			qDebug() << tr("CGI not supported.");
+			QCoreApplication::exit(-1);
 			return;
 		}
 
