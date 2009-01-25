@@ -42,6 +42,7 @@ namespace FastCgiQt
 
 			// FastCGI spec says request IDs will be tightly backed near zero.
 			QVector<Request> m_requests;
+			QVector<bool> m_closeSocketOnExit;
 			QHash<int, RecordHeader> m_socketHeaders;
 	};
 };

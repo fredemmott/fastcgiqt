@@ -59,7 +59,6 @@ namespace FastCgiQt
 		lockSocket(FCGI_LISTENSOCK_FILENO);
 		int newSocket = ::accept(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
 		releaseSocket(FCGI_LISTENSOCK_FILENO);
-		::close(FCGI_LISTENSOCK_FILENO);
 
 		// We're connected, setup a QAbstractSocket
 		m_socket->setSocketDescriptor(newSocket, QLocalSocket::ConnectedState, QIODevice::ReadWrite);
@@ -164,8 +163,13 @@ namespace FastCgiQt
 		if(m_requests.size() -1 < record.requestId())
 		{
 			m_requests.resize((record.requestId() + 1) + 2);
-			m_requests[record.requestId()] = Request(record.requestId());
 		}
+		if(m_closeSocketOnExit.size() -1 < record.requestId())
+		{
+			m_closeSocketOnExit.resize((record.requestId() + 1) + 2);
+		}
+		m_requests[record.requestId()] = Request(record.requestId());
+		m_closeSocketOnExit[record.requestId()] = ! (record.flags() | BeginRequestRecord::KeepConnection);
 	}
 
 	void ManagerPrivate::respond(quint16 requestId)
@@ -177,7 +181,12 @@ namespace FastCgiQt
 		);
 		responder->respond();
 		m_socket->write(EndRequestRecord::create(requestId));
+		if(m_closeSocketOnExit.value(requestId))
+		{
+			m_socket->close();
+		}
 		delete responder;
+
 	}
 
 	bool ManagerPrivate::processNewRecord(int socket)
