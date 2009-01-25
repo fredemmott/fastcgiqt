@@ -17,6 +17,7 @@ HEADERS += \
 	Listener.h \
 	ParametersRecord.h \
 	RecordHeader.h \
+	Request.h \
 	fastcgi.h \
 
 SOURCES += \
@@ -25,5 +26,6 @@ SOURCES += \
 	Listener.cpp \
 	ParametersRecord.cpp \
 	RecordHeader.cpp \
+	Request.cpp \
 	main.cpp
 

@@ -2,6 +2,7 @@
 #define _FASTCGI_QT_LISTENER_H
 
 #include "RecordHeader.h"
+#include "Request.h"
 
 #include <QHash>
 #include <QObject>
@@ -12,7 +13,6 @@ class QSignalMapper;
 
 namespace FastCgiQt
 {
-	class RecordHeader;
 	class Listener : public QObject
 	{
 		Q_OBJECT
@@ -34,6 +34,7 @@ namespace FastCgiQt
 			QSignalMapper* m_socketMapper;
 			QStringList m_allowedAddresses;
 
+			QVector<Request> m_requests;
 			QHash<int, RecordHeader> m_socketHeaders;
 	};
 };

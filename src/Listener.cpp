@@ -136,6 +136,13 @@ namespace FastCgiQt
 		Q_ASSERT(header.type() == RecordHeader::BeginRequestRecord);
 		BeginRequestRecord record(header, *reinterpret_cast<const FCGI_BeginRequestBody*>(data.constData()));
 		qDebug() << "Got new begin request with id" << record.requestId() << "role" << record.role() << "flags" << record.flags();
+		Q_ASSERT(record.role() == BeginRequestRecord::ResponderRole);
+
+		if(m_requests.size() -1 < record.requestId())
+		{
+			m_requests.resize((record.requestId() + 1) + 2);
+			m_requests[record.requestId()] = Request(record.requestId());
+		}
 	}
 
 	bool Listener::processNewRecord(int socket)
