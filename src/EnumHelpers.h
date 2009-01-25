@@ -78,6 +78,9 @@ template<class T> const char* nameFromEnumHelper(const QMetaObject& so, const ch
  */
 #define ENUM_FROM_NAME(o,e,n) ENUM_FROM_NAME_HELPER(o::staticMetaObject,o,e,n)
 
+#define ENUM_DEBUG_STRING(c,e,v) \
+	qPrintable(QString("%1 (%2)").arg(static_cast<int>(v)).arg(NAME_FROM_ENUM(c,e,v)))
+
 /** Declare operators neccessary for an enum to be pretty printed by qDebug.
  * @param c is a class
  * @param e is an enum name
@@ -91,7 +94,7 @@ template<class T> const char* nameFromEnumHelper(const QMetaObject& so, const ch
 #define DEFINE_DEBUG_ENUM(c, e) \
 	QDebug operator<<(QDebug dbg, c::e value) \
 	{ \
-		dbg.nospace() << static_cast<int>(value) << " (" << NAME_FROM_ENUM(c,e,value) << ")"; \
+		dbg.nospace() << ENUM_DEBUG_STRING(c,e,value); \
 		return dbg.space(); \
 	}
 #endif
