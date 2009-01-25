@@ -17,15 +17,13 @@ namespace FastCgiQt
 		public:
 			virtual void respond() = 0;
 			virtual ~Responder();
+		private:
+			OutputDevice* m_outputDevice;
 		protected:
 			Responder(const Request& request, QIODevice* socket, QObject* parent = NULL);
 
-			const Request& request() const;
-			QTextStream& out();
-		private:
-			OutputDevice* m_outputDevice;
-			QTextStream m_outputStream;
-			const Request m_request;
+			const Request& request;
+			QTextStream out;
 	};
 	typedef Responder* (*ResponderGenerator)(const Request&, QIODevice*, QObject*);
 }

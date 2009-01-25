@@ -16,22 +16,12 @@ namespace FastCgiQt
 					this
 				)
 			),
-			m_outputStream(m_outputDevice),
-			m_request(request)
+			request(request),
+			out(m_outputDevice)
 	{
 	}
 
 	Responder::~Responder()
 	{
-	}
-
-	const Request& Responder::request() const
-	{
-		return m_request;
-	}
-
-	QTextStream& Responder::out()
-	{
-		return m_outputStream;
 	}
 }
