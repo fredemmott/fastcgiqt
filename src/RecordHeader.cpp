@@ -1,7 +1,6 @@
 #include "RecordHeader.h"
 
 #include <QDebug>
-#include "EnumHelpers.h"
 
 namespace FastCgiQt
 {
@@ -54,8 +53,5 @@ namespace FastCgiQt
 		return m_payloadLength;
 	}
 }
-QDebug operator<<(QDebug dbg, FastCgiQt::RecordHeader::RecordType type)
-{
-	dbg.nospace() << static_cast<int>(type) << " (" << NAME_FROM_ENUM(FastCgiQt::RecordHeader,RecordType,type) << ")";
-	return dbg.space();
-}
+
+DEFINE_DEBUG_ENUM(FastCgiQt::RecordHeader, RecordType);

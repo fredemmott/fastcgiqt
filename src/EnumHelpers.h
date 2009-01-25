@@ -17,6 +17,7 @@
 #ifndef _FASTCGI_QT_ENUM_HELPERS_H
 #define _FASTCGI_QT_ENUM_HELPERS_H
 
+#include <QDebug>
 #include <QMetaEnum>
 #include <QMetaObject>
 
@@ -77,4 +78,20 @@ template<class T> const char* nameFromEnumHelper(const QMetaObject& so, const ch
  */
 #define ENUM_FROM_NAME(o,e,n) ENUM_FROM_NAME_HELPER(o::staticMetaObject,o,e,n)
 
+/** Declare operators neccessary for an enum to be pretty printed by qDebug.
+ * @param c is a class
+ * @param e is an enum name
+ */
+#define DECLARE_DEBUG_ENUM(c, e) \
+	QDebug operator<<(QDebug dbg, c::e value);
+/** Define operators neccessary for an enum to be pretty printed by qDebug.
+ * @param c is a class
+ * @param e is an enum name
+ */
+#define DEFINE_DEBUG_ENUM(c, e) \
+	QDebug operator<<(QDebug dbg, c::e value) \
+	{ \
+		dbg.nospace() << static_cast<int>(value) << " (" << NAME_FROM_ENUM(c,e,value) << ")"; \
+		return dbg.space(); \
+	}
 #endif

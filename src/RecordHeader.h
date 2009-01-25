@@ -1,6 +1,8 @@
 #ifndef _FASTCGI_QT_RECORD_HEADER_H
 #define _FASTCGI_QT_RECORD_HEADER_H
 
+#include "EnumHelpers.h"
+
 #include "fastcgi.h"
 
 #include <QByteArray>
@@ -47,6 +49,6 @@ namespace FastCgiQt
 	};
 }
 
-QDebug operator<<(QDebug dbg, FastCgiQt::RecordHeader::RecordType type);
+DECLARE_DEBUG_ENUM(FastCgiQt::RecordHeader, RecordType);
 
 #endif
