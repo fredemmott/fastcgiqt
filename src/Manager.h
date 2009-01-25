@@ -1,5 +1,5 @@
-#ifndef _FASTCGI_QT_LISTENER_H
-#define _FASTCGI_QT_LISTENER_H
+#ifndef _FASTCGI_QT_MANAGER_H
+#define _FASTCGI_QT_MANAGER_H
 
 #include "RecordHeader.h"
 #include "Request.h"
@@ -13,11 +13,11 @@ class QSignalMapper;
 
 namespace FastCgiQt
 {
-	class Listener : public QObject
+	class Manager : public QObject
 	{
 		Q_OBJECT
 		public:
-			Listener(QObject* parent = NULL);
+			Manager(QObject* parent = NULL);
 		private slots:
 			void processSocketData(int socket);
 		private:

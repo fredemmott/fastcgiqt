@@ -1,6 +1,6 @@
 
 #include "DebugHandler.h"
-#include "Listener.h"
+#include "Manager.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 	application.setApplicationName("FastCgiQt");
 
 	FastCgiQt::DebugHandler handler;
-	FastCgiQt::Listener listener;
+	FastCgiQt::Manager manager;
 
 	return application.exec();
 }

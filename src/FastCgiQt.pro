@@ -14,7 +14,7 @@ HEADERS += \
 	BeginRequestRecord.h \
 	DebugHandler.h \
 	EnumHelpers.h \
-	Listener.h \
+	Manager.h \
 	OutputDevice.h \
 	ParametersRecord.h \
 	RecordHeader.h \
@@ -27,9 +27,9 @@ HEADERS += \
 SOURCES += \
 	BeginRequestRecord.cpp \
 	DebugHandler.cpp \
-	Listener.cpp \
-	ParametersRecord.cpp \
+	Manager.cpp \
 	OutputDevice.cpp \
+	ParametersRecord.cpp \
 	RecordHeader.cpp \
 	Request.cpp \
 	Responder.cpp \

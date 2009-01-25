@@ -1,4 +1,4 @@
-#include "Listener.h"
+#include "Manager.h"
 
 #include "BeginRequestRecord.h"
 #include "EnumHelpers.h"
@@ -21,7 +21,7 @@
 
 namespace FastCgiQt
 {
-	Listener::Listener(QObject* parent)
+	Manager::Manager(QObject* parent)
 		:
 			QObject(parent),
 			m_socket(new QLocalSocket(this)),
@@ -67,17 +67,17 @@ namespace FastCgiQt
 		m_socketMapper->setMapping(m_socket, newSocket);
 	}
 
-	void Listener::lockSocket(int socket)
+	void Manager::lockSocket(int socket)
 	{
 		::flock(socket, LOCK_EX);
 	}
 
-	void Listener::releaseSocket(int socket)
+	void Manager::releaseSocket(int socket)
 	{
 		::flock(socket, LOCK_UN);
 	}
 
-	void Listener::processSocketData(int socket)
+	void Manager::processSocketData(int socket)
 	{
 		bool success;
 		do
@@ -94,7 +94,7 @@ namespace FastCgiQt
 		while(success && m_socket->bytesAvailable() > 0);
 	}
 
-	bool Listener::processRecordData(int socket)
+	bool Manager::processRecordData(int socket)
 	{
 		qDebug() << "Payload on socket" << socket;
 		const RecordHeader header(m_socketHeaders.value(socket));
@@ -129,7 +129,7 @@ namespace FastCgiQt
 		return true;
 	}
 
-	void Listener::loadParameters(const RecordHeader& header, const QByteArray& data)
+	void Manager::loadParameters(const RecordHeader& header, const QByteArray& data)
 	{
 		Q_ASSERT(header.type() == RecordHeader::ParametersRecord);
 		Q_ASSERT(m_requests.value(header.requestId()).isValid());
@@ -137,7 +137,7 @@ namespace FastCgiQt
 		m_requests[header.requestId()].addServerData(record.parameters());
 	}
 
-	void Listener::readStandardInput(const RecordHeader& header, const QByteArray& data)
+	void Manager::readStandardInput(const RecordHeader& header, const QByteArray& data)
 	{
 		Q_ASSERT(header.type() == RecordHeader::StandardInputRecord);
 		Q_ASSERT(m_requests.value(header.requestId()).isValid());
@@ -146,7 +146,7 @@ namespace FastCgiQt
 		qDebug() << "Read standard input - done?" << m_requests.value(header.requestId()).haveContent();
 	}
 
-	void Listener::beginRequest(const RecordHeader& header, const QByteArray& data)
+	void Manager::beginRequest(const RecordHeader& header, const QByteArray& data)
 	{
 		Q_ASSERT(header.type() == RecordHeader::BeginRequestRecord);
 		Q_ASSERT(!m_requests.value(header.requestId()).isValid());
@@ -161,7 +161,7 @@ namespace FastCgiQt
 		}
 	}
 
-	bool Listener::processNewRecord(int socket)
+	bool Manager::processNewRecord(int socket)
 	{
 		qDebug() << "New record on socket" << socket;
 		if(m_socket->bytesAvailable() < FCGI_HEADER_LEN)
