@@ -45,6 +45,7 @@ namespace FastCgiQt
 			this,
 			SLOT(listen())
 		);
+		// Wait for the event loop to start up before running
 		QTimer::singleShot(0, this, SLOT(listen()));
 	}
 
@@ -53,7 +54,7 @@ namespace FastCgiQt
 		// Initialise socket address structure
 		sockaddr_un sa;
 		socklen_t len = sizeof(sa);
-		memset(&sa, 0, len);
+		::memset(&sa, 0, len);
 
 		// The recommended way of telling if we're running as fastcgi or not.
 		int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
