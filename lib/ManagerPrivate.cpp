@@ -14,6 +14,7 @@
 #include <QFile>
 #include <QHostAddress>
 #include <QLocalSocket>
+#include <QPointer>
 #include <QSignalMapper>
 #include <QSocketNotifier>
 #include <QTimer>
@@ -94,7 +95,7 @@ namespace FastCgiQt
 
 	void ManagerPrivate::processSocketData(int socketId)
 	{
-		QLocalSocket* socket = m_sockets.value(socketId);
+		QPointer<QLocalSocket> socket = m_sockets.value(socketId);
 		bool success;
 		do
 		{
@@ -107,7 +108,7 @@ namespace FastCgiQt
 				success = processRecordData(socket, socketId);
 			}
 		}
-		while(success && socket->bytesAvailable() > 0);
+		while(success && socket && socket->bytesAvailable() > 0);
 	}
 
 	bool ManagerPrivate::processRecordData(QLocalSocket* socket, int socketId)
@@ -137,7 +138,7 @@ namespace FastCgiQt
 				readStandardInput(header, data);
 				if(m_requests[header.requestId()].haveContent())
 				{
-					respond(socket, header.requestId());
+					respond(socket, socketId, header.requestId());
 				}
 				break;
 			default:
@@ -171,19 +172,19 @@ namespace FastCgiQt
 		BeginRequestRecord record(header, *reinterpret_cast<const FCGI_BeginRequestBody*>(data.constData()));
 		Q_ASSERT(record.role() == BeginRequestRecord::ResponderRole);
 
-		if(m_requests.size() -1 < record.requestId())
+		if(m_requests.size() < record.requestId())
 		{
-			m_requests.resize((record.requestId() + 1) + 2);
+			m_requests.resize((record.requestId() + 1) * 2);
 		}
-		if(m_closeSocketOnExit.size() -1 < record.requestId())
+		if(m_closeSocketOnExit.size() < record.requestId())
 		{
-			m_closeSocketOnExit.resize((record.requestId() + 1) + 2);
+			m_closeSocketOnExit.resize((record.requestId() + 1) * 2);
 		}
 		m_requests[record.requestId()] = Request(record.requestId());
-		m_closeSocketOnExit[record.requestId()] = ! (record.flags() | BeginRequestRecord::KeepConnection);
+		m_closeSocketOnExit[record.requestId()] = ! (record.flags() & BeginRequestRecord::KeepConnection);
 	}
 
-	void ManagerPrivate::respond(QLocalSocket* socket, quint16 requestId)
+	void ManagerPrivate::respond(QLocalSocket* socket, int socketId, quint16 requestId)
 	{
 		Responder* responder = (*m_responderGenerator)(
 			m_requests.at(requestId),
@@ -192,13 +193,15 @@ namespace FastCgiQt
 		);
 		responder->respond();
 		socket->write(EndRequestRecord::create(requestId));
+		socket->flush();
 		if(m_closeSocketOnExit.value(requestId))
 		{
-			///@todo cleanup
 			socket->close();
+			m_sockets.remove(socketId);
+			delete socket;
 		}
+		m_requests[requestId] = Request();
 		delete responder;
-
 	}
 
 	bool ManagerPrivate::processNewRecord(QLocalSocket* socket, int socketId)
