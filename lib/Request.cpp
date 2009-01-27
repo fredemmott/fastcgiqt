@@ -131,12 +131,19 @@ namespace FastCgiQt
 
 	QString Request::postData(const QString& name) const
 	{
-		waitForAllContent();
+		if(contentType() == QLatin1String("application/x-www-form-urlencoded"))
+		{
+			waitForAllContent();
+		}
 		return m_postData.value(name);
 	}
 
 	QHash<QString, QString> Request::postData() const
 	{
+		if(contentType() == QLatin1String("application/x-www-form-urlencoded"))
+		{
+			waitForAllContent();
+		}
 		waitForAllContent();
 		return m_postData;
 	}
