@@ -19,6 +19,9 @@ namespace FastCgiQt
 			QByteArray content() const;
 			bool haveContent() const;
 
+			QString postData(const QString& name) const;
+			QHash<QString, QString> postData() const;
+
 			QString serverData(const QString& name) const;
 			QHash<QString, QString> serverData() const;
 
@@ -32,6 +35,7 @@ namespace FastCgiQt
 			quint16 m_requestId;
 			QHash<QString, QString> m_serverData;
 			QHash<QString, QString> m_getData;
+			QHash<QString, QString> m_postData;
 
 			QString m_contentType;
 			quint16 m_contentLength;

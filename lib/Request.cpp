@@ -104,5 +104,20 @@ namespace FastCgiQt
 	{
 		Q_ASSERT(data.length() + m_content.length() <= m_contentLength);
 		m_content.append(data);
+		if(m_content.length() == contentLength() && contentType() == "application/x-www-form-urlencoded")
+		{
+			QStringList nameValuePairs = QString::fromUtf8(m_content).split("&");
+			Q_FOREACH(const QString& pair, nameValuePairs)
+			{
+				QStringList nameValuePair = pair.split("=");
+				QString name = QUrl::fromPercentEncoding(nameValuePair.first().toLatin1());
+				QString value;
+				if(nameValuePair.size() > 1)
+				{
+					value = QUrl::fromPercentEncoding(nameValuePair.value(1).toLatin1());
+				}
+				m_postData.insert(name, value);
+			}
+		}
 	}
 }
