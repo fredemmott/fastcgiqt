@@ -6,6 +6,7 @@ namespace FastCgiQt
 {
 	BeginRequestRecord::BeginRequestRecord(const RecordHeader& header, const FCGI_BeginRequestBody& body)
 	{
+		Q_ASSERT(header.type() == RecordHeader::BeginRequestRecord);
 		m_requestId = header.requestId();
 		int role = (body.roleB1 << 8) | body.roleB0;
 		if(role < FirstRole || role >= UnknownRole)

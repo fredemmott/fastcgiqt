@@ -1,5 +1,6 @@
 #include "Request.h"
 
+#include <QCoreApplication>
 #include <QStringList>
 #include <QUrl>
 
@@ -29,14 +30,21 @@ namespace FastCgiQt
 		return m_contentLength;
 	}
 
+	void Request::waitForAllContent() const
+	{
+		while(!haveAllContent())
+		{
+			QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents);
+		}
+	}
+
 	QByteArray Request::content() const
 	{
-		// If this fails, still waiting for some STDIN records
-		Q_ASSERT(m_content.length() == m_contentLength);
+		waitForAllContent();
 		return m_content;
 	}
 
-	bool Request::haveContent() const
+	bool Request::haveAllContent() const
 	{
 		return contentLength() == m_content.length();
 	}
@@ -123,11 +131,13 @@ namespace FastCgiQt
 
 	QString Request::postData(const QString& name) const
 	{
+		waitForAllContent();
 		return m_postData.value(name);
 	}
 
 	QHash<QString, QString> Request::postData() const
 	{
+		waitForAllContent();
 		return m_postData;
 	}
 }

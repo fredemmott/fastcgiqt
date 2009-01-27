@@ -14,6 +14,7 @@
 #include <QFile>
 #include <QHostAddress>
 #include <QLocalSocket>
+#include <QMetaMethod>
 #include <QPointer>
 #include <QSignalMapper>
 #include <QSocketNotifier>
@@ -120,6 +121,8 @@ namespace FastCgiQt
 			return false;
 		}
 
+		m_socketHeaders.remove(socketId);
+
 		QByteArray data = socket->read(header.payloadLength());
 		qint64 bytesRead = data.length();
 
@@ -133,29 +136,35 @@ namespace FastCgiQt
 				beginRequest(header, data);
 				break;
 			case RecordHeader::ParametersRecord:
-				loadParameters(header, data);
-				break;
-			case RecordHeader::StandardInputRecord:
-				readStandardInput(header, data);
-				if(m_requests[header.requestId()].haveContent())
+				if(!loadParameters(header, data))
 				{
 					respond(socket, socketId, header.requestId());
 				}
+				break;
+			case RecordHeader::StandardInputRecord:
+				readStandardInput(header, data);
 				break;
 			default:
 				qDebug() << "Got query string data" << m_requests[header.requestId()].getData();
 				qFatal("Don't know how to deal with payload for type %s", ENUM_DEBUG_STRING(RecordHeader,RecordType,header.type()));
 		}
-		m_socketHeaders.remove(socketId);
 		return true;
 	}
 
-	void ManagerPrivate::loadParameters(const RecordHeader& header, const QByteArray& data)
+	bool ManagerPrivate::loadParameters(const RecordHeader& header, const QByteArray& data)
 	{
 		Q_ASSERT(header.type() == RecordHeader::ParametersRecord);
 		Q_ASSERT(m_requests.value(header.requestId()).isValid());
 		ParametersRecord record(header, data);
-		m_requests[header.requestId()].addServerData(record.parameters());
+		if(record.isEmpty())
+		{
+			return false;
+		}
+		else
+		{
+			m_requests[header.requestId()].addServerData(record.parameters());
+			return true;
+		}
 	}
 
 	void ManagerPrivate::readStandardInput(const RecordHeader& header, const QByteArray& data)
@@ -185,6 +194,11 @@ namespace FastCgiQt
 		m_closeSocketOnExit[record.requestId()] = ! (record.flags() & BeginRequestRecord::KeepConnection);
 	}
 
+	void ManagerPrivate::queueSocketCheck(int socket)
+	{
+		staticMetaObject.invokeMethod(this, "processSocketData", Qt::QueuedConnection, Q_ARG(int, socket));
+	}
+
 	void ManagerPrivate::respond(QLocalSocket* socket, int socketId, quint16 requestId)
 	{
 		Responder* responder = (*m_responderGenerator)(
@@ -192,10 +206,22 @@ namespace FastCgiQt
 			socket,
 			this
 		);
+		// in case we have more local data...
+		queueSocketCheck(socketId);
+		
+		// actually start the response
 		responder->respond();
+
+		// clean up any pending events
+		QCoreApplication::processEvents();
+
+		// clean up the responder
 		delete responder; // clean up IO devices before cleaning up socket.
+
+		// cleanup the socket
 		socket->write(EndRequestRecord::create(requestId));
 		socket->flush();
+		// close and delete if the server's lazy
 		if(m_closeSocketOnExit.value(requestId))
 		{
 			socket->close();

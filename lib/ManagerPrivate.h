@@ -24,10 +24,11 @@ namespace FastCgiQt
 			void processSocketData(int socket);
 			void listen();
 		private:
+			void queueSocketCheck(int socket);
 			bool processNewRecord(QLocalSocket* socket, int socketId);
 			bool processRecordData(QLocalSocket* socket, int socketId);
 			void beginRequest(const RecordHeader& header, const QByteArray& data);
-			void loadParameters(const RecordHeader& header, const QByteArray& data);
+			bool loadParameters(const RecordHeader& header, const QByteArray& data);
 			void readStandardInput(const RecordHeader& header, const QByteArray& data);
 			void respond(QLocalSocket* socket, int socketId, quint16 requestId);
 
