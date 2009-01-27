@@ -193,6 +193,7 @@ namespace FastCgiQt
 			this
 		);
 		responder->respond();
+		delete responder; // clean up IO devices before cleaning up socket.
 		socket->write(EndRequestRecord::create(requestId));
 		socket->flush();
 		if(m_closeSocketOnExit.value(requestId))
@@ -202,7 +203,6 @@ namespace FastCgiQt
 			delete socket;
 		}
 		m_requests[requestId] = Request();
-		delete responder;
 	}
 
 	bool ManagerPrivate::processNewRecord(QLocalSocket* socket, int socketId)

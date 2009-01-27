@@ -2,6 +2,7 @@
 
 #include "OutputDevice.h"
 
+#include <QDebug>
 #include <QIODevice>
 
 namespace FastCgiQt
@@ -23,5 +24,6 @@ namespace FastCgiQt
 
 	Responder::~Responder()
 	{
+		out << flush;
 	}
 }
