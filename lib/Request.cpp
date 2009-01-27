@@ -120,4 +120,14 @@ namespace FastCgiQt
 			}
 		}
 	}
+
+	QString Request::postData(const QString& name) const
+	{
+		return m_postData.value(name);
+	}
+
+	QHash<QString, QString> Request::postData() const
+	{
+		return m_postData;
+	}
 }
