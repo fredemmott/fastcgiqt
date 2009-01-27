@@ -3,6 +3,7 @@
 #include "BeginRequestRecord.h"
 #include "EndRequestRecord.h"
 #include "EnumHelpers.h"
+#include "InputDevice.h"
 #include "ParametersRecord.h"
 #include "RecordHeader.h"
 #include "StandardInputRecord.h"
@@ -173,6 +174,7 @@ namespace FastCgiQt
 		Q_ASSERT(m_requests.value(header.requestId()).isValid());
 		StandardInputRecord record(header, data);
 		m_requests[header.requestId()].appendContent(record.streamData());
+		m_inputDevices[header.requestId()]->appendData(record.streamData());
 	}
 
 	void ManagerPrivate::beginRequest(const RecordHeader& header, const QByteArray& data)
@@ -190,8 +192,13 @@ namespace FastCgiQt
 		{
 			m_closeSocketOnExit.resize((record.requestId() + 1) * 2);
 		}
+		if(m_inputDevices.size() < record.requestId())
+		{
+			m_inputDevices.resize((record.requestId() + 1) * 2);
+		}
 		m_requests[record.requestId()] = Request(record.requestId());
 		m_closeSocketOnExit[record.requestId()] = ! (record.flags() & BeginRequestRecord::KeepConnection);
+		m_inputDevices[record.requestId()] = new InputDevice(this);
 	}
 
 	void ManagerPrivate::queueSocketCheck(int socket)
@@ -204,6 +211,7 @@ namespace FastCgiQt
 		Responder* responder = (*m_responderGenerator)(
 			m_requests.at(requestId),
 			socket,
+			m_inputDevices.at(requestId),
 			this
 		);
 		// in case we have more local data...
@@ -229,6 +237,7 @@ namespace FastCgiQt
 			delete socket;
 		}
 		m_requests[requestId] = Request();
+		delete m_inputDevices[requestId];
 	}
 
 	bool ManagerPrivate::processNewRecord(QLocalSocket* socket, int socketId)

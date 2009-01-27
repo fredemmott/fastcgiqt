@@ -7,18 +7,18 @@
 
 namespace FastCgiQt
 {
-	Responder::Responder(const Request& request, QIODevice* socket, QObject* parent)
+	Responder::Responder(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent)
 		:
 			QObject(parent),
-			m_outputDevice(
+			request(request),
+			in(inputDevice),
+			out(
 				new OutputDevice(
 					request.requestId(),
 					socket,
 					this
 				)
-			),
-			request(request),
-			out(m_outputDevice)
+			)
 	{
 	}
 

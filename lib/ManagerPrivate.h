@@ -7,6 +7,7 @@
 
 #include <QHash>
 #include <QObject>
+#include <QPointer>
 #include <QStringList>
 
 class QLocalSocket;
@@ -15,6 +16,7 @@ class QSocketNotifier;
 
 namespace FastCgiQt
 {
+	class InputDevice;
 	class ManagerPrivate : public QObject
 	{
 		Q_OBJECT
@@ -46,6 +48,7 @@ namespace FastCgiQt
 			// FastCGI spec says request IDs will be tightly backed near zero.
 			QVector<Request> m_requests;
 			QVector<bool> m_closeSocketOnExit;
+			QVector<QPointer<InputDevice> > m_inputDevices;
 			QHash<int, RecordHeader> m_socketHeaders;
 	};
 };
