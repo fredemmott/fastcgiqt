@@ -13,6 +13,7 @@ namespace FastCgiQt
 		public:
 			ParametersRecord(const RecordHeader& header, const QByteArray& data);
 			quint16 requestId() const;
+			bool isEmpty() const;
 			QHash<QString, QString> parameters() const;
 		private:
 			quint16 m_requestId;
