@@ -15,6 +15,7 @@ HEADERS += \
 	EndRequestRecord.h \
 	EnumHelpers.h \
 	ManagerPrivate.h \
+	InputDevice.h \
 	OutputDevice.h \
 	ParametersRecord.h \
 	RecordHeader.h \
@@ -26,6 +27,7 @@ SOURCES += \
 	BeginRequestRecord.cpp \
 	DebugHandler.cpp \
 	EndRequestRecord.cpp \
+	InputDevice.cpp \
 	Manager.cpp \
 	ManagerPrivate.cpp \
 	OutputDevice.cpp \
