@@ -1,0 +1,5 @@
+/** @namespace FastCgiQt
+  * The FastCgiQt namespace contains classes, functions, and macros for writing
+  * <a href='http://www.fastcgi.com'>FastCGI</a> applications using
+  * <a href='http://www.qtsoftware.com'>Qt</a>.
+  */
