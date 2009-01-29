@@ -18,7 +18,7 @@
 
 namespace FastCgiQt
 {
-	ManagerPrivate::ManagerPrivate(ResponderGenerator responderGenerator, QObject* parent)
+	ManagerPrivate::ManagerPrivate(Responder::Generator responderGenerator, QObject* parent)
 		:
 			QObject(parent),
 			m_socketNotifier(new QSocketNotifier(FCGI_LISTENSOCK_FILENO, QSocketNotifier::Read, this)),

@@ -15,7 +15,7 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
-			ManagerPrivate(ResponderGenerator responderGenerator, QObject* parent = NULL);
+			ManagerPrivate(Responder::Generator responderGenerator, QObject* parent = NULL);
 		private slots:
 			void listen();
 		private:
@@ -23,7 +23,7 @@ namespace FastCgiQt
 			void releaseSocket(int socket);
 
 			QSocketNotifier* m_socketNotifier;
-			ResponderGenerator m_responderGenerator;
+			Responder::Generator m_responderGenerator;
 
 			QStringList m_allowedAddresses;
 

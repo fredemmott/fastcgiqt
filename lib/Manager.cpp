@@ -4,7 +4,7 @@
 
 namespace FastCgiQt
 {
-	Manager::Manager(ResponderGenerator responderGenerator, QObject* parent)
+	Manager::Manager(Responder::Generator responderGenerator, QObject* parent)
 		:
 			QObject(parent),
 			d(new ManagerPrivate(responderGenerator, this))

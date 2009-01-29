@@ -14,7 +14,7 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
-			SocketManager(ResponderGenerator responderGenerator, int socketId, QObject* parent = NULL);
+			SocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent = NULL);
 			~SocketManager();
 		private:
 			void queueSocketCheck();
@@ -29,7 +29,7 @@ namespace FastCgiQt
 			void processSocketData();
 		private:
 			RecordHeader m_recordHeader;
-			ResponderGenerator m_responderGenerator;
+			Responder::Generator m_responderGenerator;
 			QLocalSocket* m_socket;
 
 			// FastCGI spec says request IDs will be tightly packed near zero.

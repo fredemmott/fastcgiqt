@@ -18,6 +18,15 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
+			/** A typedef for a pointer to a factory function for Responder objects.
+			 *
+			 * This function must have the signature:
+			 * @code
+			 * void myResponderGenerator(const Request&, QIODevice*, QIODevice*, QObject*);
+			 * @endcode
+			 */
+			typedef Responder* (*Generator)(const Request&, QIODevice*, QIODevice* inputDevice, QObject*);
+
 			/// Respond to a web request.
 			virtual void respond() = 0;
 			/** Clean up the responder.
@@ -71,17 +80,6 @@ namespace FastCgiQt
 			 */
 			QTextStream out;
 	};
-
-	/** A typedef for a pointer to a factory function for Responder objects.
-	 *
-	 * This function must have the signature:
-	 * @code
-	 * void myResponderGenerator(const Request&, QIODevice*, QIODevice*, QObject*);
-	 * @endcode
-	 *
-	 * @relates Responder
-	 */
-	typedef Responder* (*ResponderGenerator)(const Request&, QIODevice*, QIODevice* inputDevice, QObject*);
 }
 
 /** Convenience macro for creating constructor and factories of Responder
@@ -90,7 +88,7 @@ namespace FastCgiQt
  * The generated constructor just calls the Responder constructor.
  *
  * The generated factory function is called 'instance', and a pointer to it is
- * a FastCgiQt::ResponderGenerator.
+ * a FastCgiQt::Responder::Generator.
  *
  * @relates FastCgiQt::Responder
  */

@@ -24,7 +24,7 @@ namespace FastCgiQt
 			 * @param responderGenerator is a pointer to a function creating Responder objects.
 			 * @param parent is the parent object.
 			 */
-			Manager(ResponderGenerator responderGenerator, QObject* parent = NULL);
+			Manager(Responder::Generator responderGenerator, QObject* parent = NULL);
 			/// Destroy the Manager.
 			~Manager();
 		private:

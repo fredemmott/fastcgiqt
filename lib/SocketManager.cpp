@@ -19,7 +19,7 @@
 
 namespace FastCgiQt
 {
-	SocketManager::SocketManager(ResponderGenerator responderGenerator, int socketId, QObject* parent)
+	SocketManager::SocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent)
 		:
 			QObject(parent),
 			m_responderGenerator(responderGenerator)
