@@ -6,6 +6,7 @@
 #include "InputDevice.h"
 #include "ParametersRecord.h"
 #include "RecordHeader.h"
+#include "RequestDataProvider.h"
 #include "SocketManager.h"
 #include "StandardInputRecord.h"
 
@@ -108,7 +109,7 @@ namespace FastCgiQt
 		}
 		else
 		{
-			m_requests[requestId].addServerData(record.parameters());
+			RequestDataProvider::addServerData(&m_requests[requestId], record.parameters());
 			return true;
 		}
 	}
@@ -119,7 +120,7 @@ namespace FastCgiQt
 		Q_ASSERT(m_recordHeader.type() == RecordHeader::StandardInputRecord);
 		Q_ASSERT(m_requests.value(requestId).isValid());
 		StandardInputRecord record(m_recordHeader, data);
-		m_requests[requestId].appendContent(record.streamData());
+		RequestDataProvider::appendContent(&m_requests[requestId], record.streamData());
 		m_inputDevices[requestId]->appendData(record.streamData());
 	}
 

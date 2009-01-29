@@ -9,6 +9,7 @@ namespace FastCgiQt
 	/// Class containing information about a request.
 	class Request
 	{
+		friend class RequestDataProvider;
 		public:
 			/// Construct an invalid Request object.
 			Request();
@@ -185,22 +186,20 @@ namespace FastCgiQt
 			 */
 			QHash<QString, QString> getData() const;
 
-			/** @internal
-			 * Add some newly-received server variables to this
+		private:
+			/** Add some newly-received server variables to this
 			 * Request object.
 			 *
-			 * This should only be called by a FastCgiQt::Manager
-			 * object.
+			 * This should be called by RequestDataProvider.
 			 */
 			void addServerData(const QHash<QString, QString>& data);
-			/** @internal
-			 * Add some newly-received post data.
+
+			/** Add some newly-received post data.
 			 *
-			 * This should only be called by a FastCgiQt::Manager
-			 * object.
+			 * This should be called by RequestDataProvider.
 			 */
 			void appendContent(const QByteArray& data);
-		private:
+
 			bool m_isValid;
 			quint16 m_requestId;
 			QHash<QString, QString> m_serverData;

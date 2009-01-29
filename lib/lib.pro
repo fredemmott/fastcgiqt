@@ -20,6 +20,7 @@ HEADERS += \
 	OutputDevice.h \
 	ParametersRecord.h \
 	RecordHeader.h \
+	RequestDataProvider.h \
 	SocketManager.h \
 	StandardInputRecord.h \
 	StandardOutputRecord.h \
@@ -36,6 +37,7 @@ SOURCES += \
 	ParametersRecord.cpp \
 	RecordHeader.cpp \
 	Request.cpp \
+	RequestDataProvider.cpp \
 	Responder.cpp \
 	SocketManager.cpp \
 	StandardInputRecord.cpp \
