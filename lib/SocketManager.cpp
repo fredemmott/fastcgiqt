@@ -72,7 +72,7 @@ namespace FastCgiQt
 
 		if(bytesRead != header.payloadLength())
 		{
-			qFatal("Couldn't read payload - tried to read %d bytes, got %d", header.payloadLength(), bytesRead);
+			qFatal("Couldn't read payload - tried to read %d bytes, got %lld", header.payloadLength(), bytesRead);
 		}
 
 		switch(header.type())
@@ -202,7 +202,7 @@ namespace FastCgiQt
 		qint64 bytesRead = m_socket->read(reinterpret_cast<char*>(&fcgiHeader), FCGI_HEADER_LEN);
 		if(bytesRead != FCGI_HEADER_LEN)
 		{
-			qFatal("Couldn't read FCGI header - tried to read %d bytes, got %d", FCGI_HEADER_LEN, bytesRead);
+			qFatal("Couldn't read FCGI header - tried to read %d bytes, got %lld", FCGI_HEADER_LEN, bytesRead);
 		}
 		m_recordHeader = RecordHeader(fcgiHeader);
 		if(m_socket->bytesAvailable() >= m_recordHeader.payloadLength())

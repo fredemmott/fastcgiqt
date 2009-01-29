@@ -46,7 +46,7 @@ namespace FastCgiQt
 
 	bool Request::haveAllContent() const
 	{
-		return contentLength() == m_content.length();
+		return contentLength() == static_cast<quint64>(m_content.length());
 	}
 
 	bool Request::isValid() const
@@ -112,7 +112,7 @@ namespace FastCgiQt
 	{
 		Q_ASSERT(data.length() + m_content.length() <= m_contentLength);
 		m_content.append(data);
-		if(m_content.length() == contentLength() && contentType() == "application/x-www-form-urlencoded")
+		if(static_cast<quint64>(m_content.length()) == contentLength() && contentType() == "application/x-www-form-urlencoded")
 		{
 			QStringList nameValuePairs = QString::fromUtf8(m_content).split("&");
 			Q_FOREACH(const QString& pair, nameValuePairs)
