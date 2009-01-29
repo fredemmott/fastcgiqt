@@ -96,6 +96,7 @@ namespace FastCgiQt
 	public: \
 		className(const FastCgiQt::Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent = NULL) \
 			: Responder(request, socket, inputDevice, parent) {} \
-		static Responder* instance(const FastCgiQt::Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent) \
-			{ return new className(request, socket, inputDevice, parent); }
+		static Responder* create(const FastCgiQt::Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent) \
+			{ return new className(request, socket, inputDevice, parent); } \
+	private:
 #endif

@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 	QCoreApplication application(argc, argv);
 	application.setApplicationName("HelloWorld");
 
-	FastCgiQt::Manager manager(&HelloWorld::instance);
+	FastCgiQt::Manager manager(&HelloWorld::create);
 
 	return application.exec();
 }
