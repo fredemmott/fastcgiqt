@@ -8,11 +8,11 @@ QT += network
 
 # Input
 HEADERS += \
-	../include/FastCgiQt/DebugHandler.h \
 	../include/FastCgiQt/Manager.h \
 	../include/FastCgiQt/Request.h \
 	../include/FastCgiQt/Responder.h \
 	BeginRequestRecord.h \
+	DebugHandler.h \
 	EndRequestRecord.h \
 	EnumHelpers.h \
 	ManagerPrivate.h \

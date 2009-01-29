@@ -2,14 +2,15 @@
 #define _FAST_CGI_QT_DEBUG_HANDLER_H
 
 #include <QByteArray>
+#include <QObject>
 #include <QtGlobal>
 
 namespace FastCgiQt
 {
-	class DebugHandler
+	class DebugHandler : public QObject
 	{
 		public:
-			DebugHandler();
+			DebugHandler(QObject* parent = NULL);
 			~DebugHandler();
 		private:
 			static void syslogHandler(QtMsgType type, const char* message);

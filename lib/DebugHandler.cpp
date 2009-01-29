@@ -8,8 +8,9 @@
 
 namespace FastCgiQt
 {
-	DebugHandler::DebugHandler()
+	DebugHandler::DebugHandler(QObject* parent)
 		:
+			QObject(parent),
 			m_name(QCoreApplication::applicationName().toUtf8())
 	{
 		::openlog(m_name.constData(), LOG_PERROR | LOG_PID, LOG_USER);
