@@ -50,14 +50,14 @@ TYPEDEF_HIDES_STRUCT   = NO
 # Build related configuration options
 #---------------------------------------------------------------------------
 EXTRACT_ALL            = NO
-EXTRACT_PRIVATE        = NO
+EXTRACT_PRIVATE        = YES
 EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
 EXTRACT_LOCAL_METHODS  = YES
 EXTRACT_ANON_NSPACES   = YES
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
-HIDE_FRIEND_COMPOUNDS  = NO
+HIDE_FRIEND_COMPOUNDS  = YES
 HIDE_IN_BODY_DOCS      = NO
 INTERNAL_DOCS          = YES
 CASE_SENSE_NAMES       = YES
