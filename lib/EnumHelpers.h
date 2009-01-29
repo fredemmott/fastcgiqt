@@ -17,6 +17,12 @@
 #ifndef _FASTCGI_QT_ENUM_HELPERS_H
 #define _FASTCGI_QT_ENUM_HELPERS_H
 
+/** Helper functions for dealing with enums.
+ * @internal @file
+ *
+ * This requires the enum in question to be declared with Q_ENUMS.
+ */
+
 #include <QDebug>
 #include <QMetaEnum>
 #include <QMetaObject>
@@ -78,6 +84,7 @@ template<class T> const char* nameFromEnumHelper(const QMetaObject& so, const ch
  */
 #define ENUM_FROM_NAME(o,e,n) ENUM_FROM_NAME_HELPER(o::staticMetaObject,o,e,n)
 
+/// Convenience function for getting a string suitable for writing to qDebug with an enum value.
 #define ENUM_DEBUG_STRING(c,e,v) \
 	qPrintable(QString("%1 (%2)").arg(static_cast<int>(v)).arg(NAME_FROM_ENUM(c,e,v)))
 
