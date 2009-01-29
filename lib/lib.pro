@@ -1,5 +1,6 @@
 TEMPLATE = lib
 TARGET = FastCgiQt
+CONFIG += debug
 DEPENDPATH += .
 INCLUDEPATH += . ../include/FastCgiQt
 QT -= gui
@@ -19,6 +20,7 @@ HEADERS += \
 	OutputDevice.h \
 	ParametersRecord.h \
 	RecordHeader.h \
+	SocketManager.h \
 	StandardInputRecord.h \
 	StandardOutputRecord.h \
 	fastcgi.h \
@@ -35,6 +37,7 @@ SOURCES += \
 	RecordHeader.cpp \
 	Request.cpp \
 	Responder.cpp \
+	SocketManager.cpp \
 	StandardInputRecord.cpp \
 	StandardOutputRecord.cpp \
 
