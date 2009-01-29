@@ -7,7 +7,8 @@
 
 namespace FastCgiQt
 {
-	/** @internal @brief Class for redirection qDebug, qFatal, and so on.
+	/** @internal
+	 * @brief Class for redirecting qDebug, qFatal, and so on to somewhere useful.
 	 *
 	 * This redirects to syslog, as required by the FastCGI spec.
 	 */
