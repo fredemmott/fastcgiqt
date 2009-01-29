@@ -10,7 +10,6 @@ namespace FastCgiQt
 	{
 		Q_ASSERT(header.type() == RecordHeader::ParametersRecord);
 		Q_ASSERT(data.length() >= header.contentLength());
-		m_requestId = header.requestId();
 
 		quint16 i = 0;
 		quint16 bytesToRead = header.contentLength();
@@ -71,11 +70,6 @@ namespace FastCgiQt
 	bool ParametersRecord::isEmpty() const
 	{
 		return m_parameters.isEmpty();
-	}
-
-	quint16 ParametersRecord::requestId() const
-	{
-		return m_requestId;
 	}
 
 	QHash<QString, QString> ParametersRecord::parameters() const

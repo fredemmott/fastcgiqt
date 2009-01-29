@@ -49,14 +49,11 @@ namespace FastCgiQt
 			 */
 			BeginRequestRecord(const RecordHeader& header, const FCGI_BeginRequestBody&);
 
-			/// The ID of this request.
-			quint16 requestId() const;
 			/// The role of this request.
 			Role role() const;
 			/// The flags for this request.
 			Flags flags() const;
 		private:
-			quint16 m_requestId;
 			Role m_role;
 			Flags m_flags;
 	};

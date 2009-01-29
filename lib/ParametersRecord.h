@@ -23,8 +23,6 @@ namespace FastCgiQt
 			 * @param data is the payload for this record.
 			 */
 			ParametersRecord(const RecordHeader& header, const QByteArray& data);
-			/// The FastCGI ID of this request.
-			quint16 requestId() const;
 			/// Whether or not an empty record was given.
 			bool isEmpty() const;
 			/** The parameters given in this record.
@@ -33,7 +31,6 @@ namespace FastCgiQt
 			 */
 			QHash<QString, QString> parameters() const;
 		private:
-			quint16 m_requestId;
 			QHash<QString, QString> m_parameters;
 	};
 }
