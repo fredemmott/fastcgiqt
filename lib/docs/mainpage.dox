@@ -68,11 +68,16 @@
  *	@line return
  * 
  * @section examples Other Examples
- * There are several examples included in the FastCGI-Qt source:
- * - HelloWorld is the traditional first program.
- * - Dumper dumps all GET, POST, and server variables.
- * - GetGreeter is a simple example for processing a form submitted via GET.
- * - PostGreeter is a simple example for processing a form submitted via POST.
+ * There are <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples'>several examples</a>
+ * included in the FastCGI-Qt source:
+ * - <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples/HelloWorld'>HelloWorld</a>
+ *  	is the traditional first program.
+ * - <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples/Dumper'>Dumper</a>
+ *  	dumps all GET, POST, and server variables.
+ * - <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples/GetGreeter'>GetGreeter</a>
+ *  	is a simple example for processing a form submitted via GET.
+ * - <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples/PostGreeter'>PostGreeter</a>
+ *  	is a simple example for processing a form submitted via POST.
  *
  * @section Source
  * The source code for FastCGI-Qt can be
