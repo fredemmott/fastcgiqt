@@ -17,6 +17,7 @@
 #define _FASTCGI_QT_OUTPUT_DEVICE_H
 
 #include <QIODevice>
+#include <QHash>
 
 namespace FastCgiQt
 {
@@ -50,7 +51,20 @@ namespace FastCgiQt
 			 * 	error occured.
 			 */
 			qint64 writeData(const char* data, qint64 maxSize);
+
+			/** Try and set the a header value.
+			 *
+			 * @returns true if the header was set.
+			 * @returns false if the header could not be set - for
+			 * 	example, if data has already been sent to the
+			 * 	client.
+			 */
+			bool setHeader(const QString& name, const QString& value);
 		private:
+			/// If any data has been written to the socket yet.
+			bool m_haveSentData;
+			/// List of headers to prefix to the data.
+			QHash<QString, QString> m_headers;
 			/// The FastCGI request ID.
 			quint16 m_requestId;
 			/// The socket that output should be sent on.

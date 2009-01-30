@@ -2,7 +2,6 @@
 
 void Dumper::respond()
 {
-	out << "Content-type: text/html\r\n\r\n" << flush;
 	out << "<h1>" << tr("Variable Dump") << "</h1>";
 	dumpHash(tr("Get variables"), request.getData());
 	dumpHash(tr("Post variables"), request.postData());

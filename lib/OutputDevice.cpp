@@ -22,10 +22,13 @@ namespace FastCgiQt
 	OutputDevice::OutputDevice(quint16 requestId, QIODevice* socket, QObject* parent)
 		:
 			QIODevice(parent),
+			m_haveSentData(false),
 			m_requestId(requestId),
 			m_socket(socket)
 	{
 		open(QIODevice::WriteOnly);
+		m_headers.insert("CONTENT-TYPE", "text/html");
+		m_headers.insert("STATUS", "200 OK");
 	}
 
 	qint64 OutputDevice::readData(char* data, qint64 maxSize)
@@ -37,6 +40,23 @@ namespace FastCgiQt
 
 	qint64 OutputDevice::writeData(const char* data, qint64 maxSize)
 	{
+		if(!m_haveSentData)
+		{
+			m_haveSentData = true;
+			QString headerData;
+			for(
+				QHash<QString, QString>::ConstIterator it = m_headers.constBegin();
+				it != m_headers.constEnd();
+				++it
+			)
+			{
+				headerData += QString("%1: %2\r\n").arg(it.key(), it.value());
+			}
+			headerData += "\r\n";
+			QByteArray raw = headerData.toUtf8();
+			writeData(raw.constData(), raw.length());
+		}
+
 		QByteArray record = StandardOutputRecord::create(
 			m_requestId,
 			QByteArray::fromRawData(data, maxSize)
@@ -51,5 +71,17 @@ namespace FastCgiQt
 		{
 			return -1;
 		}
+	}
+
+	bool OutputDevice::setHeader(const QString& name, const QString& value)
+	{
+		if(m_haveSentData)
+		{
+			qCritical("Attempted to set a header after data has been sent.");
+			return false;
+		}
+
+		m_headers[name.toUpper()] = value;
+		return true;
 	}
 }
