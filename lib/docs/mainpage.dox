@@ -1,0 +1,76 @@
+/** @mainpage FastCGI-Qt
+ *
+ * @section Introduction
+ *
+ * FastCGI-Qt is a library to make writing
+ * <a href='http://www.fastcgi.com'>FastCGI</a> applications using
+ * <a href='http://www.qtsoftware.com'>Qt</a> easy.
+ *
+ * Unlike the majority of existing libraries, FastCGI-Qt aims to provide a clean
+ * interface to the data provided by the client or web server, instead of merely
+ * providing a CGI/1.1-compatible environment.
+ *
+ * This interface is provided by three main classes:
+ * - FastCgiQt::Request contains the information given to the application by the
+ * 	server.
+ * - FastCgiQt::Responder is an abstract base class (which you need to inherit
+ *   	from) for responding to requests.
+ * - FastCgiQt::Manager handles communication with the webserver, creating
+ *   	Request and Responder objects as needed.
+ *
+ * @section example Writing an application with FastCGI-Qt
+ *
+ * Only three things are needed to make a FastCGI application with FastCGI-Qt:
+ *
+ * - A FastCgiQt::Responder subclass that implements
+ *  	FastCgiQt::Responder::respond().
+ * - A factory function to create instances of this subclass (there is the
+ * 	#RESPONDER macro to help).
+ * - An instance of FastCgiQt::Manager.
+ *
+ * A simple "Hello, World" application is used as an example.
+ *
+ * @subsection example_header Header File
+ *
+ * @include HelloWorld/HelloWorld.h
+ *
+ * This declares a subclass of FastCgiQt::Responder called "HelloWorld", which
+ * overrides FastCgiQt::Responder::respond().
+ *
+ * The #RESPONDER macro does two things:
+ *
+ * - Defines a constructor which just calls the superclass constructor.
+ * - Defines a factory function called 'create', which is compatible with the
+ *  	FastCgiQt::Responder::Generator typedef.
+ *
+ * This means that all that has to be written by hand is the @ref
+ * FastCgiQt::Responder::respond() "respond()" function.
+ *
+ * @subsection example_implementation Implementation File
+ *
+ * @include HelloWorld/HelloWorld.cpp
+ *
+ * This just writes a content-type header, and the traditional greeting (though
+ * with translation support).
+ *
+ * @subsection example_main main.cpp
+ *
+ * @include HelloWorld/main.cpp
+ *
+ * This:
+ * -# Sets up the QCoreApplication.
+ * 	@skipline n app
+ * 	@until setApplicationName
+ * -# Creates a manager, passing it a pointer to the static generator function
+ *  	defined by #RESPONDER.
+ *	@line FastCgiQt::Manager
+ * -# Starts the application running.
+ *	@line return
+ * 
+ * @section examples Other Examples
+ * There are several examples included in the FastCgiQt source:
+ * - HelloWorld is the traditional first program.
+ * - Dumper dumps all GET, POST, and server variables.
+ * - GetGreeter is a simple example for processing a form submitted via GET.
+ * - PostGreeter is a simple example for processing a form submitted via POST.
+ */
