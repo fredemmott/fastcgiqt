@@ -68,14 +68,14 @@
  *	@line return
  * 
  * @section examples Other Examples
- * There are several examples included in the FastCgiQt source:
+ * There are several examples included in the FastCGI-Qt source:
  * - HelloWorld is the traditional first program.
  * - Dumper dumps all GET, POST, and server variables.
  * - GetGreeter is a simple example for processing a form submitted via GET.
  * - PostGreeter is a simple example for processing a form submitted via POST.
  *
  * @section Source
- * The source code for FastCgiQt can be
+ * The source code for FastCGI-Qt can be
  * <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=summary'>browsed via gitweb</a>.
  *
  * You can obtain the code via git:
@@ -83,13 +83,13 @@
  *
  * @section License
  *
- * With the exception of the file 'fastcgi.h', FastCgiQt is licensed under the
+ * With the exception of the file 'fastcgi.h', FastCGI-Qt is licensed under the
  * ISC license:
  *
  * @verbinclude LICENSE.ISC
  *
  * The file 'fastcgi.h' is not under the same license, as it is taken from the
- * FastCGI development kit. This file is not part of the user API for FastCgiQt.
+ * FastCGI development kit. This file is not part of the user API for FastCGI-Qt.
  *
  * It is under the following license:
  *
