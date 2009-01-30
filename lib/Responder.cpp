@@ -41,4 +41,12 @@ namespace FastCgiQt
 	{
 		out << flush;
 	}
+
+	bool Responder::setHeader(const QString& name, const QString& value)
+	{
+		Q_ASSERT(out.device());
+		OutputDevice* outDevice = qobject_cast<OutputDevice*>(out.device());
+		Q_ASSERT(outDevice);
+		return outDevice->setHeader(name, value);
+	}
 }

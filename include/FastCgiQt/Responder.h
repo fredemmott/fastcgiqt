@@ -94,6 +94,18 @@ namespace FastCgiQt
 			 * If you need the raw device, use out.device().
 			 */
 			QTextStream out;
+
+			/** Attempt to set an HTTP header.
+			 *
+			 * @param name is the name of the header.
+			 * @param value is the value to assign to the header.
+			 *
+			 * @returns true if the header was set.
+			 * @returns false if the header could not be set (for
+			 * 	example, if data has already been sent to the
+			 * 	client).
+			 */
+			bool setHeader(const QString& name, const QString& value);
 	};
 }
 
