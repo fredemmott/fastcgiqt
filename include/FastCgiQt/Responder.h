@@ -87,7 +87,7 @@ namespace FastCgiQt
  *
  * The generated constructor just calls the Responder constructor.
  *
- * The generated factory function is called 'instance', and a pointer to it is
+ * The generated factory function is called 'create', and a pointer to it is
  * a FastCgiQt::Responder::Generator.
  *
  * @relates FastCgiQt::Responder
