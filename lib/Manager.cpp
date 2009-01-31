@@ -18,6 +18,9 @@
 #include "DebugHandler.h"
 #include "ManagerPrivate.h"
 
+#include <QCoreApplication>
+#include <QSettings>
+
 namespace FastCgiQt
 {
 	Manager::Manager(Responder::Generator responderGenerator, QObject* parent)
@@ -25,6 +28,12 @@ namespace FastCgiQt
 			QObject(parent),
 			d(new ManagerPrivate(responderGenerator, this))
 	{
+		QSettings::setDefaultFormat(QSettings::IniFormat);
+		QSettings::setPath(
+			QSettings::IniFormat,
+			QSettings::UserScope,
+			QCoreApplication::applicationDirPath() + "/." + QCoreApplication::applicationName() + ".ini"
+		);
 		new DebugHandler(this);
 	}
 
