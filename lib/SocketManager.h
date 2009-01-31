@@ -70,6 +70,13 @@ namespace FastCgiQt
 			void readStandardInput(const QByteArray& data);
 			/// Create a Responder, run it, and cleanup.
 			void respond();
+		signals:
+			/** This socket manager is done.
+			 *
+			 * @param inThread is the thread that this SocketManager
+			 * 	is running in.
+			 */
+			void finished(QThread* inThread);
 		private slots:
 			/** Process new data on the socket.
 			 *

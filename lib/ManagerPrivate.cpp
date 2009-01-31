@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <QHostAddress>
 #include <QSocketNotifier>
+#include <QThread>
 #include <QTime>
 #include <QTimer>
 
@@ -46,8 +47,24 @@ namespace FastCgiQt
 			SLOT(listen())
 		);
 
+		// Spawn some threads
+		for(int i = 0; i < qMax(QThread::idealThreadCount(), 1); ++i)
+		{
+			QThread* thread = new QThread(this);
+			thread->start();
+			m_threads.append(thread);
+		}
+
 		// Wait for the event loop to start up before running
 		QTimer::singleShot(0, this, SLOT(listen()));
+	}
+
+	bool ManagerPrivate::hasLessLoadThan(QThread* t1, QThread* t2)
+	{
+		Q_ASSERT(t1->parent() == t2->parent());
+		ManagerPrivate* p = qobject_cast<ManagerPrivate*>(t1->parent());
+		Q_ASSERT(p);
+		return p->m_threadLoads.value(t1) < p->m_threadLoads.value(t2);
 	}
 
 	void ManagerPrivate::listen()
@@ -74,7 +91,23 @@ namespace FastCgiQt
 		/* We're connected, setup a SocketManager.
 		 * This will delete itself when appropriate (via deleteLater())
 		 */
-		new SocketManager(m_responderGenerator, newSocket, this);
+		// Pick a thread to put it in
+		qSort(m_threads.begin(), m_threads.end(), hasLessLoadThan);
+		QThread* thread = m_threads.first();
+		m_threadLoads[thread].ref();
+		SocketManager* socket = new SocketManager(m_responderGenerator, newSocket, NULL);
+		connect(
+			socket,
+			SIGNAL(finished(QThread*)),
+			this,
+			SLOT(reduceLoadCount(QThread*))
+		);
+		socket->moveToThread(thread);
+	}
+
+	void ManagerPrivate::reduceLoadCount(QThread* thread)
+	{
+		m_threadLoads[thread].deref();
 	}
 
 	void ManagerPrivate::lockSocket(int socket)

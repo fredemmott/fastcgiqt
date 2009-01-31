@@ -199,6 +199,7 @@ namespace FastCgiQt
 		if(m_closeSocketOnExit.value(requestId))
 		{
 			m_socket->close();
+			emit finished(thread());
 			deleteLater();
 		}
 		m_requests[requestId] = Request();

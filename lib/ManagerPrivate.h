@@ -18,10 +18,13 @@
 
 #include "Responder.h"
 
+#include <QAtomicInt>
+#include <QMap>
 #include <QObject>
 #include <QStringList>
 
 class QSocketNotifier;
+class QThread;
 
 namespace FastCgiQt
 {
@@ -31,6 +34,8 @@ namespace FastCgiQt
 	 *
 	 * This class listens to the main FastCGI socket, spawns new
 	 * connections, and passes them off to a SocketManager.
+	 *
+	 * It will spread the load over QThread::idealThreadCount() threads.
 	 */
 	class ManagerPrivate : public QObject
 	{
@@ -41,11 +46,20 @@ namespace FastCgiQt
 		private slots:
 			/// Listen for a new FastCGI connection.
 			void listen();
+			/// Decrease the load counter for the specified thread.
+			void reduceLoadCount(QThread* thread);
 		private:
 			/// Lock the socket with the specified socket id.
 			void lockSocket(int socket);
 			/// Unlock the socket with the specified socket id.
 			void releaseSocket(int socket);
+			/** Comparison for thread loads.
+			 *
+			 * @returns true if thread @p t1 is currently handling
+			 * 	less requests than @p t2.
+			 * @returns false otherwise.
+			 */
+			static bool hasLessLoadThan(QThread* t1, QThread* t2);
 
 			/** Notifier used to watch for new connections to the
 			 * FastCGI socket.
@@ -61,6 +75,13 @@ namespace FastCgiQt
 			 */
 			QStringList m_allowedAddresses;
 
+			/// The thread pool.
+			QList<QThread*> m_threads;
+
+			/** The number of requests each thread is currently
+			 * handling.
+			 */
+			QMap<const QObject*, QAtomicInt> m_threadLoads;
 	};
 };
 
