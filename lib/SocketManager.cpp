@@ -30,8 +30,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QLocalSocket>
-#include <QMetaMethod>
 #include <QSocketNotifier>
+#include <QTimer>
 
 namespace FastCgiQt
 {
@@ -167,7 +167,7 @@ namespace FastCgiQt
 
 	void SocketManager::queueSocketCheck()
 	{
-		staticMetaObject.invokeMethod(this, "processSocketData", Qt::QueuedConnection);
+		QTimer::singleShot(0, this, SLOT(processSocketData()));
 	}
 
 	void SocketManager::respond()
