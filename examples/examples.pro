@@ -4,4 +4,5 @@ SUBDIRS = \
 	GetGreeter \
 	HelloWorld \
 	PostGreeter \
+	ServiceExample \
 
