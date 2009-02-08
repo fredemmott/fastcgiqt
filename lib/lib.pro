@@ -8,9 +8,12 @@ QT += network
 
 # Input
 HEADERS += \
+	../include/FastCgiQt/ClientIOInterface.h \
 	../include/FastCgiQt/Manager.h \
 	../include/FastCgiQt/Request.h \
 	../include/FastCgiQt/Responder.h \
+	../include/FastCgiQt/Service.h \
+	../include/FastCgiQt/ServiceMapper.h \
 	BeginRequestRecord.h \
 	DebugHandler.h \
 	EndRequestRecord.h \
@@ -28,6 +31,7 @@ HEADERS += \
 
 SOURCES += \
 	BeginRequestRecord.cpp \
+	ClientIOInterface.cpp \
 	DebugHandler.cpp \
 	EndRequestRecord.cpp \
 	InputDevice.cpp \
@@ -39,6 +43,8 @@ SOURCES += \
 	Request.cpp \
 	RequestDataProvider.cpp \
 	Responder.cpp \
+	Service.cpp \
+	ServiceMapper.cpp \
 	SocketManager.cpp \
 	StandardInputRecord.cpp \
 	StandardOutputRecord.cpp \

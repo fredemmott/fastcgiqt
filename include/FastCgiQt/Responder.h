@@ -17,10 +17,7 @@
 #define _FASTCGI_QT_RESPONDER_H
 
 #include "Request.h"
-
-#include <QTextStream>
-
-class QIODevice;
+#include "ClientIOInterface.h"
 
 namespace FastCgiQt
 {
@@ -29,7 +26,7 @@ namespace FastCgiQt
 	 * All web applications will involve at least one subclass of this
 	 * class.
 	 */
-	class Responder : public QObject
+	class Responder : public FastCgiQt::ClientIOInterface
 	{
 		Q_OBJECT
 		public:
@@ -64,48 +61,6 @@ namespace FastCgiQt
 			 * @param parent is a QObject* parent.
 			 */
 			Responder(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent = NULL);
-
-			/// Class containing information about the request.
-			const Request& request;
-			/** Input text stream (POST data).
-			 *
-			 * This is the HTTP post data, as a text stream.
-			 * If you need the raw device, use in.device().
-			 *
-			 * The Request class has other (possible more
-			 * convenient) ways to access this data, although
-			 * not as a stream.
-			 *
-			 * @see Request::postData() const
-			 * @see Request::postData(const QString&) const
-			 * @see Request::content()
-			 * @see Request::contentType()
-			 * @see Request::contentLength()
-			 * @see Request::haveAllContent()
-			 * @see Request::waitForAllContent()
-			 */
-			QTextStream in;
-
-			/** Output text stream.
-			 *
-			 * Text written to this stream will be sent to the
-			 * client.
-			 *
-			 * If you need the raw device, use out.device().
-			 */
-			QTextStream out;
-
-			/** Attempt to set an HTTP header.
-			 *
-			 * @param name is the name of the header.
-			 * @param value is the value to assign to the header.
-			 *
-			 * @returns true if the header was set.
-			 * @returns false if the header could not be set (for
-			 * 	example, if data has already been sent to the
-			 * 	client).
-			 */
-			bool setHeader(const QString& name, const QString& value);
 	};
 }
 

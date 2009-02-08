@@ -13,7 +13,7 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#include "Responder.h"
+#include "ClientIOInterface.h"
 
 #include "OutputDevice.h"
 
@@ -22,13 +22,31 @@
 
 namespace FastCgiQt
 {
-	Responder::Responder(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent)
+	ClientIOInterface::ClientIOInterface(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent)
 		:
-			ClientIOInterface(request, socket, inputDevice, parent)
+			QObject(parent),
+			request(request),
+			in(inputDevice),
+			out(
+				new OutputDevice(
+					request.requestId(),
+					socket,
+					this
+				)
+			)
 	{
 	}
 
-	Responder::~Responder()
+	ClientIOInterface::~ClientIOInterface()
 	{
+		out << flush;
+	}
+
+	bool ClientIOInterface::setHeader(const QString& name, const QString& value)
+	{
+		Q_ASSERT(out.device());
+		OutputDevice* outDevice = qobject_cast<OutputDevice*>(out.device());
+		Q_ASSERT(outDevice);
+		return outDevice->setHeader(name, value);
 	}
 }
