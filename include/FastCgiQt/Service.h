@@ -60,7 +60,7 @@ namespace FastCgiQt
 			 *
 			 * @see urlMap()
 			 */
-			void dispatchRequest(const QString& urlFragment);
+			virtual void dispatchRequest(const QString& urlFragment);
 
 			/// Destructor.
 			virtual ~Service();
