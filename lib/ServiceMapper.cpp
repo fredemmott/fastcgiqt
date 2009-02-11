@@ -18,6 +18,8 @@
 #include "Service.h"
 
 #include <QDebug>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QRegExp>
 #include <QStringList>
 #include <QThread>
@@ -28,9 +30,11 @@ namespace FastCgiQt
 	{
 		public:
 			typedef QMap<QString, Service::Generator> ServiceMap;
-			static QMap<QThread*, ServiceMap> services;
+			static ServiceMap services;
+			static QMutex serviceLock;
 	};
-	QMap<QThread*, ServiceMapper::Private::ServiceMap> ServiceMapper::Private::services;
+	ServiceMapper::Private::ServiceMap ServiceMapper::Private::services;
+	QMutex ServiceMapper::Private::serviceLock;
 
 	ServiceMapper::ServiceMapper(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent)
 		:
@@ -41,23 +45,25 @@ namespace FastCgiQt
 
 	void ServiceMapper::addService(const QString& serviceName, Service::Generator service)
 	{
-		d->services[QThread::currentThread()].insert(serviceName, service);
+		d->services.insert(serviceName, service);
 	}
 
 	void ServiceMapper::respond()
 	{
-		if(d->services.value(QThread::currentThread()).isEmpty())
 		{
-			loadServices();
+			QMutexLocker lock(&d->serviceLock);
+			if(d->services.isEmpty())
+			{
+				loadServices();
+			}
 		}
-		Private::ServiceMap services = d->services.value(QThread::currentThread());
 
 		QStringList parts = request.serverData("PATH_INFO").split("/").filter(QRegExp("."));;
 		const QString serviceName(parts.isEmpty() ? "" : parts.takeFirst());
 
 		for(
-			Private::ServiceMap::ConstIterator it = services.constBegin();
-			it != services.constEnd();
+			Private::ServiceMap::ConstIterator it = d->services.constBegin();
+			it != d->services.constEnd();
 			++it
 		)
 		{
