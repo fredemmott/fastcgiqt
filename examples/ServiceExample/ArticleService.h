@@ -2,6 +2,7 @@
 class ArticleService : public FastCgiQt::Service
 {
 	Q_OBJECT
+	SERVICE(ArticleService)
 	public:
 		ArticleService(QObject* parent = NULL);
 	public slots:

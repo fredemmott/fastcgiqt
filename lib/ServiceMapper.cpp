@@ -27,7 +27,7 @@ namespace FastCgiQt
 	class ServiceMapper::Private
 	{
 		public:
-			typedef QMap<QString, Service*> ServiceMap;
+			typedef QMap<QString, Service::Generator> ServiceMap;
 			static QMap<QThread*, ServiceMap> services;
 	};
 	QMap<QThread*, ServiceMapper::Private::ServiceMap> ServiceMapper::Private::services;
@@ -39,7 +39,7 @@ namespace FastCgiQt
 	{
 	}
 
-	void ServiceMapper::addService(const QString& serviceName, Service* service)
+	void ServiceMapper::addService(const QString& serviceName, Service::Generator service)
 	{
 		d->services[QThread::currentThread()].insert(serviceName, service);
 	}
@@ -63,7 +63,7 @@ namespace FastCgiQt
 		{
 			if(it.key() == serviceName || (parts.isEmpty() && it.key().isEmpty() && serviceName.isEmpty()))
 			{
-				Service* service = it.value();
+				Service* service = (*it.value())(this);
 
 				// copy over the ClientIOInterface parts
 				// Trust me, I'm a friend class.
@@ -72,13 +72,11 @@ namespace FastCgiQt
 				service->in.setDevice(in.device());
 
 				// do the actual request
-				it.value()->dispatchRequest(parts.join("/"));
+				service->dispatchRequest(parts.join("/"));
 
 				// flush the text stream
 				service->out << flush;
-				// reset devices
-				service->in.setDevice(NULL);
-				service->out.setDevice(NULL);
+				delete service;
 				return;
 			}
 		}

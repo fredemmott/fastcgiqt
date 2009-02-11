@@ -7,6 +7,6 @@
 
 void ServiceExample::loadServices()
 {
-	addService("", new IndexService());
-	addService("articles", new ArticleService());
+	addService("", IndexService::create);
+	addService("articles", ArticleService::create);
 }

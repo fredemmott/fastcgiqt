@@ -3,6 +3,7 @@
 class IndexService : public FastCgiQt::Service
 {
 	Q_OBJECT
+	SERVICE(IndexService)
 	public:
 		IndexService(QObject* parent = NULL);
 	public slots:

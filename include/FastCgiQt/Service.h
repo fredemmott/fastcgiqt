@@ -53,6 +53,14 @@ namespace FastCgiQt
 		friend class ServicePrivate;
 		Q_OBJECT
 		public:
+			/** A typedef for a pointer to a factory function for Service objects.
+			 *
+			 * This function must have the signature:
+			 * @code
+			 * void myServiceGenerator(QObject*);
+			 * @endcode
+			 */
+			typedef Service* (*Generator)(QObject* parent);
 			/** @internal
 			 * @brief Call a slot based on an url fragment.
 			 *
@@ -89,5 +97,19 @@ namespace FastCgiQt
 			ServicePrivate* d;
 	};
 }
+
+/** Convenience macro for creating factories of Service subclasses.
+ *
+ * The generated constructor just calls the Responder constructor.
+ *
+ * The generated factory function is called 'create', and a pointer to it is
+ * a FastCgiQt::Service::Generator.
+ *
+ * @relates FastCgiQt::Service
+ */
+#define SERVICE(className) \
+	public: \
+		static Service* create(QObject* parent) { return new className(parent); } \
+	private:
 
 #endif

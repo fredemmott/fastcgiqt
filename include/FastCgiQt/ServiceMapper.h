@@ -17,10 +17,10 @@
 #define _FASTCGI_QT_SERVICE_MAPPER_H
 
 #include "Responder.h"
+#include "Service.h"
 
 namespace FastCgiQt
 {
-	class Service;
 	/** Map requests to services.
 	 *
 	 * This class is for mapping URLs to QObjects and slots.
@@ -37,7 +37,7 @@ namespace FastCgiQt
 			void respond();
 		protected:
 			/// Add a service to the mapping.
-			void addService(const QString& serviceName, Service* service);
+			void addService(const QString& serviceName, Service::Generator service);
 			/** Initialise the name -> service map.
 			 *
 			 * The implementation should call addService.
