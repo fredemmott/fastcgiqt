@@ -49,6 +49,10 @@ namespace FastCgiQt
 				);
 			}
 		}
+		///@todo FIXME
+		setHeader("status", "404");
+
+		out << "<h1>404 Not Found</h1>";
 	}
 
 	void ServicePrivate::invokeMethod(
