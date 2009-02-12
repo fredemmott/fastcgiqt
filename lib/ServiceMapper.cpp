@@ -70,7 +70,10 @@ namespace FastCgiQt
 		{
 			if(it.key() == serviceName || (parts.isEmpty() && it.key().isEmpty() && serviceName.isEmpty()))
 			{
-				parts.takeFirst();
+				if(!parts.isEmpty())
+				{
+					parts.takeFirst();
+				}
 				service = (*it.value())(this);
 			}
 		}
