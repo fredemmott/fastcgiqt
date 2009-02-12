@@ -59,8 +59,9 @@ namespace FastCgiQt
 		}
 
 		QStringList parts = request.serverData("PATH_INFO").split("/").filter(QRegExp("."));;
-		const QString serviceName(parts.isEmpty() ? "" : parts.takeFirst());
+		const QString serviceName(parts.isEmpty() ? "" : parts.first());
 
+		Service* service = NULL;
 		for(
 			Private::ServiceMap::ConstIterator it = d->services.constBegin();
 			it != d->services.constEnd();
@@ -69,24 +70,35 @@ namespace FastCgiQt
 		{
 			if(it.key() == serviceName || (parts.isEmpty() && it.key().isEmpty() && serviceName.isEmpty()))
 			{
-				Service* service = (*it.value())(this);
-
-				// copy over the ClientIOInterface parts
-				// Trust me, I'm a friend class.
-				*const_cast<Request*>(&service->request) = *const_cast<Request*>(&this->request);
-				service->out.setDevice(out.device());
-				service->in.setDevice(in.device());
-
-				// do the actual request
-				service->dispatchRequest(parts.join("/"));
-
-				// flush the text stream
-				service->out << flush;
-				delete service;
-				return;
+				parts.takeFirst();
+				service = (*it.value())(this);
 			}
 		}
-		errorMessage(404);
+		
+		if(!service && d->services.contains(""))
+		{
+			service = (d->services.value(""))(this);
+		}
+
+		if(service)
+		{
+			// copy over the ClientIOInterface parts
+			// Trust me, I'm a friend class.
+			*const_cast<Request*>(&service->request) = *const_cast<Request*>(&this->request);
+			service->out.setDevice(out.device());
+			service->in.setDevice(in.device());
+
+			// do the actual request
+			service->dispatchRequest(parts.join("/"));
+
+			// flush the text stream
+			service->out << flush;
+			delete service;
+		}
+		else
+		{
+			errorMessage(404);
+		}
 		return;
 	}
 
