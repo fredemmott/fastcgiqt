@@ -16,6 +16,7 @@
 #include "Request.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QStringList>
 #include <QUrl>
 
@@ -61,6 +62,7 @@ namespace FastCgiQt
 
 	bool Request::haveAllContent() const
 	{
+		qDebug() << "Expecting" << contentLength() << "and got" << m_content.length();
 		return contentLength() == static_cast<quint64>(m_content.length());
 	}
 

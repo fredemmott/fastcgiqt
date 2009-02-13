@@ -3,8 +3,8 @@
 #include <QDate>
 #include <QDebug>
 
-ArticleService::ArticleService(QObject* parent)
-	: Service(parent)
+ArticleService::ArticleService(const FastCgiQt::Request& request, QObject* parent)
+	: Service(request, parent)
 {
 }
 

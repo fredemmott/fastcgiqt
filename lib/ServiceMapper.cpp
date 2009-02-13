@@ -17,7 +17,6 @@
 
 #include "Service.h"
 
-#include <QDebug>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QRegExp>
@@ -74,20 +73,19 @@ namespace FastCgiQt
 				{
 					parts.takeFirst();
 				}
-				service = (*it.value())(this);
+				service = (*it.value())(request, this);
 			}
 		}
 		
 		if(!service && d->services.contains(""))
 		{
-			service = (d->services.value(""))(this);
+			service = (d->services.value(""))(request, this);
 		}
 
 		if(service)
 		{
 			// copy over the ClientIOInterface parts
 			// Trust me, I'm a friend class.
-			*const_cast<Request*>(&service->request) = *const_cast<Request*>(&this->request);
 			service->out.setDevice(out.device());
 			service->in.setDevice(in.device());
 

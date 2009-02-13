@@ -25,9 +25,9 @@
 
 namespace FastCgiQt
 {
-	Service::Service(QObject* parent)
+	Service::Service(const Request& request, QObject* parent)
 		:
-			ClientIOInterface(Request(), NULL, NULL, parent)
+			ClientIOInterface(request, NULL, NULL, parent)
 	{
 		d = new ServicePrivate();
 	}

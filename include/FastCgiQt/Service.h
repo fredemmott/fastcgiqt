@@ -17,6 +17,7 @@
 #define _FASTCGI_QT_SERVICE_H
 
 #include "ClientIOInterface.h"
+#include "Request.h"
 
 #include <QMap>
 #include <QObject>
@@ -60,7 +61,7 @@ namespace FastCgiQt
 			 * void myServiceGenerator(QObject*);
 			 * @endcode
 			 */
-			typedef Service* (*Generator)(QObject* parent);
+			typedef Service* (*Generator)(const Request& request, QObject* parent);
 			/** @internal
 			 * @brief Call a slot based on an url fragment.
 			 *
@@ -96,7 +97,7 @@ namespace FastCgiQt
 			 */
 			virtual UrlMap urlMap() const = 0;
 			/// Constructor.
-			Service(QObject* parent = NULL);
+			Service(const Request& request, QObject* parent = NULL);
 		private:
 			ServicePrivate* d;
 	};
@@ -113,7 +114,7 @@ namespace FastCgiQt
  */
 #define SERVICE(className) \
 	public: \
-		static Service* create(QObject* parent) { return new className(parent); } \
+		static Service* create(const FastCgiQt::Request& request, QObject* parent) { return new className(request, parent); } \
 	private:
 
 #endif

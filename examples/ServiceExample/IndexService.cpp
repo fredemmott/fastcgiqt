@@ -1,7 +1,7 @@
 #include "IndexService.h"
 
-IndexService::IndexService(QObject* parent)
-	: Service(parent)
+IndexService::IndexService(const FastCgiQt::Request& request, QObject* parent)
+	: Service(request, parent)
 {
 }
 

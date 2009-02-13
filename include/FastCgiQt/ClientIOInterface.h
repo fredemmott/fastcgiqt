@@ -50,7 +50,7 @@ namespace FastCgiQt
 			ClientIOInterface(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent = NULL);
 
 			/// Class containing information about the request.
-			const Request request;
+			const Request& request;
 			/** Input text stream (POST data).
 			 *
 			 * This is the HTTP post data, as a text stream.
