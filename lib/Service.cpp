@@ -47,8 +47,8 @@ namespace FastCgiQt
 					action.second,
 					parameters
 				);
+				return;
 			}
-			return;
 		}
 		///@todo FIXME
 		setHeader("status", "404");
