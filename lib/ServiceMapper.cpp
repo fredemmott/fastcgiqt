@@ -58,7 +58,7 @@ namespace FastCgiQt
 			}
 		}
 
-		QStringList parts = request.serverData("PATH_INFO").split("/").filter(QRegExp("."));;
+		QStringList parts = request.serverData("PATH_INFO").split("/");
 		const QString serviceName(parts.isEmpty() ? "" : parts.first());
 
 		Service* service = NULL;
