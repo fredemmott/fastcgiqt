@@ -13,6 +13,6 @@ void IndexService::index()
 FastCgiQt::Service::UrlMap IndexService::urlMap() const
 {
 	FastCgiQt::Service::UrlMap map;
-	map.insert("", SLOT(index()));
+	map.append("", SLOT(index()));
 	return map;
 }

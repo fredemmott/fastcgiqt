@@ -36,11 +36,11 @@ void ArticleService::show(const QString& year, const QString& month, const QStri
 FastCgiQt::Service::UrlMap ArticleService::urlMap() const
 {
 	FastCgiQt::Service::UrlMap map;
-	map.insert("", SLOT(list()));
-	map.insert("(\\d+)", SLOT(list(QString)));
-	map.insert("(\\d+)/(\\d+)", SLOT(list(QString, QString)));
-	map.insert("(\\d+)/(\\d+)/(\\d+)", SLOT(list(QString, QString,QString)));
-	map.insert("(\\d+)/(\\d+)/(\\d+)/(.+)", SLOT(show(QString, QString,QString, QString)));
+	map.append("", SLOT(list()));
+	map.append("(\\d+)", SLOT(list(QString)));
+	map.append("(\\d+)/(\\d+)", SLOT(list(QString, QString)));
+	map.append("(\\d+)/(\\d+)/(\\d+)", SLOT(list(QString, QString,QString)));
+	map.append("(\\d+)/(\\d+)/(\\d+)/(.+)", SLOT(show(QString, QString,QString, QString)));
 	qDebug() << "returning" << map.count() << "methods from ArticleService";
 	return map;
 }

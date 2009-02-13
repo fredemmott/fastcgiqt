@@ -125,20 +125,20 @@ namespace FastCgiQt
 			);
 		}
 
-		Service::UrlMap urlMap= service->urlMap();
+		Service::UrlMap urlMap = service->urlMap();
 		for(
-			Service::UrlMap::ConstIterator it = urlMap.constBegin();
+			QList<QPair<QString, const char*> >::ConstIterator it = urlMap.constBegin();
 			it != urlMap.constEnd();
 			++it
 		)
 		{
-			QByteArray normalized = QMetaObject::normalizedSignature(it.value());
+			QByteArray normalized = QMetaObject::normalizedSignature(it->second);
 			if(!slotsToMethods.contains(normalized.constData()))
 			{
 				qFatal("Couldn't find a public slot matching '%s'.", normalized.constData());
 			}
 			///@todo check captures vs parameters
-			forwardMap.append(qMakePair(QRegExp(it.key()), slotsToMethods.value(normalized)));
+			forwardMap.append(qMakePair(QRegExp(it->first), slotsToMethods.value(normalized)));
 			Q_ASSERT(forwardMap.last().first.isValid());
 		}
 	}
@@ -146,6 +146,11 @@ namespace FastCgiQt
 	Service::~Service()
 	{
 		delete d;
+	}
+
+	void Service::UrlMap::append(const QString& regexp, const char* slot)
+	{
+		QList<QPair<QString, const char*> >::append(qMakePair(regexp, slot));
 	}
 
 }

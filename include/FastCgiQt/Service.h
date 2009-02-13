@@ -81,7 +81,11 @@ namespace FastCgiQt
 			 *
 			 * @see urlMap()
 			 */
-			typedef QMap<QString, const char*> UrlMap;
+			class UrlMap : public QList<QPair<QString, const char*> >
+			{
+				public:
+					void append(const QString& regexp, const char* slot);
+			};
 
 			/** Return a mapping of regular expressions to slots.
 			 *
