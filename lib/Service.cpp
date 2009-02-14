@@ -69,6 +69,11 @@ namespace FastCgiQt
 
 	void Service::dispatchRequest(const QString& urlFragment)
 	{
+		dispatchUncachedRequest(urlFragment);
+	}
+
+	void Service::dispatchUncachedRequest(const QString& urlFragment)
+	{
 		d->fillMap(this);
 		Q_FOREACH(const Service::Private::UrlMapEntry& action, d->forwardMap)
 		{

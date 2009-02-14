@@ -64,15 +64,30 @@ namespace FastCgiQt
 			/** @internal
 			 * @brief Call a slot based on an url fragment.
 			 *
+			 * The result may be cached.
+			 *
 			 * The mapping depends on what urlMap() returns.
 			 *
+			 * If you want to override this function, see
+			 * dispatchUncachedRequest()
+			 *
+			 * @see dispatchUncachedRequest()
 			 * @see urlMap()
 			 */
-			virtual void dispatchRequest(const QString& urlFragment);
+			void dispatchRequest(const QString& urlFragment);
 
 			/// Destructor.
 			virtual ~Service();
 		protected:
+			/** @internal
+			 * @brief Call a slot based on an URL fragment.
+			 *
+			 * This should not maintain an urlFragment -> result map,
+			 * as this is done by Service.
+			 *
+			 * @see dispatchRequest()
+			 */
+			virtual void dispatchUncachedRequest(const QString& urlFragment);
 			/** A map of regular expressions to slots.
 			 *
 			 * This is a pair of regularExpressionString ->
