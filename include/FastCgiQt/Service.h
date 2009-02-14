@@ -19,6 +19,7 @@
 #include "ClientIOInterface.h"
 #include "Request.h"
 
+#include <QDateTime>
 #include <QMap>
 #include <QObject>
 #include <QRegExp>
@@ -44,6 +45,19 @@ namespace FastCgiQt
 	 * thread (which may be more than one request) - there is no guarantee
 	 * that all requests in the same session will go to the same instance of
 	 * your subclass.
+	 *
+	 * Service also maintains two caches:
+	 *  - A file cache
+	 *  - A request cache
+	 *
+	 * The file cache caches data from the readFile call.
+	 *
+	 * The request cache caches urlFragment -> result pairs. This is only
+	 * used if a slot calls canCacheThisRequest(). You can expire a cache
+	 * entry by reimplementing isExpired.
+	 *
+	 * These caches are currently per-process. In the future, they may be
+	 * shared between processes via memcached or similar.
 	 *
 	 * @see ServiceMapper
 	 */
@@ -101,6 +115,33 @@ namespace FastCgiQt
 				public:
 					void append(const QString& regexp, const char* slot);
 			};
+
+			/** The size of the request cache.
+			 *
+			 * @see canCacheThisRequest()
+			 * @see isExpired()
+			 * @see setRequestCacheSize()
+			 */
+			static int requestCacheSize();
+
+			/** Set the size of the request cache.
+			 *
+			 * @see canCacheThisRequest()
+			 * @see isExpired()
+			 * @see requestCacheSize()
+			 */
+			static void setRequestCacheSize(int newSize);
+
+			/** Next time a similar request is made, return the same data.
+			 *
+			 * To have effect, this must be called before any data
+			 * is written to the output device.
+			 *
+			 * @see isExpired()
+			 * @see requestCacheSize()
+			 * @see setRequestCacheSize()
+			 */
+			void canCacheThisRequest();
 
 			/** Return a mapping of regular expressions to slots.
 			 *
@@ -182,6 +223,24 @@ namespace FastCgiQt
 			 * @see setFileCacheSize
 			 */
 			QByteArray readFile(const QString& path, bool useCache = true);
+			/** Whether or not a cached result for the given urlFragment is still valid.
+			 *
+			 * @param urlFragment is the URL fragment for the request.
+			 * @param generated is the time the cached version was generated.
+			 *
+			 * If you have content that may change, but you wish to
+			 * cache the results, you'll want to reimplement this
+			 * function, and make your slots call canCacheThisRequest().
+			 *
+			 * If the cached result is invalid, you should return
+			 * true, and refresh any internal caches in your service.
+			 *
+			 * @see canCacheThisRequest()
+			 * @see requestCacheSize()
+			 * @see setRequestCacheSize()
+			 * @returns false
+			 */
+			virtual bool isExpired(const QString& urlFragment, const QDateTime& generated);
 			/// Constructor.
 			Service(const Request& request, QObject* parent = NULL);
 		private:

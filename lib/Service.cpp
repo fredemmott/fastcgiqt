@@ -30,6 +30,7 @@ namespace FastCgiQt
 	// Static variables
 	bool Service::Private::usingFileCache(false);
 	QCache<QString, QByteArray> Service::Private::fileCache;
+	QCache<QString, Service::Private::RequestCacheEntry> Service::Private::requestCache;
 
 	Service::Service(const Request& request, QObject* parent)
 		:
@@ -68,6 +69,11 @@ namespace FastCgiQt
 		return Service::Private::fileCache.maxCost();
 	}
 
+	void Service::canCacheThisRequest()
+	{
+		d->canCacheThisRequest = true;
+	}
+
 	void Service::dispatchRequest(const QString& urlFragment)
 	{
 		// Don't stack-overflow if a subclass calls the wrong function
@@ -80,6 +86,16 @@ namespace FastCgiQt
 			);
 			return;
 		}
+
+		if(d->requestCache.contains(urlFragment))
+		{
+			if(!isExpired(urlFragment, d->requestCache[urlFragment]->timeStamp))
+			{
+				out.device()->write(d->requestCache[urlFragment]->data);
+			}
+		}
+
+		d->canCacheThisRequest = false;
 
 		d->dispatchingRequest = true;
 		dispatchUncachedRequest(urlFragment);
@@ -224,6 +240,23 @@ namespace FastCgiQt
 	Service::~Service()
 	{
 		delete d;
+	}
+
+	int Service::requestCacheSize()
+	{
+		return Service::Private::requestCache.maxCost();
+	}
+
+	void Service::setRequestCacheSize(int size)
+	{
+		Service::Private::requestCache.setMaxCost(size);
+	}
+
+	bool Service::isExpired(const QString& urlFragment, const QDateTime& generated)
+	{
+		Q_UNUSED(urlFragment);
+		Q_UNUSED(generated);
+		return false;
 	}
 
 	void Service::UrlMap::append(const QString& regexp, const char* slot)

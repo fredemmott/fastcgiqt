@@ -28,6 +28,11 @@ namespace FastCgiQt
 	class Service::Private
 	{
 		public:
+			struct RequestCacheEntry
+			{
+				QDateTime timeStamp;
+				QByteArray data;
+			};
 			typedef QPair<QRegExp, QMetaMethod> UrlMapEntry;
 			QList<UrlMapEntry> forwardMap;
 			void fillMap(Service* service);
@@ -37,8 +42,10 @@ namespace FastCgiQt
 				const QStringList& parameters
 			);
 			bool dispatchingRequest;
+			bool canCacheThisRequest;
 			static bool usingFileCache;
 			static QCache<QString, QByteArray> fileCache;
+			static QCache<QString, RequestCacheEntry> requestCache;
 	};
 }
 
