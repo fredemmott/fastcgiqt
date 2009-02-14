@@ -60,7 +60,37 @@ namespace FastCgiQt
 			 * 	client.
 			 */
 			bool setHeader(const QString& name, const QString& value);
+
+			enum Mode
+			{
+				Streamed, //< Data is written straight out, and not logged.
+				Logged,   //< Data is written straight out, but a log is kept.
+				Buffered  //< Not yet supported.
+			};
+			/** The output mode.
+			 *
+			 * Default is Streamed.
+			 */
+			Mode mode() const;
+			/** Change the output mode.
+			 *
+			 * This can only be called before data has been written.
+			 */
+			void setMode(Mode mode);
+			/** The output buffer.
+			 *
+			 * This contains logged/buffered output. It is empty if
+			 * mode() == Streamed
+			 */
+			QByteArray buffer() const;
+			/// Whether or not data has been sent on the socket yet.
+			bool haveSentData() const;
 		private:
+			/** Output buffer/log.
+			 *
+			 * Only used if mode() != Streamed
+			 */
+			QByteArray m_buffer;
 			/// If any data has been written to the socket yet.
 			bool m_haveSentData;
 			/// List of headers to prefix to the data.
@@ -69,6 +99,8 @@ namespace FastCgiQt
 			quint16 m_requestId;
 			/// The socket that output should be sent on.
 			QIODevice* m_socket;
+			/// The output mode;
+			Mode m_mode;
 	};
 }
 

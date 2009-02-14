@@ -24,11 +24,29 @@ namespace FastCgiQt
 			QIODevice(parent),
 			m_haveSentData(false),
 			m_requestId(requestId),
-			m_socket(socket)
+			m_socket(socket),
+			m_mode(Streamed)
 	{
 		open(QIODevice::WriteOnly);
 		m_headers.insert("CONTENT-TYPE", "text/html");
 		m_headers.insert("STATUS", "200 OK");
+	}
+
+	void OutputDevice::setMode(Mode mode)
+	{
+		Q_ASSERT(!haveSentData());
+		Q_ASSERT(mode != Buffered); // not yet supported
+		m_mode = mode;
+	}
+
+	OutputDevice::Mode OutputDevice::mode() const
+	{
+		return m_mode;
+	}
+
+	QByteArray OutputDevice::buffer() const
+	{
+		return m_buffer;
 	}
 
 	qint64 OutputDevice::readData(char* data, qint64 maxSize)
@@ -36,6 +54,11 @@ namespace FastCgiQt
 		Q_UNUSED(data);
 		Q_UNUSED(maxSize);
 		return -1;
+	}
+
+	bool OutputDevice::haveSentData() const
+	{
+		return m_haveSentData;
 	}
 
 	qint64 OutputDevice::writeData(const char* data, qint64 maxSize)
@@ -65,6 +88,10 @@ namespace FastCgiQt
 		Q_ASSERT(wrote == record.length());
 		if(wrote == record.length())
 		{
+			if(mode() == Logged)
+			{
+				m_buffer.append(QByteArray(data, maxSize));
+			}
 			return maxSize;
 		}
 		else
