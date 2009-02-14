@@ -57,7 +57,8 @@ namespace FastCgiQt
 	 * entry by reimplementing isExpired.
 	 *
 	 * These caches are currently per-process. In the future, they may be
-	 * shared between processes via memcached or similar.
+	 * shared between processes via memcached or similar. They default to a
+	 * maximum size of 10MiB.
 	 *
 	 * @see ServiceMapper
 	 */

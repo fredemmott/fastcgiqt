@@ -15,6 +15,7 @@
 */
 #include "Service.h"
 
+#include "OutputDevice.h"
 #include "ServicePrivate.h"
 
 #include <QCoreApplication>
@@ -29,8 +30,8 @@ namespace FastCgiQt
 {
 	// Static variables
 	bool Service::Private::usingFileCache(false);
-	QCache<QString, QByteArray> Service::Private::fileCache;
-	QCache<QString, Service::Private::RequestCacheEntry> Service::Private::requestCache;
+	QCache<QString, QByteArray> Service::Private::fileCache(10*1024*1024);
+	QCache<QString, Service::Private::RequestCacheEntry> Service::Private::requestCache(10*1024*1024);
 
 	Service::Service(const Request& request, QObject* parent)
 		:
@@ -71,6 +72,10 @@ namespace FastCgiQt
 
 	void Service::canCacheThisRequest()
 	{
+		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
+		Q_ASSERT(outputDevice);
+		Q_ASSERT(!outputDevice->haveSentData());
+		outputDevice->setMode(OutputDevice::Logged);
 		d->canCacheThisRequest = true;
 	}
 
@@ -87,11 +92,18 @@ namespace FastCgiQt
 			return;
 		}
 
+		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
+		Q_ASSERT(outputDevice);
+
 		if(d->requestCache.contains(urlFragment))
 		{
-			if(!isExpired(urlFragment, d->requestCache[urlFragment]->timeStamp))
+			Service::Private::RequestCacheEntry* cacheEntry = d->requestCache[urlFragment];
+
+			if(!isExpired(urlFragment, cacheEntry->timeStamp))
 			{
-				out.device()->write(d->requestCache[urlFragment]->data);
+				outputDevice->setSendingHeadersEnabled(false);
+				outputDevice->write(cacheEntry->data);
+				return;
 			}
 		}
 
@@ -100,6 +112,14 @@ namespace FastCgiQt
 		d->dispatchingRequest = true;
 		dispatchUncachedRequest(urlFragment);
 		d->dispatchingRequest = false;
+
+		if(d->canCacheThisRequest)
+		{
+			Service::Private::RequestCacheEntry* cacheEntry = new Service::Private::RequestCacheEntry();
+			cacheEntry->timeStamp = QDateTime::currentDateTime();
+			cacheEntry->data = outputDevice->buffer();
+			d->requestCache.insert(urlFragment, cacheEntry, cacheEntry->data.length());
+		}
 	}
 
 	void Service::dispatchUncachedRequest(const QString& urlFragment)
