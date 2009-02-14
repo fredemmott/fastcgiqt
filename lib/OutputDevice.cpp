@@ -29,7 +29,7 @@ namespace FastCgiQt
 			m_sendHeaders(true)
 	{
 		open(QIODevice::WriteOnly);
-		m_headers.insert("CONTENT-TYPE", "text/html");
+		m_headers.insert("CONTENT-TYPE", "text/html; charset=UTF-8");
 		m_headers.insert("STATUS", "200 OK");
 	}
 
