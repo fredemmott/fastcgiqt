@@ -16,6 +16,7 @@
 #ifndef _FASTCGI_QT_SERVICE_PRIVATE_H
 #define _FASTCGI_QT_SERVICE_PRIVATE_H
 
+#include <QCache>
 #include <QList>
 #include <QPair>
 #include <QRegExp>
@@ -24,7 +25,7 @@ class QMetaMethod;
 
 namespace FastCgiQt
 {
-	class ServicePrivate
+	class Service::Private
 	{
 		public:
 			typedef QPair<QRegExp, QMetaMethod> UrlMapEntry;
@@ -35,7 +36,8 @@ namespace FastCgiQt
 				const QMetaMethod& method,
 				const QStringList& parameters
 			);
-
+			static bool usingFileCache;
+			static QCache<QString, QByteArray> fileCache;
 	};
 }
 

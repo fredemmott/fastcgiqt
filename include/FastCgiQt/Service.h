@@ -26,7 +26,6 @@
 
 namespace FastCgiQt
 {
-	class ServicePrivate;
 	/** Interface exposing public slots to the web.
 	 *
 	 * urlMap() should be overridden to provide a regex->slot mapping;
@@ -96,10 +95,83 @@ namespace FastCgiQt
 			 * @see UrlMap
 			 */
 			virtual UrlMap urlMap() const = 0;
+
+			/** Whether or not file reads are cached.
+			 *
+			 * If this is true, all file reads via readFile will be
+			 * cached, if the file size is less than the maximum
+			 * cache size.
+			 *
+			 * @see setUsingFileCache
+			 * @see clearFileCache
+			 * @see fileCacheSize
+			 * @see setFileCacheSize
+			 * @see readFile
+			 */
+			static bool usingFileCache();
+
+			/** Set whether or not file reads via readFile() are cached.
+			 *
+			 * @see usingFileCache
+			 * @see clearFileCache
+			 * @see fileCacheSize
+			 * @see setFileCacheSize
+			 * @see readFile
+			 */
+			static void setUsingFileCache(bool use);
+
+			/** Clear the file cache used by readFile().
+			 *
+			 * @see usingFileCache
+			 * @see setUsingFileCache
+			 * @see fileCacheSize
+			 * @see setFileCacheSize
+			 * @see readFile
+			 */
+			static void clearFileCache();
+
+			/** The maximum size of the cache for readFile().
+			 *
+			 * @see usingFileCache
+			 * @see clearFileCache
+			 * @see setUsingFileCache
+			 * @see setFileCacheSize
+			 * @see readFile
+			 */
+			static int fileCacheSize();
+
+			/** Set the maximum size of the cache for readFile().
+			 *
+			 * @see usingFileCache
+			 * @see clearFileCache
+			 * @see setUsingFileCache
+			 * @see fileCacheSize
+			 * @see readFile
+			 */
+			static void setFileCacheSize(int maximumSize);
+
+			/** Read a file, optionally using a per-process file cache.
+			 *
+			 * If @p useCache is true, the cache is enabled, and the
+			 * file is smaller than the maximum size of the cache,
+			 * the file cache will be used.
+			 *
+			 * If this would put the cache size over the maximum,
+			 * the least-recently-accessed file will be removed from
+			 * the cache.
+			 *
+			 * @see usingFileCache
+			 * @see clearFileCache
+			 * @see setUsingFileCache
+			 * @see fileCacheSize
+			 * @see setFileCacheSize
+			 */
+			QByteArray readFile(const QString& path, bool useCache = true);
 			/// Constructor.
 			Service(const Request& request, QObject* parent = NULL);
 		private:
-			ServicePrivate* d;
+			class Private;
+			Private* d;
 	};
 }
 

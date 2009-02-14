@@ -17,7 +17,9 @@
 
 #include "ServicePrivate.h"
 
+#include <QCoreApplication>
 #include <QDebug>
+#include <QFile>
 #include <QGenericArgument>
 #include <QMetaMethod>
 #include <QMetaObject>
@@ -25,17 +27,50 @@
 
 namespace FastCgiQt
 {
+	// Static variables
+	bool Service::Private::usingFileCache(false);
+	QCache<QString, QByteArray> Service::Private::fileCache;
+
 	Service::Service(const Request& request, QObject* parent)
 		:
 			ClientIOInterface(request, NULL, NULL, parent)
 	{
-		d = new ServicePrivate();
+		d = new Service::Private();
+	}
+
+	QByteArray Service::readFile(const QString& path, bool useCache)
+	{
+		const QString prefix = path.startsWith('/') ? "" : QCoreApplication::applicationDirPath() + "/";
+		const QString fullPath = prefix + path;
+		if(useCache && Service::Private::fileCache.contains(fullPath))
+		{
+			return *Service::Private::fileCache[fullPath];
+		}
+
+		QFile file(fullPath);
+		file.open(QIODevice::ReadOnly);
+		Q_ASSERT(file.isOpen());
+
+		if(this->usingFileCache() && useCache && file.size() < fileCacheSize())
+		{
+			Service::Private::fileCache.insert(fullPath, new QByteArray(file.readAll()), file.size());
+			return *Service::Private::fileCache[fullPath];
+		}
+		else
+		{
+			return file.readAll();
+		}
+	}
+
+	int Service::fileCacheSize()
+	{
+		return Service::Private::fileCache.maxCost();
 	}
 
 	void Service::dispatchRequest(const QString& urlFragment)
 	{
 		d->fillMap(this);
-		Q_FOREACH(const ServicePrivate::UrlMapEntry& action, d->forwardMap)
+		Q_FOREACH(const Service::Private::UrlMapEntry& action, d->forwardMap)
 		{
 			QRegExp re(action.first);
 			if(re.exactMatch(urlFragment))
@@ -56,7 +91,7 @@ namespace FastCgiQt
 		out << "<h1>404 Not Found</h1>";
 	}
 
-	void ServicePrivate::invokeMethod(
+	void Service::Private::invokeMethod(
 		QObject* object,
 		const QMetaMethod& method,
 		const QStringList& parameters
@@ -91,7 +126,31 @@ namespace FastCgiQt
 		);
 	}
 
-	void ServicePrivate::fillMap(Service* service)
+	bool Service::usingFileCache()
+	{
+		return Service::Private::usingFileCache;
+	}
+
+	void Service::setUsingFileCache(bool useFileCache)
+	{
+		Service::Private::usingFileCache = useFileCache;
+		if(!useFileCache)
+		{
+			clearFileCache();
+		}
+	}
+
+	void Service::clearFileCache()
+	{
+		Service::Private::fileCache.clear();
+	}
+
+	void Service::setFileCacheSize(int maximumSize)
+	{
+		Service::Private::fileCache.setMaxCost(maximumSize);
+	}
+
+	void Service::Private::fillMap(Service* service)
 	{
 		if(!forwardMap.isEmpty())
 		{
