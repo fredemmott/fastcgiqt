@@ -36,6 +36,7 @@ namespace FastCgiQt
 				const QMetaMethod& method,
 				const QStringList& parameters
 			);
+			bool dispatchingRequest;
 			static bool usingFileCache;
 			static QCache<QString, QByteArray> fileCache;
 	};

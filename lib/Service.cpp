@@ -36,6 +36,7 @@ namespace FastCgiQt
 			ClientIOInterface(request, NULL, NULL, parent)
 	{
 		d = new Service::Private();
+		d->dispatchingRequest = false;
 	}
 
 	QByteArray Service::readFile(const QString& path, bool useCache)
@@ -69,7 +70,20 @@ namespace FastCgiQt
 
 	void Service::dispatchRequest(const QString& urlFragment)
 	{
+		// Don't stack-overflow if a subclass calls the wrong function
+		if(d->dispatchingRequest)
+		{
+			qFatal(
+				"Recursion detected in FastCgiQt::Service::dispatchRequest(). "
+				"You probably have a subclass calling dispatchRequest which "
+				"should be calling dispatchUncachedRequest instead."
+			);
+			return;
+		}
+
+		d->dispatchingRequest = true;
 		dispatchUncachedRequest(urlFragment);
+		d->dispatchingRequest = false;
 	}
 
 	void Service::dispatchUncachedRequest(const QString& urlFragment)
