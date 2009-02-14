@@ -39,6 +39,23 @@ namespace FastCgiQt
 			 */
 			OutputDevice(quint16 requestId, QIODevice* socket, QObject* parent = NULL);
 
+			/** Whether or not to output headers.
+			 *
+			 * Default is true.
+			 *
+			 * @see setSendingHeadersEnabled
+			 */
+			bool isSendingHeadersEnabled() const;
+			/** Set whether or not to output headers.
+			 *
+			 * Default is true.
+			 *
+			 * This must be called before any data is sent.
+			 *
+			 * @see isSendingHeadersEnabled
+			 */
+			void setSendingHeadersEnabled(bool enabled);
+
 			/** Try (and fail) to read data from the stream.
 			 *
 			 * @returns -1
@@ -101,6 +118,8 @@ namespace FastCgiQt
 			QIODevice* m_socket;
 			/// The output mode;
 			Mode m_mode;
+			/// Whether or not to send headesr
+			bool m_sendHeaders;
 	};
 }
 

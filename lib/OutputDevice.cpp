@@ -25,11 +25,23 @@ namespace FastCgiQt
 			m_haveSentData(false),
 			m_requestId(requestId),
 			m_socket(socket),
-			m_mode(Streamed)
+			m_mode(Streamed),
+			m_sendHeaders(true)
 	{
 		open(QIODevice::WriteOnly);
 		m_headers.insert("CONTENT-TYPE", "text/html");
 		m_headers.insert("STATUS", "200 OK");
+	}
+
+	bool OutputDevice::isSendingHeadersEnabled() const
+	{
+		return m_sendHeaders;
+	}
+
+	void OutputDevice::setSendingHeadersEnabled(bool enabled)
+	{
+		Q_ASSERT(!haveSentData());
+		m_sendHeaders = enabled;
 	}
 
 	void OutputDevice::setMode(Mode mode)
@@ -63,7 +75,7 @@ namespace FastCgiQt
 
 	qint64 OutputDevice::writeData(const char* data, qint64 maxSize)
 	{
-		if(!m_haveSentData)
+		if(isSendingHeadersEnabled() && !m_haveSentData)
 		{
 			m_haveSentData = true;
 			QString headerData;
