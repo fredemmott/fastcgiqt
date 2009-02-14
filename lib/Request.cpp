@@ -167,8 +167,9 @@ namespace FastCgiQt
 
 	QString Request::baseUri() const
 	{
-		QString uri(serverData("REQUEST_URI"));
-		QString pathInfo(serverData("PATH_INFO"));
-		return uri.left(uri.length() - pathInfo.length());
+		const QString uri(serverData("REQUEST_URI").replace(QRegExp("\\?.*"),""));
+		const QString pathInfo(serverData("PATH_INFO"));
+		const QString baseUri(uri.left(uri.length() - pathInfo.length()));
+		return baseUri;
 	}
 }
