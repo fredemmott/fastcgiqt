@@ -164,4 +164,11 @@ namespace FastCgiQt
 		waitForAllContent();
 		return m_postData;
 	}
+
+	QString Request::baseUri() const
+	{
+		QString uri(serverData("REQUEST_URI"));
+		QString pathInfo(serverData("PATH_INFO"));
+		return uri.left(uri.length() - pathInfo.length());
+	}
 }

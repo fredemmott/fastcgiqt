@@ -201,6 +201,11 @@ namespace FastCgiQt
 			 */
 			QHash<QString, QString> getData() const;
 
+			/** Return a guess at the base URI for this script.
+			 *
+			 * This is useful for creating relative links.
+			 */
+			QString baseUri() const;
 		private:
 			/** Add some newly-received server variables to this
 			 * Request object.
