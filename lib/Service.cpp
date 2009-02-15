@@ -22,16 +22,18 @@
 #include <QDebug>
 #include <QFile>
 #include <QGenericArgument>
+#include <QReadLocker>
 #include <QMetaMethod>
 #include <QMetaObject>
 #include <QStringList>
+#include <QThread>
 
 namespace FastCgiQt
 {
 	// Static variables
 	bool Service::Private::usingFileCache(false);
-	QCache<QString, QByteArray> Service::Private::fileCache(10*1024*1024);
-	QCache<QString, Service::Private::RequestCacheEntry> Service::Private::requestCache(10*1024*1024);
+	Cache Service::Private::fileCache(10*1024*1024);
+	Cache Service::Private::requestCache(10*1024*1024);
 
 	Service::Service(const Request& request, QObject* parent)
 		:
@@ -47,7 +49,7 @@ namespace FastCgiQt
 		const QString fullPath = prefix + path;
 		if(useCache && Service::Private::fileCache.contains(fullPath))
 		{
-			return *Service::Private::fileCache[fullPath];
+			return Service::Private::fileCache[fullPath]->data;
 		}
 
 		QFile file(fullPath);
@@ -56,8 +58,10 @@ namespace FastCgiQt
 
 		if(this->usingFileCache() && useCache && file.size() < fileCacheSize())
 		{
-			Service::Private::fileCache.insert(fullPath, new QByteArray(file.readAll()), file.size());
-			return *Service::Private::fileCache[fullPath];
+			CacheEntry* entry = new CacheEntry(QDateTime::currentDateTime(), file.readAll());
+			QWriteLocker lock(d->fileCache.readWriteLock());
+			d->fileCache.insert(fullPath, entry);
+			return entry->data;
 		}
 		else
 		{
@@ -95,15 +99,18 @@ namespace FastCgiQt
 		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
 		Q_ASSERT(outputDevice);
 
-		if(d->requestCache.contains(urlFragment))
 		{
-			Service::Private::RequestCacheEntry* cacheEntry = d->requestCache[urlFragment];
-
-			if(!isExpired(urlFragment, cacheEntry->timeStamp))
+			QReadLocker lock(d->fileCache.readWriteLock());
+			if(d->requestCache.contains(urlFragment))
 			{
-				outputDevice->setSendingHeadersEnabled(false);
-				outputDevice->write(cacheEntry->data);
-				return;
+				CacheEntry* cacheEntry = d->requestCache[urlFragment];
+	
+				if(!isExpired(urlFragment, cacheEntry->timeStamp))
+				{
+					outputDevice->setSendingHeadersEnabled(false);
+					outputDevice->write(cacheEntry->data);
+					return;
+				}
 			}
 		}
 
@@ -115,10 +122,8 @@ namespace FastCgiQt
 
 		if(d->canCacheThisRequest)
 		{
-			Service::Private::RequestCacheEntry* cacheEntry = new Service::Private::RequestCacheEntry();
-			cacheEntry->timeStamp = QDateTime::currentDateTime();
-			cacheEntry->data = outputDevice->buffer();
-			d->requestCache.insert(urlFragment, cacheEntry, cacheEntry->data.length());
+			CacheEntry* cacheEntry = new CacheEntry(QDateTime::currentDateTime(), outputDevice->buffer());
+			d->requestCache.insert(urlFragment, cacheEntry);
 		}
 	}
 

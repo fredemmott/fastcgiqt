@@ -16,23 +16,20 @@
 #ifndef _FASTCGI_QT_SERVICE_PRIVATE_H
 #define _FASTCGI_QT_SERVICE_PRIVATE_H
 
-#include <QCache>
+#include "Cache.h"
+
+#include <QFileSystemWatcher>
 #include <QList>
+#include <QMutex>
 #include <QPair>
 #include <QRegExp>
 
-class QMetaMethod;
-
+class QMetaMethod; 
 namespace FastCgiQt
 {
 	class Service::Private
 	{
 		public:
-			struct RequestCacheEntry
-			{
-				QDateTime timeStamp;
-				QByteArray data;
-			};
 			typedef QPair<QRegExp, QMetaMethod> UrlMapEntry;
 			QList<UrlMapEntry> forwardMap;
 			void fillMap(Service* service);
@@ -44,8 +41,9 @@ namespace FastCgiQt
 			bool dispatchingRequest;
 			bool canCacheThisRequest;
 			static bool usingFileCache;
-			static QCache<QString, QByteArray> fileCache;
-			static QCache<QString, RequestCacheEntry> requestCache;
+
+			static Cache fileCache;
+			static Cache requestCache;
 	};
 }
 
