@@ -17,6 +17,7 @@
 
 #include "FileCacheMaintainer.h"
 #include "OutputDevice.h"
+#include "RequestCacheMaintainer.h"
 #include "ServicePrivate.h"
 
 #include <QCoreApplication>
@@ -49,9 +50,18 @@ namespace FastCgiQt
 	{
 		const QString prefix = path.startsWith('/') ? "" : QCoreApplication::applicationDirPath() + "/";
 		const QString fullPath = prefix + path;
-		if(useCache && Service::Private::fileCache.contains(fullPath))
+
+		if(d->canCacheThisRequest)
 		{
-			return Service::Private::fileCache[fullPath]->data;
+			// not if use-cache:
+			// if caching of this file isn't wanted, then surely the
+			// request cache should be invalidated here too
+			RequestCacheMaintainer::instance(&d->requestCache)->addDependency(d->urlFragment, fullPath);
+		}
+
+		if(useCache && d->fileCache.contains(fullPath))
+		{
+			return d->fileCache[fullPath]->data;
 		}
 
 		QFile file(fullPath);
@@ -115,6 +125,8 @@ namespace FastCgiQt
 				}
 			}
 		}
+
+		d->urlFragment = urlFragment;
 
 		d->canCacheThisRequest = false;
 
