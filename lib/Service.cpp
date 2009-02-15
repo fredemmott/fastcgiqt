@@ -87,7 +87,7 @@ namespace FastCgiQt
 		return Service::Private::fileCache.maxCost();
 	}
 
-	void Service::canCacheThisRequest()
+	void Service::cacheThisRequest()
 	{
 		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
 		Q_ASSERT(outputDevice);

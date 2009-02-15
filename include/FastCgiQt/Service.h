@@ -53,7 +53,7 @@ namespace FastCgiQt
 	 * The file cache caches data from the readFile call.
 	 *
 	 * The request cache caches urlFragment -> result pairs. This is only
-	 * used if a slot calls canCacheThisRequest(). You can expire a cache
+	 * used if a slot calls cacheThisRequest(). You can expire a cache
 	 * entry by reimplementing isExpired.
 	 *
 	 * These caches are currently per-process. In the future, they may be
@@ -121,7 +121,7 @@ namespace FastCgiQt
 
 			/** The size of the request cache.
 			 *
-			 * @see canCacheThisRequest()
+			 * @see cacheThisRequest()
 			 * @see isExpired()
 			 * @see setRequestCacheSize()
 			 */
@@ -129,7 +129,7 @@ namespace FastCgiQt
 
 			/** Set the size of the request cache.
 			 *
-			 * @see canCacheThisRequest()
+			 * @see cacheThisRequest()
 			 * @see isExpired()
 			 * @see requestCacheSize()
 			 */
@@ -144,7 +144,7 @@ namespace FastCgiQt
 			 * @see requestCacheSize()
 			 * @see setRequestCacheSize()
 			 */
-			void canCacheThisRequest();
+			void cacheThisRequest();
 
 			/** Return a mapping of regular expressions to slots.
 			 *
@@ -237,12 +237,12 @@ namespace FastCgiQt
 			 *
 			 * If you have content that may change, but you wish to
 			 * cache the results, you'll want to reimplement this
-			 * function, and make your slots call canCacheThisRequest().
+			 * function, and make your slots call cacheThisRequest().
 			 *
 			 * If the cached result is invalid, you should return
 			 * true, and refresh any internal caches in your service.
 			 *
-			 * @see canCacheThisRequest()
+			 * @see cacheThisRequest()
 			 * @see requestCacheSize()
 			 * @see setRequestCacheSize()
 			 * @returns false
