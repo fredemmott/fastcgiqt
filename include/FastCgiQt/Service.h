@@ -217,6 +217,9 @@ namespace FastCgiQt
 			 * the least-recently-accessed file will be removed from
 			 * the cache.
 			 *
+			 * A cache entry will automatically expire when the file
+			 * is modified.
+			 *
 			 * @see usingFileCache
 			 * @see clearFileCache
 			 * @see setUsingFileCache
@@ -224,6 +227,7 @@ namespace FastCgiQt
 			 * @see setFileCacheSize
 			 */
 			QByteArray readFile(const QString& path, bool useCache = true);
+
 			/** Whether or not a cached result for the given urlFragment is still valid.
 			 *
 			 * @param urlFragment is the URL fragment for the request.
