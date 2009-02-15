@@ -21,6 +21,7 @@ SET(
 	OutputDevice
 	ParametersRecord
 	RecordHeader
+	RequestCacheMaintainer
 	RequestDataProvider
 	SocketManager
 	StandardInputRecord
