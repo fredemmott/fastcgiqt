@@ -46,13 +46,6 @@ namespace FastCgiQt
 
 			/// The old Qt message handler.
 			QtMsgHandler m_oldHandler;
-			/** The name of the application.
-			 *
-			 * This is taken from QCoreApplication::applicationName().utf8().
-			 *
-			 * A copy is made, as syslog wants a const char* to it.
-			 */
-			const QByteArray m_name;
 	};
 };
 

@@ -16,6 +16,7 @@
 #ifndef _FASTCGI_QT_SOCKET_MANAGER_H
 #define _FASTCGI_QT_SOCKET_MANAGER_H
 
+#include "DebugHandler.h"
 #include "RecordHeader.h"
 #include "Responder.h"
 #include "Request.h"
@@ -92,6 +93,8 @@ namespace FastCgiQt
 			Responder::Generator m_responderGenerator;
 			/// The socket this SocketManager managers.
 			QLocalSocket* m_socket;
+
+			DebugHandler m_debugHandler;
 
 			// FastCGI spec says request IDs will be tightly packed near zero.
 

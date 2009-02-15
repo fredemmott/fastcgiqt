@@ -25,15 +25,14 @@ namespace FastCgiQt
 {
 	DebugHandler::DebugHandler(QObject* parent)
 		:
-			QObject(parent),
-			m_name(QCoreApplication::applicationName().toUtf8())
+			QObject(parent)
 	{
-		::openlog(m_name.constData(), LOG_PERROR | LOG_PID, LOG_USER);
 		qInstallMsgHandler(syslogHandler);
 	}
 
 	void DebugHandler::syslogHandler(QtMsgType type, const char* message)
 	{
+		::openlog(QCoreApplication::applicationName().toUtf8(), LOG_PERROR | LOG_PID, LOG_USER);
 		switch(type)
 		{
 			case QtDebugMsg:
@@ -52,11 +51,11 @@ namespace FastCgiQt
 				::syslog(LOG_EMERG, "UNKNOWN: %s", message);
 				abort();
 		}
+		::closelog();
 	}
 
 	DebugHandler::~DebugHandler()
 	{
-		::closelog();
 		qInstallMsgHandler(m_oldHandler);
 	}
 }
