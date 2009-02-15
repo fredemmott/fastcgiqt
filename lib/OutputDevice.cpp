@@ -102,7 +102,7 @@ namespace FastCgiQt
 
 		qint64 remaining = dataSize;
 		QByteArray copy;
-		do
+		while(remaining > 0)
 		{
 			const qint64 toWrite(qMin(remaining, static_cast<qint64>(65535)));
 			const qint64 offset(dataSize - remaining);
@@ -112,11 +112,21 @@ namespace FastCgiQt
 				QByteArray(&data[offset], toWrite)
 			);
 			qint64 wrote = m_socket->write(record);
-			Q_ASSERT(wrote == record.length());
-			if(!m_socket->waitForBytesWritten(-1))
+			QLocalSocket* socket = qobject_cast<QLocalSocket*>(m_socket);
+			Q_ASSERT(socket);
+			if(socket->state() != QLocalSocket::ConnectedState)
 			{
-				qFatal("Couldn't write to socket.");
+				return -1;
 			}
+			if(!m_socket->waitForBytesWritten(1000))
+			{
+				if(socket->state() != QLocalSocket::ConnectedState)
+				{
+					return -1;
+				}
+				qFatal("Couldn't write to socket: %s %d", qPrintable(m_socket->errorString()), m_socket->isOpen());
+			}
+			Q_ASSERT(wrote == record.length());
 			if(wrote == record.length())
 			{
 				if(mode() == Logged)
@@ -130,7 +140,6 @@ namespace FastCgiQt
 			}
 			remaining -= toWrite;
 		}
-		while (remaining > 0);
 		return dataSize;
 	}
 
