@@ -29,10 +29,21 @@ namespace FastCgiQt
 		delete m_lock;
 	}
 
-	bool Cache::insert(const QString& key, CacheEntry* object)
+	void Cache::addObserver(Observer* observer)
 	{
 		QWriteLocker lock(m_lock);
+		m_observers.insert(observer);
+	}
+
+	bool Cache::insert(const QString& key, CacheEntry* object)
+	{
+		m_lock->lockForWrite();
 		return super::insert(key, object, object->data.length());
+		m_lock->unlock();
+		Q_FOREACH(Observer* observer, m_observers)
+		{
+			observer->entryAdded(key, object);
+		}
 	}
 	
 	bool Cache::contains(const QString& key) const

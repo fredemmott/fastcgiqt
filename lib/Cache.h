@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QCache>
 #include <QDateTime>
+#include <QSet>
 #include <QString>
 
 class QReadWriteLock;
@@ -31,7 +32,6 @@ namespace FastCgiQt
 	class Cache : private QCache<QString, CacheEntry>
 	{
 		public:
-			/
 			Cache(int maxSize);
 			~Cache();
 			/// Return a pointer to the QReadWriteLock.
@@ -44,8 +44,16 @@ namespace FastCgiQt
 			int maxCost() const;
 			void setMaxCost(int cost);
 			CacheEntry* operator[](const QString& key) const;
+
+			class Observer
+			{
+				public:
+					virtual void entryAdded(const QString& key, CacheEntry* entry) = 0;
+			};
+			void addObserver(Observer* observer);
 		private:
 			QReadWriteLock* m_lock;
+			QSet<Observer*> m_observers;
 	};
 }
 
