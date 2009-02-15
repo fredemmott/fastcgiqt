@@ -18,6 +18,8 @@
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include <syslog.h>
 
@@ -32,6 +34,8 @@ namespace FastCgiQt
 
 	void DebugHandler::syslogHandler(QtMsgType type, const char* message)
 	{
+		static QMutex mutex;
+		QMutexLocker lock(&mutex);
 		QByteArray name = QCoreApplication::applicationName().toUtf8();
 		::openlog(name, LOG_PERROR | LOG_PID, LOG_USER);
 		switch(type)
