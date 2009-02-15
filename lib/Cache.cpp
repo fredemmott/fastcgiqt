@@ -37,13 +37,19 @@ namespace FastCgiQt
 
 	bool Cache::insert(const QString& key, CacheEntry* object)
 	{
-		m_lock->lockForWrite();
-		return super::insert(key, object, object->data.length());
-		m_lock->unlock();
-		Q_FOREACH(Observer* observer, m_observers)
+		bool success;
 		{
-			observer->entryAdded(key, object);
+			QWriteLocker lock(m_lock);
+			success = super::insert(key, object, object->data.length());
 		}
+		if(success)
+		{
+			Q_FOREACH(Observer* observer, m_observers)
+			{
+				observer->entryAdded(key, object);
+			}
+		}
+		return success;
 	}
 	
 	bool Cache::contains(const QString& key) const
