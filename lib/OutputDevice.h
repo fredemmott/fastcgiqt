@@ -78,6 +78,9 @@ namespace FastCgiQt
 			 */
 			bool setHeader(const QString& name, const QString& value);
 
+			/// Wait until all data has been sent.
+			bool waitForBytesWritten(int msecs);
+
 			enum Mode
 			{
 				Streamed, //< Data is written straight out, and not logged.

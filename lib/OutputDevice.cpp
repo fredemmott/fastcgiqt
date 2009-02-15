@@ -17,6 +17,9 @@
 
 #include "StandardOutputRecord.h"
 
+#include <QDebug>
+#include <QLocalSocket>
+
 namespace FastCgiQt
 {
 	OutputDevice::OutputDevice(quint16 requestId, QIODevice* socket, QObject* parent)
@@ -73,7 +76,12 @@ namespace FastCgiQt
 		return m_haveSentData;
 	}
 
-	qint64 OutputDevice::writeData(const char* data, qint64 maxSize)
+	bool OutputDevice::waitForBytesWritten(int msecs)
+	{
+		return m_socket->waitForBytesWritten(msecs);
+	}
+
+	qint64 OutputDevice::writeData(const char* data, const qint64 dataSize)
 	{
 		if(isSendingHeadersEnabled() && !m_haveSentData)
 		{
@@ -92,24 +100,38 @@ namespace FastCgiQt
 			writeData(raw.constData(), raw.length());
 		}
 
-		QByteArray record = StandardOutputRecord::create(
-			m_requestId,
-			QByteArray::fromRawData(data, maxSize)
-		);
-		qint64 wrote = m_socket->write(record.constData(), record.length());
-		Q_ASSERT(wrote == record.length());
-		if(wrote == record.length())
+		qint64 remaining = dataSize;
+		QByteArray copy;
+		do
 		{
-			if(mode() == Logged)
+			const qint64 toWrite(qMin(remaining, static_cast<qint64>(65535)));
+			const qint64 offset(dataSize - remaining);
+
+			QByteArray record = StandardOutputRecord::create(
+				m_requestId,
+				QByteArray(&data[offset], toWrite)
+			);
+			qint64 wrote = m_socket->write(record);
+			Q_ASSERT(wrote == record.length());
+			if(!m_socket->waitForBytesWritten(-1))
 			{
-				m_buffer.append(QByteArray(data, maxSize));
+				qFatal("Couldn't write to socket.");
 			}
-			return maxSize;
+			if(wrote == record.length())
+			{
+				if(mode() == Logged)
+				{
+					m_buffer.append(QByteArray(&data[offset], toWrite));
+				}
+			}
+			else
+			{
+				return -1;
+			}
+			remaining -= toWrite;
 		}
-		else
-		{
-			return -1;
-		}
+		while (remaining > 0);
+		return dataSize;
 	}
 
 	bool OutputDevice::setHeader(const QString& name, const QString& value)

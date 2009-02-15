@@ -40,6 +40,7 @@ namespace FastCgiQt
 	ClientIOInterface::~ClientIOInterface()
 	{
 		out << flush;
+		out.device()->waitForBytesWritten(5000);
 	}
 
 	bool ClientIOInterface::setHeader(const QString& name, const QString& value)
