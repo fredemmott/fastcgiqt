@@ -15,6 +15,7 @@
 */
 #include "Service.h"
 
+#include "FileCacheMaintainer.h"
 #include "OutputDevice.h"
 #include "ServicePrivate.h"
 
@@ -41,6 +42,7 @@ namespace FastCgiQt
 	{
 		d = new Service::Private();
 		d->dispatchingRequest = false;
+		FileCacheMaintainer::instance(&d->fileCache);
 	}
 
 	QByteArray Service::readFile(const QString& path, bool useCache)
