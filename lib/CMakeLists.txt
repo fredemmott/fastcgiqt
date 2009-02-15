@@ -15,6 +15,7 @@ SET(
 	DebugHandler
 	EndRequestRecord
 	EnumHelpers
+	FileCacheMaintainer
 	InputDevice
 	ManagerPrivate
 	OutputDevice
@@ -45,7 +46,6 @@ FOREACH(class ${PUBLIC_CLASSES})
 	SET(PUBLIC_HEADERS ${PUBLIC_HEADERS} ../include/FastCgiQt/${class}.h)
 ENDFOREACH()
 
-MESSAGE(STATUS "Headers: ${HEADERS}")
 QT4_WRAP_CPP(MOC_SOURCES ${HEADERS})
 
 ADD_LIBRARY(
