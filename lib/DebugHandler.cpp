@@ -32,7 +32,8 @@ namespace FastCgiQt
 
 	void DebugHandler::syslogHandler(QtMsgType type, const char* message)
 	{
-		::openlog(QCoreApplication::applicationName().toUtf8(), LOG_PERROR | LOG_PID, LOG_USER);
+		QByteArray name = QCoreApplication::applicationName().toUtf8();
+		::openlog(name, LOG_PERROR | LOG_PID, LOG_USER);
 		switch(type)
 		{
 			case QtDebugMsg:
