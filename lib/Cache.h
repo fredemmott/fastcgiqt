@@ -37,11 +37,15 @@ namespace FastCgiQt
 			/// Return a pointer to the QReadWriteLock.
 			QReadWriteLock* readWriteLock() const;
 
+			QList<QString> keys() const;
 			void clear();
 			bool insert(const QString& key, CacheEntry* object);
 			bool contains(const QString& key) const;
 			bool remove(const QString& key);
+			int totalCost() const;
 			int maxCost() const;
+			int count() const;
+			int size() const;
 			void setMaxCost(int cost);
 			CacheEntry* operator[](const QString& key) const;
 

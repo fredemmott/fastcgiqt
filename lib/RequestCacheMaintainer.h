@@ -22,6 +22,7 @@ namespace FastCgiQt
 			 */
 			static RequestCacheMaintainer* instance(Cache* cache);
 			void addDependency(const QString& urlFragment, const QString& file);
+			QList<QString> dependencies(const QString& urlFragment);
 		private slots:
 			/** Remove an entry from the cache.
 			 *

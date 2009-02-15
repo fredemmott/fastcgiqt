@@ -93,6 +93,8 @@ namespace FastCgiQt
 
 			/// Destructor.
 			virtual ~Service();
+		public slots:
+			void dumpCacheInformation();
 		protected:
 			/** @internal
 			 * @brief Call a slot based on an URL fragment.

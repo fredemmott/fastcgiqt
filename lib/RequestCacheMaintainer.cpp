@@ -35,6 +35,12 @@ namespace FastCgiQt
 		);
 	}
 
+	QList<QString> RequestCacheMaintainer::dependencies(const QString& urlFragment)
+	{
+		QMutexLocker lock(&m_watcherMutex);
+		return m_filesToFragments.keys(urlFragment);
+	}
+
 	void RequestCacheMaintainer::addDependency(const QString& urlFragment, const QString& file)
 	{
 		QMutexLocker lock(&m_watcherMutex);

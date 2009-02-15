@@ -29,6 +29,7 @@
 #include <QMetaObject>
 #include <QStringList>
 #include <QThread>
+#include <QXmlStreamWriter>
 
 namespace FastCgiQt
 {
@@ -165,6 +166,62 @@ namespace FastCgiQt
 		out << "<h1>404 Not Found</h1>";
 	}
 
+	void Service::dumpCacheInformation()
+	{
+		QReadLocker fileLock(d->fileCache.readWriteLock());
+		QReadLocker requestLock(d->requestCache.readWriteLock());
+		QXmlStreamWriter xml(out.device());
+		xml.writeStartDocument();
+		xml.writeStartElement("html");
+			xml.writeStartElement("head");
+				xml.writeTextElement("title", tr("Cache Information"));
+			xml.writeEndElement();
+			xml.writeStartElement("body");
+				xml.writeTextElement("h1", tr("Cache Information"));
+				xml.writeStartElement("dl");
+					xml.writeTextElement("dt", tr("File cache size:"));
+					xml.writeTextElement("dd", tr("%1 bytes").arg(d->fileCache.totalCost()));
+					xml.writeTextElement("dt", tr("Maximum file cache size:"));
+					xml.writeTextElement("dd", tr("%1 bytes").arg(d->fileCache.maxCost()));
+					xml.writeTextElement("dt", tr("Items in file cache:"));
+					xml.writeStartElement("dd");
+						xml.writeCharacters(tr("%1 files:").arg(d->fileCache.count()));
+						xml.writeStartElement("ul");
+							Q_FOREACH(const QString& file, d->fileCache.keys())
+							{
+								xml.writeTextElement("li", QString("'%1' (%2 bytes)").arg(file).arg(d->fileCache[file]->data.length()));
+							}
+						xml.writeEndElement();
+					xml.writeEndElement();
+					xml.writeTextElement("dt", tr("Request cache size:"));
+					xml.writeTextElement("dd", tr("%1 bytes").arg(d->requestCache.totalCost()));
+					xml.writeTextElement("dt", tr("Request cache size:"));
+					xml.writeTextElement("dd", tr("%1 bytes").arg(d->requestCache.maxCost()));
+					xml.writeTextElement("dt", tr("Items in request cache:"));
+					xml.writeStartElement("dd");
+						xml.writeCharacters(tr("%1 pages:").arg(d->requestCache.count()));
+						xml.writeStartElement("ul");
+							Q_FOREACH(const QString& urlFragment, d->requestCache.keys())
+							{
+								xml.writeStartElement("li");
+									xml.writeCharacters(QString("'%1' (%2 bytes)").arg(urlFragment).arg(d->requestCache[urlFragment]->data.length()));
+									xml.writeTextElement("p", tr("File dependencies:"));
+									xml.writeStartElement("ul");
+										Q_FOREACH(const QString& file, RequestCacheMaintainer::instance(&d->requestCache)->dependencies(urlFragment))
+										{
+											xml.writeTextElement("li", file);
+										}
+									xml.writeEndElement();
+								xml.writeEndElement();
+							}
+						xml.writeEndElement();
+					xml.writeEndElement();
+				xml.writeEndElement();
+			xml.writeEndElement();
+		xml.writeEndElement();
+		xml.writeEndDocument();
+	}
+
 	void Service::Private::invokeMethod(
 		QObject* object,
 		const QMetaMethod& method,
@@ -234,7 +291,7 @@ namespace FastCgiQt
 		QMap<QString, QMetaMethod> slotsToMethods;
 		const QMetaObject* mo = service->metaObject();
 		for(
-			int i = mo->methodOffset();
+			int i = Service::staticMetaObject.methodOffset();
 			i < mo->methodCount();
 			++i
 		)

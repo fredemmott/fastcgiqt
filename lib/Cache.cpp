@@ -87,6 +87,29 @@ namespace FastCgiQt
 		return super::maxCost();
 	}
 
+	int Cache::totalCost() const
+	{
+		QReadLocker lock(m_lock);
+		return super::totalCost();
+	}
+
+	int Cache::count() const
+	{
+		QReadLocker lock(m_lock);
+		return super::count();
+	}
+
+	QList<QString> Cache::keys() const
+	{
+		QReadLocker lock(m_lock);
+		return super::keys();
+	}
+
+	int Cache::size() const
+	{
+		return count();
+	}
+
 	void Cache::setMaxCost(int cost)
 	{
 		QWriteLocker lock(m_lock);
