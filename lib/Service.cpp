@@ -195,7 +195,7 @@ namespace FastCgiQt
 					xml.writeEndElement();
 					xml.writeTextElement("dt", tr("Request cache size:"));
 					xml.writeTextElement("dd", tr("%1 bytes").arg(d->requestCache.totalCost()));
-					xml.writeTextElement("dt", tr("Request cache size:"));
+					xml.writeTextElement("dt", tr("Maximum equest cache size:"));
 					xml.writeTextElement("dd", tr("%1 bytes").arg(d->requestCache.maxCost()));
 					xml.writeTextElement("dt", tr("Items in request cache:"));
 					xml.writeStartElement("dd");
