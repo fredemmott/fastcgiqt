@@ -78,6 +78,12 @@ namespace FastCgiQt
 
 	bool OutputDevice::waitForBytesWritten(int msecs)
 	{
+		QLocalSocket* socket = qobject_cast<QLocalSocket*>(m_socket);
+		Q_ASSERT(socket);
+		if(socket->state() != QLocalSocket::ConnectedState)
+		{
+			return false;
+		}
 		return m_socket->waitForBytesWritten(msecs);
 	}
 
@@ -114,11 +120,7 @@ namespace FastCgiQt
 			qint64 wrote = m_socket->write(record);
 			QLocalSocket* socket = qobject_cast<QLocalSocket*>(m_socket);
 			Q_ASSERT(socket);
-			if(socket->state() != QLocalSocket::ConnectedState)
-			{
-				return -1;
-			}
-			if(!m_socket->waitForBytesWritten(1000))
+			if(!waitForBytesWritten(1000))
 			{
 				if(socket->state() != QLocalSocket::ConnectedState)
 				{
