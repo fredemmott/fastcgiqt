@@ -50,10 +50,10 @@ namespace FastCgiQt
 				::syslog(LOG_CRIT, "CRITICAL: %s", message);
 				break;
 			case QtFatalMsg:
-				::syslog(LOG_EMERG, "FATAL: %s", message);
+				::syslog(LOG_CRIT, "FATAL: %s", message);
 				abort();
 			default:
-				::syslog(LOG_EMERG, "UNKNOWN: %s", message);
+				::syslog(LOG_CRIT, "UNKNOWN: %s", message);
 				abort();
 		}
 		::closelog();
