@@ -69,6 +69,13 @@ namespace FastCgiQt
 			 */
 			qint64 writeData(const char* data, qint64 maxSize);
 
+			/** Return a header sent/due to be sent to the client.
+			 *
+			 * @returns a null QString if header @p name is not set.
+			 * @returns the value of header @p name otherwise.
+			 */
+			QString header(const QString& name) const;
+
 			/** Try and set the a header value.
 			 *
 			 * @returns true if the header was set.

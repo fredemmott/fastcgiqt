@@ -71,6 +71,11 @@ namespace FastCgiQt
 		return -1;
 	}
 
+	QString OutputDevice::header(const QString& name) const
+	{
+		return m_headers.value(name.toUpper());
+	}
+
 	bool OutputDevice::haveSentData() const
 	{
 		return m_haveSentData;

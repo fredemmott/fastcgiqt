@@ -79,6 +79,13 @@ namespace FastCgiQt
 			 */
 			QTextStream out;
 
+			/** Return a header sent/due to be sent to the client.
+			 *
+			 * @returns a null QString if header @p name is not set.
+			 * @returns the value of header @p name otherwise.
+			 */
+			QString header(const QString& name) const;
+
 			/** Attempt to set an HTTP header.
 			 *
 			 * @param name is the name of the header.

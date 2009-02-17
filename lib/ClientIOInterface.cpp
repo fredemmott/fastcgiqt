@@ -50,4 +50,11 @@ namespace FastCgiQt
 		Q_ASSERT(outDevice);
 		return outDevice->setHeader(name, value);
 	}
+
+	QString ClientIOInterface::header(const QString& name) const
+	{
+		OutputDevice* outDevice = qobject_cast<OutputDevice*>(out.device());
+		Q_ASSERT(outDevice);
+		return outDevice->header(name);
+	}
 }
