@@ -17,6 +17,7 @@
 #define _FASTCGI_QT_SERVICE_PRIVATE_H
 
 #include "Cache.h"
+#include "FileCache.h"
 
 #include <QFileSystemWatcher>
 #include <QList>
@@ -43,7 +44,7 @@ namespace FastCgiQt
 			QString urlFragment;
 			static bool usingFileCache;
 
-			static Cache fileCache;
+			static FileCache fileCache;
 			static Cache requestCache;
 	};
 }

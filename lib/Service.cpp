@@ -15,7 +15,6 @@
 */
 #include "Service.h"
 
-#include "FileCacheMaintainer.h"
 #include "OutputDevice.h"
 #include "RequestCacheMaintainer.h"
 #include "ServicePrivate.h"
@@ -35,7 +34,7 @@ namespace FastCgiQt
 {
 	// Static variables
 	bool Service::Private::usingFileCache(false);
-	Cache Service::Private::fileCache(10*1024*1024);
+	FileCache Service::Private::fileCache(10*1024*1024);
 	Cache Service::Private::requestCache(10*1024*1024);
 
 	Service::Service(const Request& request, QObject* parent)
@@ -44,7 +43,6 @@ namespace FastCgiQt
 	{
 		d = new Service::Private();
 		d->dispatchingRequest = false;
-		FileCacheMaintainer::instance(&d->fileCache);
 	}
 
 	QByteArray Service::readFile(const QString& path, bool useCache)

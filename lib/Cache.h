@@ -38,10 +38,10 @@ namespace FastCgiQt
 			QReadWriteLock* readWriteLock() const;
 
 			QList<QString> keys() const;
-			void clear();
-			bool insert(const QString& key, CacheEntry* object);
+			virtual void clear();
+			virtual bool insert(const QString& key, CacheEntry* object);
 			bool contains(const QString& key) const;
-			bool remove(const QString& key);
+			virtual bool remove(const QString& key);
 			int totalCost() const;
 			int maxCost() const;
 			int count() const;

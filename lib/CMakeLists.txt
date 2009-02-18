@@ -15,7 +15,7 @@ SET(
 	DebugHandler
 	EndRequestRecord
 	EnumHelpers
-	FileCacheMaintainer
+	FileCache
 	InputDevice
 	ManagerPrivate
 	OutputDevice
