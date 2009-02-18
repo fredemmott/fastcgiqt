@@ -16,7 +16,6 @@
 #include "Service.h"
 
 #include "OutputDevice.h"
-#include "RequestCacheMaintainer.h"
 #include "ServicePrivate.h"
 
 #include <QCoreApplication>
@@ -35,7 +34,7 @@ namespace FastCgiQt
 	// Static variables
 	bool Service::Private::usingFileCache(false);
 	FileCache Service::Private::fileCache(10*1024*1024);
-	Cache Service::Private::requestCache(10*1024*1024);
+	FileDependentCache Service::Private::requestCache(10*1024*1024);
 
 	Service::Service(const Request& request, QObject* parent)
 		:
@@ -55,7 +54,7 @@ namespace FastCgiQt
 			// not if use-cache:
 			// if caching of this file isn't wanted, then surely the
 			// request cache should be invalidated here too
-			RequestCacheMaintainer::instance(&d->requestCache)->addDependency(d->urlFragment, fullPath);
+			d->requestCache.addDependency(d->urlFragment, fullPath);
 		}
 
 		if(useCache && d->fileCache.contains(fullPath))
@@ -205,7 +204,7 @@ namespace FastCgiQt
 									xml.writeCharacters(QString("'%1' (%2 bytes)").arg(urlFragment).arg(d->requestCache[urlFragment]->data.length()));
 									xml.writeTextElement("p", tr("File dependencies:"));
 									xml.writeStartElement("ul");
-										Q_FOREACH(const QString& file, RequestCacheMaintainer::instance(&d->requestCache)->dependencies(urlFragment))
+										Q_FOREACH(const QString& file, d->requestCache.dependencies(urlFragment))
 										{
 											xml.writeTextElement("li", file);
 										}

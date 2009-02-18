@@ -18,6 +18,7 @@
 
 #include "Cache.h"
 #include "FileCache.h"
+#include "FileDependentCache.h"
 
 #include <QFileSystemWatcher>
 #include <QList>
@@ -45,7 +46,7 @@ namespace FastCgiQt
 			static bool usingFileCache;
 
 			static FileCache fileCache;
-			static Cache requestCache;
+			static FileDependentCache requestCache;
 	};
 }
 

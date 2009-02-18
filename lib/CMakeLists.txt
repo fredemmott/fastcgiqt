@@ -16,12 +16,12 @@ SET(
 	EndRequestRecord
 	EnumHelpers
 	FileCache
+	FileDependentCache
 	InputDevice
 	ManagerPrivate
 	OutputDevice
 	ParametersRecord
 	RecordHeader
-	RequestCacheMaintainer
 	RequestDataProvider
 	SocketManager
 	StandardInputRecord
