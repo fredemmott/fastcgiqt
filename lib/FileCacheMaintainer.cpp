@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFileSystemWatcher>
 #include <QMutexLocker>
+#include <QStringList>
 
 namespace FastCgiQt
 {
@@ -39,7 +40,10 @@ namespace FastCgiQt
 	{
 		QMutexLocker lock(&m_watcherMutex);
 		Q_UNUSED(entry);
-		m_watcher->addPath(key);
+		if(!m_watcher->files().contains(key))
+		{
+			m_watcher->addPath(key);
+		}
 	}
 
 	void FileCacheMaintainer::removeEntry(const QString& path)

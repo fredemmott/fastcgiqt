@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFileSystemWatcher>
 #include <QMutexLocker>
+#include <QStringList>
 #include <QWriteLocker>
 
 namespace FastCgiQt
@@ -44,7 +45,7 @@ namespace FastCgiQt
 	void RequestCacheMaintainer::addDependency(const QString& urlFragment, const QString& file)
 	{
 		QMutexLocker lock(&m_watcherMutex);
-		if(!m_filesToFragments.contains(file))
+		if(!m_watcher->files().contains(file))
 		{
 			m_watcher->addPath(file);
 		}
