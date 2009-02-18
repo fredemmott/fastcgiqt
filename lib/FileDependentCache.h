@@ -28,7 +28,7 @@ namespace FastCgiQt
 			void addDependency(const QString& key, const QString& file);
 			/// Return a list of files dependent on by the specified key.
 			QList<QString> dependencies(const QString& key);
-		private slots:
+		protected slots:
 			/** Remove an entry from the cache.
 			 *
 			 * This is called when a file is modified.

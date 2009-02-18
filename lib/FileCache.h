@@ -1,7 +1,7 @@
 #ifndef _FASTCGI_QT_FILE_CACHE_H
 #define _FASTCGI_QT_FILE_CACHE_H
 
-#include "Cache.h"
+#include "FileDependentCache.h"
 
 #include <QHash>
 #include <QMutex>
@@ -17,7 +17,7 @@ namespace FastCgiQt
 	 * This class uses QFileSystemWatcher to watch all files in the cache,
 	 * and remove them from the cache as soon as they are modified.
 	 */
-	class FileCache: public QObject, public Cache
+	class FileCache: public FileDependentCache
 	{
 		Q_OBJECT
 		public:
@@ -27,12 +27,9 @@ namespace FastCgiQt
 			void clear();
 			/// Add an entry to the cache, and start watching it.
 			bool insert(const QString& path, CacheEntry* object);
+			/// Remove an entry and stop watching it.
 		public slots:
-			/// Remove an entry from the cache, and start watching it.
 			bool remove(const QString& path);
-		private:
-			QFileSystemWatcher* m_watcher;
-			QMutex m_watcherMutex;
 	};
 }
 
