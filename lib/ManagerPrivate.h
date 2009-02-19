@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QStringList>
 
+class QFileSystemWatcher;
 class QSocketNotifier;
 class QThread;
 
@@ -44,10 +45,9 @@ namespace FastCgiQt
 			/// Create a ManagerPrivate object.
 			ManagerPrivate(Responder::Generator responderGenerator, QObject* parent = NULL);
 			QList<int> threadLoads() const;
-		public slots:
+		private slots:
 			/// Request that the application shuts down.
 			void shutdown();
-		private slots:
 			/// Listen for a new FastCGI connection.
 			void listen();
 			/// Decrease the load counter for the specified thread.
@@ -88,6 +88,9 @@ namespace FastCgiQt
 			 * handling.
 			 */
 			QMap<const QObject*, QAtomicInt> m_threadLoads;
+
+			/// Watcher to call shutdown() if the executable is modified.
+			QFileSystemWatcher* m_applicationWatcher;
 	};
 };
 

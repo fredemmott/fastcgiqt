@@ -21,6 +21,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFileSystemWatcher>
 #include <QHostAddress>
 #include <QSocketNotifier>
 #include <QThread>
@@ -38,7 +39,8 @@ namespace FastCgiQt
 		:
 			QObject(parent),
 			m_socketNotifier(new QSocketNotifier(FCGI_LISTENSOCK_FILENO, QSocketNotifier::Read, this)),
-			m_responderGenerator(responderGenerator)
+			m_responderGenerator(responderGenerator),
+			m_applicationWatcher(new QFileSystemWatcher(this))
 	{
 		connect(
 			m_socketNotifier,
@@ -46,6 +48,13 @@ namespace FastCgiQt
 			this,
 			SLOT(listen())
 		);
+		connect(
+			m_applicationWatcher,
+			SIGNAL(fileChanged(QString)),
+			this,
+			SLOT(shutdown())
+		);
+		m_applicationWatcher->addPath(QCoreApplication::applicationFilePath());
 
 		// Spawn some threads
 		for(int i = 0; i < qMax(QThread::idealThreadCount(), 1); ++i)
@@ -53,6 +62,7 @@ namespace FastCgiQt
 			QThread* thread = new QThread(this);
 			thread->start();
 			m_threads.append(thread);
+			m_threadLoads[thread] = 0;
 		}
 
 		// Wait for the event loop to start up before running
@@ -87,11 +97,16 @@ namespace FastCgiQt
 			return;
 		}
 		qDebug() << "Shutdown in progress - thread loads:" << threadLoads();
-		Q_FOREACH(int load, threadLoads())
+		Q_FOREACH(QThread* thread, m_threads)
 		{
-			if(load != 0)
+			if(m_threadLoads.value(thread) != 0)
 			{
 				return;
+			}
+			else
+			{
+				thread->exit();
+				Q_ASSERT(thread->wait(500));
 			}
 		}
 		qDebug() << "Shutdown complete. No thread load.";
