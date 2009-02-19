@@ -24,7 +24,6 @@
 #include <QFileSystemWatcher>
 #include <QHostAddress>
 #include <QSocketNotifier>
-#include <QSqlDatabase>
 #include <QThread>
 #include <QTime>
 #include <QTimer>
@@ -110,12 +109,6 @@ namespace FastCgiQt
 			{
 				return;
 			}
-		}
-		qDebug() << "Shutting down database connections";
-		Q_FOREACH(const QString& connectionName, QSqlDatabase::connectionNames())
-		{
-			qDebug() << qPrintable(QString("- Connection '%1'").arg(connectionName));
-			QSqlDatabase::removeDatabase(connectionName);
 		}
 		qDebug() << "Shutting down threads";
 		Q_FOREACH(QThread* thread, m_threads)
