@@ -15,6 +15,7 @@
 */
 #include "Service.h"
 
+#include "Caches.h"
 #include "OutputDevice.h"
 #include "ServicePrivate.h"
 
@@ -31,17 +32,18 @@
 
 namespace FastCgiQt
 {
-	// Static variables
-	bool Service::Private::usingFileCache(false);
-	FileCache Service::Private::fileCache(10*1024*1024);
-	FileDependentCache Service::Private::requestCache(10*1024*1024);
-
 	Service::Service(const Request& request, QObject* parent)
 		:
 			ClientIOInterface(request, NULL, NULL, parent)
 	{
 		d = new Service::Private();
-		d->dispatchingRequest = false;
+	}
+
+	Service::Private::Private()
+		:
+			dispatchingRequest(false),
+			usingFileCache(false)
+	{
 	}
 
 	QByteArray Service::readFile(const QString& path, bool useCache)
@@ -54,12 +56,12 @@ namespace FastCgiQt
 			// not if use-cache:
 			// if caching of this file isn't wanted, then surely the
 			// request cache should be invalidated here too
-			d->requestCache.addDependency(d->urlFragment, fullPath);
+			Caches::requestCache().addDependency(d->urlFragment, fullPath);
 		}
 
-		if(useCache && d->fileCache.contains(fullPath))
+		if(useCache && Caches::fileCache().contains(fullPath))
 		{
-			return d->fileCache[fullPath]->data;
+			return Caches::fileCache()[fullPath]->data;
 		}
 
 		QFile file(fullPath);
@@ -69,8 +71,8 @@ namespace FastCgiQt
 		if(this->usingFileCache() && useCache && file.size() < fileCacheSize())
 		{
 			CacheEntry* entry = new CacheEntry(QDateTime::currentDateTime(), file.readAll());
-			QWriteLocker lock(d->fileCache.readWriteLock());
-			d->fileCache.insert(fullPath, entry);
+			QWriteLocker lock(Caches::fileCache().readWriteLock());
+			Caches::fileCache().insert(fullPath, entry);
 			return entry->data;
 		}
 		else
@@ -81,7 +83,7 @@ namespace FastCgiQt
 
 	int Service::fileCacheSize()
 	{
-		return Service::Private::fileCache.maxCost();
+		return Caches::fileCache().maxCost();
 	}
 
 	void Service::cacheThisRequest()
@@ -110,10 +112,10 @@ namespace FastCgiQt
 		Q_ASSERT(outputDevice);
 
 		{
-			QReadLocker lock(d->fileCache.readWriteLock());
-			if(d->requestCache.contains(urlFragment))
+			QReadLocker lock(Caches::fileCache().readWriteLock());
+			if(Caches::requestCache().contains(urlFragment))
 			{
-				CacheEntry* cacheEntry = d->requestCache[urlFragment];
+				CacheEntry* cacheEntry = Caches::requestCache()[urlFragment];
 	
 				if(!isExpired(urlFragment, cacheEntry->timeStamp))
 				{
@@ -135,7 +137,7 @@ namespace FastCgiQt
 		if(d->canCacheThisRequest)
 		{
 			CacheEntry* cacheEntry = new CacheEntry(QDateTime::currentDateTime(), outputDevice->buffer());
-			d->requestCache.insert(urlFragment, cacheEntry);
+			Caches::requestCache().insert(urlFragment, cacheEntry);
 		}
 	}
 
@@ -165,8 +167,8 @@ namespace FastCgiQt
 
 	void Service::dumpCacheInformation()
 	{
-		QReadLocker fileLock(d->fileCache.readWriteLock());
-		QReadLocker requestLock(d->requestCache.readWriteLock());
+		QReadLocker fileLock(Caches::fileCache().readWriteLock());
+		QReadLocker requestLock(Caches::requestCache().readWriteLock());
 		QXmlStreamWriter xml(out.device());
 		xml.writeStartDocument();
 		xml.writeStartElement("html");
@@ -177,34 +179,34 @@ namespace FastCgiQt
 				xml.writeTextElement("h1", tr("Cache Information"));
 				xml.writeStartElement("dl");
 					xml.writeTextElement("dt", tr("File cache size:"));
-					xml.writeTextElement("dd", tr("%1 bytes").arg(d->fileCache.totalCost()));
+					xml.writeTextElement("dd", tr("%1 bytes").arg(Caches::fileCache().totalCost()));
 					xml.writeTextElement("dt", tr("Maximum file cache size:"));
-					xml.writeTextElement("dd", tr("%1 bytes").arg(d->fileCache.maxCost()));
+					xml.writeTextElement("dd", tr("%1 bytes").arg(Caches::fileCache().maxCost()));
 					xml.writeTextElement("dt", tr("Items in file cache:"));
 					xml.writeStartElement("dd");
-						xml.writeCharacters(tr("%1 files:").arg(d->fileCache.count()));
+						xml.writeCharacters(tr("%1 files:").arg(Caches::fileCache().count()));
 						xml.writeStartElement("ul");
-							Q_FOREACH(const QString& file, d->fileCache.keys())
+							Q_FOREACH(const QString& file, Caches::fileCache().keys())
 							{
-								xml.writeTextElement("li", QString("'%1' (%2 bytes)").arg(file).arg(d->fileCache[file]->data.length()));
+								xml.writeTextElement("li", QString("'%1' (%2 bytes)").arg(file).arg(Caches::fileCache()[file]->data.length()));
 							}
 						xml.writeEndElement();
 					xml.writeEndElement();
 					xml.writeTextElement("dt", tr("Request cache size:"));
-					xml.writeTextElement("dd", tr("%1 bytes").arg(d->requestCache.totalCost()));
+					xml.writeTextElement("dd", tr("%1 bytes").arg(Caches::requestCache().totalCost()));
 					xml.writeTextElement("dt", tr("Maximum equest cache size:"));
-					xml.writeTextElement("dd", tr("%1 bytes").arg(d->requestCache.maxCost()));
+					xml.writeTextElement("dd", tr("%1 bytes").arg(Caches::requestCache().maxCost()));
 					xml.writeTextElement("dt", tr("Items in request cache:"));
 					xml.writeStartElement("dd");
-						xml.writeCharacters(tr("%1 pages:").arg(d->requestCache.count()));
+						xml.writeCharacters(tr("%1 pages:").arg(Caches::requestCache().count()));
 						xml.writeStartElement("ul");
-							Q_FOREACH(const QString& urlFragment, d->requestCache.keys())
+							Q_FOREACH(const QString& urlFragment, Caches::requestCache().keys())
 							{
 								xml.writeStartElement("li");
-									xml.writeCharacters(QString("'%1' (%2 bytes)").arg(urlFragment).arg(d->requestCache[urlFragment]->data.length()));
+									xml.writeCharacters(QString("'%1' (%2 bytes)").arg(urlFragment).arg(Caches::requestCache()[urlFragment]->data.length()));
 									xml.writeTextElement("p", tr("File dependencies:"));
 									xml.writeStartElement("ul");
-										Q_FOREACH(const QString& file, d->requestCache.dependencies(urlFragment))
+										Q_FOREACH(const QString& file, Caches::requestCache().dependencies(urlFragment))
 										{
 											xml.writeTextElement("li", file);
 										}
@@ -256,12 +258,12 @@ namespace FastCgiQt
 
 	bool Service::usingFileCache()
 	{
-		return Service::Private::usingFileCache;
+		return d->usingFileCache;
 	}
 
 	void Service::setUsingFileCache(bool useFileCache)
 	{
-		Service::Private::usingFileCache = useFileCache;
+		d->usingFileCache = useFileCache;
 		if(!useFileCache)
 		{
 			clearFileCache();
@@ -270,12 +272,12 @@ namespace FastCgiQt
 
 	void Service::clearFileCache()
 	{
-		Service::Private::fileCache.clear();
+		Caches::fileCache().clear();
 	}
 
 	void Service::setFileCacheSize(int maximumSize)
 	{
-		Service::Private::fileCache.setMaxCost(maximumSize);
+		Caches::fileCache().setMaxCost(maximumSize);
 	}
 
 	void Service::Private::fillMap(Service* service)
@@ -337,12 +339,12 @@ namespace FastCgiQt
 
 	int Service::requestCacheSize()
 	{
-		return Service::Private::requestCache.maxCost();
+		return Caches::requestCache().maxCost();
 	}
 
 	void Service::setRequestCacheSize(int size)
 	{
-		Service::Private::requestCache.setMaxCost(size);
+		Caches::requestCache().setMaxCost(size);
 	}
 
 	bool Service::isExpired(const QString& urlFragment, const QDateTime& generated)

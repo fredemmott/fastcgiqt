@@ -167,7 +167,7 @@ namespace FastCgiQt
 			 * @see setFileCacheSize
 			 * @see readFile
 			 */
-			static bool usingFileCache();
+			bool usingFileCache();
 
 			/** Set whether or not file reads via readFile() are cached.
 			 *
@@ -177,7 +177,7 @@ namespace FastCgiQt
 			 * @see setFileCacheSize
 			 * @see readFile
 			 */
-			static void setUsingFileCache(bool use);
+			void setUsingFileCache(bool use);
 
 			/** Clear the file cache used by readFile().
 			 *

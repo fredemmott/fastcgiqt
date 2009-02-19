@@ -12,6 +12,7 @@ SET(
 	PRIVATE_CLASSES
 	BeginRequestRecord
 	Cache
+	Caches
 	DebugHandler
 	EndRequestRecord
 	EnumHelpers

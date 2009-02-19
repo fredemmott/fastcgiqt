@@ -16,6 +16,7 @@
 #ifndef _FASTCGI_QT_MANAGER_PRIVATE_H
 #define _FASTCGI_QT_MANAGER_PRIVATE_H
 
+#include "Caches.h"
 #include "Responder.h"
 
 #include <QAtomicInt>
@@ -44,6 +45,7 @@ namespace FastCgiQt
 		public:
 			/// Create a ManagerPrivate object.
 			ManagerPrivate(Responder::Generator responderGenerator, QObject* parent = NULL);
+			~ManagerPrivate();
 			QList<int> threadLoads() const;
 		private slots:
 			/// Request that the application shuts down.
@@ -91,6 +93,9 @@ namespace FastCgiQt
 
 			/// Watcher to call shutdown() if the executable is modified.
 			QFileSystemWatcher* m_applicationWatcher;
+
+			/// Scope guard to create and cleanup global caches
+			Caches* m_caches;
 	};
 };
 

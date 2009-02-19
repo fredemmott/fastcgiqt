@@ -16,7 +16,7 @@
 #ifndef _FASTCGI_QT_SERVICE_PRIVATE_H
 #define _FASTCGI_QT_SERVICE_PRIVATE_H
 
-#include "Cache.h"
+#include "Caches.h"
 #include "FileCache.h"
 #include "FileDependentCache.h"
 
@@ -32,6 +32,7 @@ namespace FastCgiQt
 	class Service::Private
 	{
 		public:
+			Private();
 			typedef QPair<QRegExp, QMetaMethod> UrlMapEntry;
 			QList<UrlMapEntry> forwardMap;
 			void fillMap(Service* service);
@@ -43,10 +44,10 @@ namespace FastCgiQt
 			bool dispatchingRequest;
 			bool canCacheThisRequest;
 			QString urlFragment;
-			static bool usingFileCache;
-
-			static FileCache fileCache;
-			static FileDependentCache requestCache;
+			bool usingFileCache;
+		private:
+			// scope guard
+			Caches m_caches;
 	};
 }
 

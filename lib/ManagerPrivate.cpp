@@ -24,6 +24,7 @@
 #include <QFileSystemWatcher>
 #include <QHostAddress>
 #include <QSocketNotifier>
+#include <QSqlDatabase>
 #include <QThread>
 #include <QTime>
 #include <QTimer>
@@ -40,7 +41,8 @@ namespace FastCgiQt
 			QObject(parent),
 			m_socketNotifier(new QSocketNotifier(FCGI_LISTENSOCK_FILENO, QSocketNotifier::Read, this)),
 			m_responderGenerator(responderGenerator),
-			m_applicationWatcher(new QFileSystemWatcher(this))
+			m_applicationWatcher(new QFileSystemWatcher(this)),
+			m_caches(new Caches())
 	{
 		connect(
 			m_socketNotifier,
@@ -67,6 +69,11 @@ namespace FastCgiQt
 
 		// Wait for the event loop to start up before running
 		QTimer::singleShot(0, this, SLOT(listen()));
+	}
+
+	ManagerPrivate::~ManagerPrivate()
+	{
+		delete m_caches;
 	}
 
 	QList<int> ManagerPrivate::threadLoads() const
@@ -96,19 +103,30 @@ namespace FastCgiQt
 		{
 			return;
 		}
-		qDebug() << "Shutdown in progress - thread loads:" << threadLoads();
+		qDebug() << "Waiting for threads - thread loads:" << threadLoads();
 		Q_FOREACH(QThread* thread, m_threads)
 		{
 			if(m_threadLoads.value(thread) != 0)
 			{
 				return;
 			}
-			else
-			{
-				thread->exit();
-				Q_ASSERT(thread->wait(500));
-			}
 		}
+		qDebug() << "Shutting down database connections";
+		Q_FOREACH(const QString& connectionName, QSqlDatabase::connectionNames())
+		{
+			qDebug() << qPrintable(QString("- Connection '%1'").arg(connectionName));
+			QSqlDatabase::removeDatabase(connectionName);
+		}
+		qDebug() << "Shutting down threads";
+		Q_FOREACH(QThread* thread, m_threads)
+		{
+			thread->quit();
+			bool done = thread->wait(500);
+			Q_ASSERT(done);
+		}
+		qDebug() << "Shutting down caches";
+		delete m_caches;
+		m_caches = NULL;
 		qDebug() << "Shutdown complete. No thread load.";
 		QCoreApplication::exit();
 	}
