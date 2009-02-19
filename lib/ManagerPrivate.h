@@ -43,6 +43,10 @@ namespace FastCgiQt
 		public:
 			/// Create a ManagerPrivate object.
 			ManagerPrivate(Responder::Generator responderGenerator, QObject* parent = NULL);
+			QList<int> threadLoads() const;
+		public slots:
+			/// Request that the application shuts down.
+			void shutdown();
 		private slots:
 			/// Listen for a new FastCGI connection.
 			void listen();
@@ -53,6 +57,8 @@ namespace FastCgiQt
 			void lockSocket(int socket);
 			/// Unlock the socket with the specified socket id.
 			void releaseSocket(int socket);
+			/// If we're shutting down, and the loads are zero, exit.
+			void exitIfFinished();
 			/** Comparison for thread loads.
 			 *
 			 * @returns true if thread @p t1 is currently handling

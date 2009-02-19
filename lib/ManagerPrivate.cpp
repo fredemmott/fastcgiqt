@@ -59,6 +59,45 @@ namespace FastCgiQt
 		QTimer::singleShot(0, this, SLOT(listen()));
 	}
 
+	QList<int> ManagerPrivate::threadLoads() const
+	{
+		QList<int> data;
+		Q_FOREACH(const QAtomicInt& load, m_threadLoads)
+		{
+			data.append(load);
+		}
+		return data;
+	}
+
+	void ManagerPrivate::shutdown()
+	{
+		qDebug() << "Starting shutdown process";
+		// stop listening on the main socket
+		::close(m_socketNotifier->socket());
+		// stop watching it
+		m_socketNotifier->setEnabled(false);
+		// If there's no load, exit
+		exitIfFinished();
+	}
+
+	void ManagerPrivate::exitIfFinished()
+	{
+		if(m_socketNotifier->isEnabled())
+		{
+			return;
+		}
+		qDebug() << "Shutdown in progress - thread loads:" << threadLoads();
+		Q_FOREACH(int load, threadLoads())
+		{
+			if(load != 0)
+			{
+				return;
+			}
+		}
+		qDebug() << "Shutdown complete. No thread load.";
+		QCoreApplication::exit();
+	}
+
 	bool ManagerPrivate::hasLessLoadThan(QThread* t1, QThread* t2)
 	{
 		Q_ASSERT(t1->parent() == t2->parent());
@@ -108,6 +147,7 @@ namespace FastCgiQt
 	void ManagerPrivate::reduceLoadCount(QThread* thread)
 	{
 		m_threadLoads[thread].deref();
+		exitIfFinished();
 	}
 
 	void ManagerPrivate::lockSocket(int socket)
