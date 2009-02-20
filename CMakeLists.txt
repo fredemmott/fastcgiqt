@@ -20,6 +20,7 @@ ENDIF()
 
 # Optionally, add database stuff
 OPTION(WITH_SQL_SUPPORT "Build helper classes for interacting with databases" ON)
+OPTION(WITH_XSLT_SUPPORT "Build helper class for XSLT-based applications - needs Qt 4.5" OFF)
 
 # Find Qt4
 FIND_PACKAGE( Qt4 REQUIRED )
@@ -28,6 +29,9 @@ SET(QT_DONT_USE_QTGUI TRUE)
 SET(QT_USE_QTNETWORK TRUE)
 IF(WITH_SQL_SUPPORT)
 	SET(QT_USE_QTSQL TRUE)
+ENDIF()
+IF(WITH_XSLT_SUPPORT)
+	SET(QT_USE_QTXMLPATTERNS TRUE)
 ENDIF()
 
 # Include the cmake file needed to use qt4
