@@ -8,7 +8,7 @@
 
 namespace FastCgiQt
 {
-	/** Class providing access to global file/request caches.
+	/** @internal @brief Class providing access to global file/request caches.
 	 *
 	 * An instance of this class is used for reference counting and cleanup.
 	 */
