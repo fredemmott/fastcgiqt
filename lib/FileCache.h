@@ -12,7 +12,7 @@ class QFileSystemWatcher;
 
 namespace FastCgiQt
 {
-	/** Subclass of Cache specifically designed for keeping caches of local files.
+	/** @internal @brief Subclass of Cache specifically designed for keeping caches of local files.
 	 *
 	 * This class uses QFileSystemWatcher to watch all files in the cache,
 	 * and remove them from the cache as soon as they are modified.

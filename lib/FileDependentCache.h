@@ -13,7 +13,7 @@ class QFileSystemWatcher;
 
 namespace FastCgiQt
 {
-	/** Cache where entries depend on files.
+	/** @internal @brief Cache where entries depend on files.
 	 *
 	 * When a file is modified, all dependent entries are automatically removed.
 	 */

@@ -11,14 +11,14 @@ class QReadWriteLock;
 
 namespace FastCgiQt
 {
-	/// A cache entry composed of data and a timestamp.
+	///@internal @brief A cache entry composed of data and a timestamp.
 	struct CacheEntry
 	{
 		CacheEntry(const QDateTime& timeStamp, const QByteArray& data);
 		const QDateTime timeStamp;
 		const QByteArray data;
 	};
-	/** A read-write-locked cache structure.
+	/** @internal @brief A read-write-locked cache structure.
 	 *
 	 * This is a QCache<QString, CacheEntry> with a recursive QReadWriteLock.
 	 *
