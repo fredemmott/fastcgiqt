@@ -114,8 +114,12 @@ namespace FastCgiQt
 		Q_FOREACH(QThread* thread, m_threads)
 		{
 			thread->quit();
-			bool done = thread->wait(500);
-			Q_ASSERT(done);
+			bool done = thread->wait(10000);
+			if(!done)
+			{
+				qDebug() << "One thread took longer than 10 seconds to shut down, terminating";
+				thread->terminate();
+			}
 		}
 		qDebug() << "Shutting down caches";
 		delete m_caches;

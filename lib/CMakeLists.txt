@@ -29,6 +29,19 @@ SET(
 	StandardOutputRecord
 )
 
+IF(WITH_SQL_SUPPORT)
+	LIST(
+		APPEND
+		PUBLIC_CLASSES
+		Database
+	)
+	LIST(
+		APPEND
+		PRIVATE_CLASSES
+		DatabaseGuard
+	)
+ENDIF()
+
 SET(VERSION 0.0.1)
 
 INCLUDE_DIRECTORIES(../include/FastCgiQt)

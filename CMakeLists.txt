@@ -18,11 +18,17 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+# Optionally, add database stuff
+OPTION(WITH_SQL_SUPPORT "Build helper classes for interacting with databases" ON)
+
 # Find Qt4
 FIND_PACKAGE( Qt4 REQUIRED )
 
 SET(QT_DONT_USE_QTGUI TRUE)
 SET(QT_USE_QTNETWORK TRUE)
+IF(WITH_SQL_SUPPORT)
+	SET(QT_USE_QTSQL TRUE)
+ENDIF()
 
 # Include the cmake file needed to use qt4
 INCLUDE( ${QT_USE_FILE} )
