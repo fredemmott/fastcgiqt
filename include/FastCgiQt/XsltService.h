@@ -14,6 +14,10 @@ namespace FastCgiQt
 	 *
 	 * This provides an XML stream writer for your service to use to write
 	 * XML, and actually calling the XSLT processor.
+	 *
+	 * @warning This class is only available if WITH_XSLT_SUPPORT=ON is
+	 * 	passed to CMake when building FastCgiQt. The default is off, as
+	 * 	this requires Qt 4.5, which hasn't been released yet.
 	 */
 	class XsltService : public Service
 	{
