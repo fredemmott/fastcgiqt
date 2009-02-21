@@ -1,0 +1,16 @@
+/** @defgroup core Core
+@ingroup core
+@brief Core functionality used by all FastCgiQt applications.
+
+Every application using FastCgiQt will uses these classes or subclasses; it's the smallest set you need to know.
+
+ - FastCgiQt::ClientIOInterface gives you ways to interact with the HTTP client.
+ - A FastCgiQt::Request object is available from a FastCgiQt::ClientIOInterface instance,
+ 	giving you information on what the client asked the server for.
+ - FastCgiQt::Responder is an abstract class (which you need to subclass, or use one of the existing subclasses,
+ 	such as @ref services "Services") which responds to requests, and is a ClientIOInterface.
+ - A FastCgiQt::Manager is a per-application class which you just need to create an instance of, which handles setting
+ 	up all the FastCGI sockets, and creating instances of your FastCgiQt::Responder subclass as neccessary.
+
+For a more structured approach, see @ref services "Services".
+*/

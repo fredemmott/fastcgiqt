@@ -18,6 +18,7 @@ namespace FastCgiQt
 	 * @warning This class is only available if WITH_XSLT_SUPPORT=ON is
 	 * 	passed to CMake when building FastCgiQt. The default is off, as
 	 * 	this requires Qt 4.5, which hasn't been released yet.
+	 * @ingroup services
 	 */
 	class XsltService : public Service
 	{

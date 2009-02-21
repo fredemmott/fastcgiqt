@@ -1,0 +1,6 @@
+/** @defgroup services Services
+@ingroup services
+@brief Classes offering a more structured approach to FastCgiQt applications.
+
+These classes offer an URL -> QObject/slot mapping.
+*/

@@ -61,6 +61,7 @@ namespace FastCgiQt
 	 * maximum size of 10MiB.
 	 *
 	 * @see ServiceMapper
+	 * @ingroup services
 	 */
 	class Service : public ClientIOInterface
 	{

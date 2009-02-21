@@ -29,6 +29,8 @@ namespace FastCgiQt
 	 * and acting on whatever data is received.
 	 * 
 	 * This includes spawning Responder classes.
+	 *
+	 * @ingroup core
 	 */
 	class Manager : public QObject
 	{

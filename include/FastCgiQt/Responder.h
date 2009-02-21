@@ -25,6 +25,8 @@ namespace FastCgiQt
 	 *
 	 * All web applications will involve at least one subclass of this
 	 * class.
+	 *
+	 * @ingroup core
 	 */
 	class Responder : public FastCgiQt::ClientIOInterface
 	{

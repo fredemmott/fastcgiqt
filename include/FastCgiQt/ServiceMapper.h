@@ -26,6 +26,7 @@ namespace FastCgiQt
 	 * This class is for mapping URLs to QObjects and slots.
 	 *
 	 * @see Service
+	 * @ingroup services
 	 */
 	class ServiceMapper : public Responder
 	{

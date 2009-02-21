@@ -21,7 +21,9 @@
 
 namespace FastCgiQt
 {
-	/// Class containing information about a request.
+	/** Class containing information about a request.
+	 * @ingroup core
+	 */
 	class Request
 	{
 		friend class RequestDataProvider;

@@ -26,6 +26,7 @@ class QIODevice;
 namespace FastCgiQt
 {
 	/** Interface for accessing/sending client data.
+	 * @ingroup core
 	 */
 	class ClientIOInterface : public QObject
 	{
