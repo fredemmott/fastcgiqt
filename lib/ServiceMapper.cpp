@@ -17,6 +17,7 @@
 
 #include "Service.h"
 
+#include <QDebug>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QRegExp>
@@ -57,7 +58,7 @@ namespace FastCgiQt
 			}
 		}
 
-		QStringList parts = request.serverData("PATH_INFO").split("/");
+		QStringList parts = request.serverData("PATH_INFO").split("/").filter(QRegExp("."));
 		const QString serviceName(parts.isEmpty() ? "" : parts.first());
 
 		Service* service = NULL;
