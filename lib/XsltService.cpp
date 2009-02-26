@@ -139,12 +139,6 @@ namespace FastCgiQt
 			}
 	
 			out << endl;
-	
-	#ifndef QT_NO_DEBUG_OUTPUT
-			QXmlStreamWriter debugWriter(out.device());
-			debugWriter.writeComment("Source XML:");
-			debugWriter.writeComment("\n" + d->xml);
-	#endif
 		}
 		else if(!d->xml.isEmpty())
 		{
