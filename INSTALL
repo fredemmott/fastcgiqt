@@ -1,0 +1,27 @@
+At it's most basic, you can build and install FastCgiQt like this:
+
+cd FastCgiQt
+mkdir build
+cd build
+cmake ..
+make -j5
+sudo make install
+
+Currently, this will build and install FastCgiQt with core and database support, but
+not with XSLT support.
+
+DATABASE SUPPORT
+----------------
+
+By default, FastCgiQt builds with database support (the FastCgiQt::Database class).
+This can be disabled by passing WITH_SQL_SUPPORT=OFF to cmake, like so:
+
+cmake .. -DWITH_SQL_SUPPORT=OFF
+
+XSLT SUPPORT
+------------
+
+If you are building against Qt 4.5 or later, you can enable the FastCgiQt::XsltService
+class by passing WITH_XSLT_SUPPORT=ON to cmake, like so:
+
+cmake .. -DWITH_XSLT_SUPPORT=ON
