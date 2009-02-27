@@ -43,7 +43,7 @@ namespace FastCgiQt
 			);
 			bool dispatchingRequest;
 			bool canCacheThisRequest;
-			QString urlFragment;
+			QString cacheKey;
 			bool usingFileCache;
 		private:
 			// scope guard

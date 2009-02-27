@@ -56,7 +56,7 @@ namespace FastCgiQt
 			// not if use-cache:
 			// if caching of this file isn't wanted, then surely the
 			// request cache should be invalidated here too
-			Caches::requestCache().addDependency(d->urlFragment, fullPath);
+			Caches::requestCache().addDependency(d->cacheKey, fullPath);
 		}
 
 		if(useCache && Caches::fileCache().contains(fullPath))
@@ -108,14 +108,16 @@ namespace FastCgiQt
 			return;
 		}
 
+		d->cacheKey = QString("^1::%2").arg(metaObject()->className()).arg(urlFragment);
+
 		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
 		Q_ASSERT(outputDevice);
 
 		{
 			QReadLocker lock(Caches::fileCache().readWriteLock());
-			if(Caches::requestCache().contains(urlFragment))
+			if(Caches::requestCache().contains(d->cacheKey))
 			{
-				CacheEntry* cacheEntry = Caches::requestCache()[urlFragment];
+				CacheEntry* cacheEntry = Caches::requestCache()[d->cacheKey];
 	
 				if(!isExpired(urlFragment, cacheEntry->timeStamp))
 				{
@@ -126,8 +128,6 @@ namespace FastCgiQt
 			}
 		}
 
-		d->urlFragment = urlFragment;
-
 		d->canCacheThisRequest = false;
 
 		d->dispatchingRequest = true;
@@ -137,7 +137,7 @@ namespace FastCgiQt
 		if(d->canCacheThisRequest)
 		{
 			CacheEntry* cacheEntry = new CacheEntry(QDateTime::currentDateTime(), outputDevice->buffer());
-			Caches::requestCache().insert(urlFragment, cacheEntry);
+			Caches::requestCache().insert(d->cacheKey, cacheEntry);
 		}
 	}
 
