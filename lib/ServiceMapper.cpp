@@ -75,6 +75,7 @@ namespace FastCgiQt
 					parts.takeFirst();
 				}
 				service = (*it.value())(request, this);
+				break;
 			}
 		}
 		
