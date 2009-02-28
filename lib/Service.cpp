@@ -108,7 +108,7 @@ namespace FastCgiQt
 			return;
 		}
 
-		d->cacheKey = QString("^1::%2").arg(metaObject()->className()).arg(urlFragment);
+		d->cacheKey = QString("%1::%2").arg(metaObject()->className()).arg(urlFragment);
 
 		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
 		Q_ASSERT(outputDevice);
