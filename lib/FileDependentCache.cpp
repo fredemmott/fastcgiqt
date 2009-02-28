@@ -12,7 +12,8 @@ namespace FastCgiQt
 		:
 			QObject(parent),
 			Cache(maxSize),
-			m_watcher(new QFileSystemWatcher(this))
+			m_watcher(new QFileSystemWatcher(this)),
+			m_watcherMutex(QMutex::Recursive)
 
 	{
 		connect(
