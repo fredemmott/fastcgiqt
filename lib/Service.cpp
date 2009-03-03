@@ -144,11 +144,14 @@ namespace FastCgiQt
 	void Service::dispatchUncachedRequest(const QString& urlFragment)
 	{
 		d->fillMap(this);
+		qDebug() << "Looking for match against" << urlFragment;
 		Q_FOREACH(const Service::Private::UrlMapEntry& action, d->forwardMap)
 		{
 			QRegExp re(action.first);
+			qDebug() << "Considering" << action.second.signature() << "with pattern" << action.first.pattern();
 			if(re.exactMatch(urlFragment))
 			{
+				qDebug() << "match, invoking";
 				QStringList parameters(re.capturedTexts());
 				parameters.takeFirst();
 				d->invokeMethod(
