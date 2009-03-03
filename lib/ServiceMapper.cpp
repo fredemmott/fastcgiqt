@@ -83,14 +83,9 @@ namespace FastCgiQt
 		{
 			service = (d->services.value(""))(request, this);
 		}
-		else
-		{
-			qDebug() << "No service, and no empty service";
-		}
 
 		if(service)
 		{
-			qDebug() << "Got a service:" << service->metaObject()->className();
 			// copy over the ClientIOInterface parts
 			// Trust me, I'm a friend class.
 			service->out.setDevice(out.device());
