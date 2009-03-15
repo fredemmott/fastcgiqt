@@ -17,7 +17,7 @@ namespace FastCgiQt
 	MemcachedCache::MemcachedCache(const QString& cacheName)
 		:
 			m_memcached(memcached_create(NULL)),
-			m_keyPrefix(cacheName + "::")
+			m_keyPrefix(QCoreApplication::organizationDomain() + '/' + QCoreApplication::applicationName() + '/' + cacheName + '/')
 	{
 		memcached_return rt;
 
