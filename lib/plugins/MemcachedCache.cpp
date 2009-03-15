@@ -13,6 +13,7 @@
 namespace FastCgiQt
 {
 	QReadWriteLock MemcachedCache::m_lock(QReadWriteLock::Recursive);
+	QList<MemcachedCache::Server> MemcachedCache::m_servers;
 
 	MemcachedCache::MemcachedCache(const QString& cacheName)
 		:
@@ -21,8 +22,14 @@ namespace FastCgiQt
 	{
 		memcached_return rt;
 
-		rt = memcached_server_add(m_memcached, "localhost", MEMCACHED_DEFAULT_PORT);
-		Q_ASSERT(rt == MEMCACHED_SUCCESS);
+		Q_FOREACH(const Server& server, m_servers)
+		{
+			rt = memcached_server_add(m_memcached, server.host().toLatin1().constData(), server.port());
+			if(rt != MEMCACHED_SUCCESS)
+			{
+				qFatal("Failed to add memcached server %s:%d.", qPrintable(server.host()), server.port());
+			}
+		}
 	}
 	
 	MemcachedCache::~MemcachedCache()
@@ -30,9 +37,31 @@ namespace FastCgiQt
 		memcached_free(m_memcached);
 	}
 
+	void MemcachedCache::setServers(const QList<Server>& servers)
+	{
+		m_servers = servers;
+	}
+
 	CacheBackend* MemcachedCacheFactory::getCacheBackend(const QString& cacheName) const
 	{
 		return new MemcachedCache(cacheName);
+	}
+
+	MemcachedCache::Server::Server(const QString& host, unsigned int port)
+		:
+			m_host(host),
+			m_port(port)
+	{
+	}
+
+	QString MemcachedCache::Server::host() const
+	{
+		return m_host;
+	}
+
+	unsigned int MemcachedCache::Server::port() const
+	{
+		return m_port;
 	}
 
 	bool MemcachedCacheFactory::loadSettings()
@@ -43,6 +72,27 @@ namespace FastCgiQt
 		);
 		if(settings.value("cache/backend") == "MemcachedCache")
 		{
+			QList<MemcachedCache::Server> servers;
+			const int size = settings.beginReadArray("MemcachedServers");
+			if(size == 0)
+			{
+				servers.append(MemcachedCache::Server("localhost", MEMCACHED_DEFAULT_PORT));
+			}
+			else
+			{
+				for(int i = 0; i < size; ++i)
+				{
+					settings.setArrayIndex(i);
+					const QString host(settings.value("host").toString());
+					if(!host.isNull())
+					{
+						const unsigned int port = settings.value("port", MEMCACHED_DEFAULT_PORT).value<unsigned int>();
+						servers.append(MemcachedCache::Server(host, port));
+					}
+				}
+			}
+			settings.endArray();
+			MemcachedCache::setServers(servers);
 			return true;
 		}
 		return false;
@@ -67,6 +117,11 @@ namespace FastCgiQt
 			&flags,
 			&rt
 		);
+
+		if(rt != MEMCACHED_SUCCESS && rt != MEMCACHED_NOTFOUND)
+		{
+			qFatal("Memcached error: %s", memcached_strerror(m_memcached, rt));
+		}
 
 		Q_ASSERT(rawDataLength >= sizeof(quint64) || !rawData);
 		if(rawDataLength < sizeof(quint64) || !rawData)
@@ -107,7 +162,10 @@ namespace FastCgiQt
 			0, // expire
 			0 // flags
 		);
-		Q_ASSERT(rt == MEMCACHED_SUCCESS);
+		if(rt != MEMCACHED_SUCCESS)
+		{
+			qFatal("Memcached error: %s", memcached_strerror(m_memcached, rt));
+		}
 	}
 
 	void MemcachedCache::remove(const QString& key)
