@@ -31,11 +31,11 @@ namespace FastCgiQt
 			void setValue(const QString& key, const CacheEntry& object);
 
 			bool contains(const QString& key) const;
-			static void setBackendFactory(CacheBackend::Factory* factory);
 		protected:
 			/// Return a pointer to the QReadWriteLock.
 			QReadWriteLock* readWriteLock() const;
 		private:
+			void loadBackendFactory();
 			static CacheBackend::Factory* m_backendFactory;
 			CacheBackend* m_backend;
 			mutable QHash<QString, CacheEntry> m_cache;

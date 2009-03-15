@@ -1,8 +1,9 @@
 #include "Cache.h"
 
-#include "RamCache.h"
-
 #include <QDebug>
+#include <QPluginLoader>
+
+Q_IMPORT_PLUGIN(FastCgiQt_CacheBackend_RamCache)
 
 namespace FastCgiQt
 {
@@ -10,8 +11,26 @@ namespace FastCgiQt
 
 	Cache::Cache(const QString& cacheName)
 	{
-		Q_ASSERT(m_backendFactory);
+		if(!m_backendFactory)
+		{
+			loadBackendFactory();
+		}
 		m_backend = m_backendFactory->getCacheBackend(cacheName);
+	}
+
+	void Cache::loadBackendFactory()
+	{
+		QList<CacheBackend::Factory*> factories;
+		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
+		{
+			CacheBackend::Factory* factory(qobject_cast<CacheBackend::Factory*>(object));
+			if(factory)
+			{
+				factories.append(factory);
+			}
+		}
+		Q_ASSERT(!factories.isEmpty());
+		m_backendFactory = factories.first();
 	}
 
 	Cache::~Cache()
