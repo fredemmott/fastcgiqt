@@ -47,14 +47,6 @@ namespace FastCgiQt
 			 * overwritten.
 			 */
 			void setValue(const QString& key, const CacheEntry& object);
-
-			/** Whether or not an entry is in the cache.
-			 *
-			 * This will also cause a local copy to be made of the
-			 * cache entry, in case it is removed from the cache in
-			 * between calling contains() and calling value().
-			 */
-			bool contains(const QString& key) const;
 		protected:
 			/// Return a pointer to the QReadWriteLock.
 			QReadWriteLock* readWriteLock() const;
@@ -63,7 +55,6 @@ namespace FastCgiQt
 			void loadBackendFactory();
 			static CacheBackend::Factory* m_backendFactory;
 			CacheBackend* m_backend;
-			mutable QHash<QString, CacheEntry> m_cache;
 	};
 }
 

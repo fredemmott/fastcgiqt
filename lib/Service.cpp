@@ -59,9 +59,13 @@ namespace FastCgiQt
 			Caches::requestCache().addDependency(d->cacheKey, fullPath);
 		}
 
-		if(useCache && Caches::fileCache().contains(fullPath))
+		if(useCache)
 		{
-			return Caches::fileCache().value(fullPath).data();
+			CacheEntry entry = Caches::fileCache().value(fullPath);
+			if(entry.isValid())
+			{
+				return entry.data();
+			}
 		}
 
 		QFile file(fullPath);
