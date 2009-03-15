@@ -23,7 +23,7 @@ namespace FastCgiQt
 	class Cache
 	{
 		public:
-			Cache();
+			Cache(const QString& cacheName);
 			~Cache();
 
 			void remove(const QString& key);

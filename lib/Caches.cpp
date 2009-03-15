@@ -28,7 +28,7 @@ namespace FastCgiQt
 	{
 		if(!m_fileCache)
 		{
-			m_fileCache = new FileCache();
+			m_fileCache = new FileCache("FileCache");
 		}
 		return *m_fileCache;
 	}
@@ -37,7 +37,7 @@ namespace FastCgiQt
 	{
 		if(!m_requestCache)
 		{
-			m_requestCache = new FileDependentCache();
+			m_requestCache = new FileDependentCache("RequestCache");
 		}
 		return *m_requestCache;
 	}

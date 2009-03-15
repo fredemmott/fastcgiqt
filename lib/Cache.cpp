@@ -6,9 +6,9 @@
 
 namespace FastCgiQt
 {
-	Cache::Cache()
+	Cache::Cache(const QString& cacheName)
 		:
-			m_backend(new RamCache())
+			m_backend(new RamCache(cacheName))
 	{
 	}
 

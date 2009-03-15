@@ -22,7 +22,7 @@ namespace FastCgiQt
 		Q_OBJECT
 		public:
 			/// Create a FileDependentCache containing up to @p maxSize bytes.
-			FileDependentCache(QObject* parent = NULL);
+			FileDependentCache(const QString& cacheName, QObject* parent = NULL);
 
 			/// Add a dependency between a key and a file.
 			void addDependency(const QString& key, const QString& file);

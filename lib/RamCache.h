@@ -12,11 +12,13 @@ namespace FastCgiQt
 	class RamCache : public CacheBackend
 	{
 		public:
+			RamCache(const QString& cacheName);
 			virtual void remove(const QString& key);
 			virtual CacheEntry value(const QString& key) const;
 			virtual void setValue(const QString& key, const CacheEntry& entry);
 			virtual QReadWriteLock* readWriteLock() const;
 		private:
+			const QString m_keyPrefix;
 			static QCache<QString, CacheEntry> m_cache;
 			static QReadWriteLock m_lock;
 	};
@@ -24,7 +26,7 @@ namespace FastCgiQt
 	class RamCacheFactory : public CacheBackend::Factory
 	{
 		public:
-			virtual CacheBackend* getCacheBackend() const;
+			virtual CacheBackend* getCacheBackend(const QString& cacheName) const;
 	};
 }
 

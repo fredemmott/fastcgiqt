@@ -7,9 +7,9 @@
 
 namespace FastCgiQt
 {
-	FileCache::FileCache(QObject* parent)
+	FileCache::FileCache(const QString& cacheName, QObject* parent)
 		:
-			FileDependentCache(parent)
+			FileDependentCache(cacheName, parent)
 
 	{
 	}

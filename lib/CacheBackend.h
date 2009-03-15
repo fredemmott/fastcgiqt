@@ -19,7 +19,7 @@ namespace FastCgiQt
 			class Factory
 			{
 				public:
-					virtual CacheBackend* getCacheBackend() const = 0;
+					virtual CacheBackend* getCacheBackend(const QString& cacheName) const = 0;
 			};
 	};
 }
