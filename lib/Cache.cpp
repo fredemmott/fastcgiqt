@@ -20,17 +20,16 @@ namespace FastCgiQt
 
 	void Cache::loadBackendFactory()
 	{
-		QList<CacheBackend::Factory*> factories;
 		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
 		{
 			CacheBackend::Factory* factory(qobject_cast<CacheBackend::Factory*>(object));
-			if(factory)
+			if(factory && factory->loadSettings())
 			{
-				factories.append(factory);
+				m_backendFactory = factory;
+				break;
 			}
 		}
-		Q_ASSERT(!factories.isEmpty());
-		m_backendFactory = factories.first();
+		Q_ASSERT(m_backendFactory);
 	}
 
 	Cache::~Cache()

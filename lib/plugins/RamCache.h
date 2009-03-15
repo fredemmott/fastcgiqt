@@ -19,6 +19,7 @@ namespace FastCgiQt
 			virtual CacheEntry value(const QString& key) const;
 			virtual void setValue(const QString& key, const CacheEntry& entry);
 			virtual QReadWriteLock* readWriteLock() const;
+			static void setMaxSize(int size);
 		private:
 			const QString m_keyPrefix;
 			static QCache<QString, CacheEntry> m_cache;
@@ -30,6 +31,7 @@ namespace FastCgiQt
 		Q_OBJECT
 		Q_INTERFACES(FastCgiQt::CacheBackend::Factory)
 		public:
+			virtual bool loadSettings();
 			virtual CacheBackend* getCacheBackend(const QString& cacheName) const;
 	};
 }

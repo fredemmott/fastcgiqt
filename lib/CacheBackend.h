@@ -42,8 +42,15 @@ namespace FastCgiQt
 			class Factory
 			{
 				public:
-					/// Load any settings relevant for this cache backend.
-					virtual void loadSettings();
+					/** Load any settings relevant for this cache backend.
+					 *
+					 * If this doesn't create the current backend, it should return false.
+					 *
+					 * The settings file is an ini file called .applicationName in the working
+					 * directory. The relevant key is cache/backend - if not set, RamCache is
+					 * the default.
+					 */
+					virtual bool loadSettings() = 0;
 					/// Create a CacheBackend*
 					virtual CacheBackend* getCacheBackend(const QString& cacheName) const = 0;
 			};

@@ -12,7 +12,6 @@ SET(
 	PRIVATE_CLASSES
 	BeginRequestRecord
 	Cache
-	CacheBackend
 	CacheEntry
 	Caches
 	DebugHandler
@@ -24,7 +23,6 @@ SET(
 	ManagerPrivate
 	OutputDevice
 	ParametersRecord
-	RamCache
 	RecordHeader
 	RequestDataProvider
 	SocketManager
@@ -89,11 +87,6 @@ SET_TARGET_PROPERTIES(
 	SOVERSION "0"
 )
 
-TARGET_LINK_LIBRARIES(
-	FastCgiQt
-	${QT_LIBRARIES}
-)
-
 INSTALL(
 	TARGETS
 	FastCgiQt
@@ -106,4 +99,12 @@ INSTALL(
 	${PUBLIC_HEADERS}
 	DESTINATION
 	include/FastCgiQt/
+)
+
+ADD_SUBDIRECTORY(plugins)
+
+TARGET_LINK_LIBRARIES(
+	FastCgiQt
+	${QT_LIBRARIES}
+	${STATIC_PLUGINS}
 )

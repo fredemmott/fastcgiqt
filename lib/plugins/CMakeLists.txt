@@ -1,0 +1,26 @@
+SET(
+	STATIC_PLUGINS
+	RamCache
+)
+
+# Probably don't want to edit below here
+
+SET(
+	STATIC_PLUGINS
+	${STATIC_PLUGINS}
+	PARENT_SCOPE
+)
+
+ADD_DEFINITIONS(-fPIC)
+INCLUDE_DIRECTORIES(.. ../../include/FastCgiQt ${CMAKE_CURRENT_BINARY_DIR})
+
+FOREACH(plugin ${STATIC_PLUGINS})
+	SET(MOC_SOURCES)
+	SET(SOURCES ${plugin}.cpp)
+	QT4_WRAP_CPP(MOC_SOURCES ${plugin}.h)
+	ADD_LIBRARY(
+		${plugin}
+		${SOURCES}
+		${MOC_SOURCES}
+	)
+ENDFOREACH()

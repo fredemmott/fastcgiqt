@@ -1,12 +1,15 @@
 #include "RamCache.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QReadLocker>
+#include <QSettings>
+#include <QStringList>
 #include <QWriteLocker>
 
 namespace FastCgiQt
 {
-	QCache<QString, CacheEntry> RamCache::m_cache(10*1024*1024);
+	QCache<QString, CacheEntry> RamCache::m_cache(0);
 	QReadWriteLock RamCache::m_lock(QReadWriteLock::Recursive);
 
 	RamCache::RamCache(const QString& cacheName)
@@ -18,6 +21,25 @@ namespace FastCgiQt
 	CacheBackend* RamCacheFactory::getCacheBackend(const QString& cacheName) const
 	{
 		return new RamCache(cacheName);
+	}
+
+	bool RamCacheFactory::loadSettings()
+	{
+		QSettings settings(
+			"." + QCoreApplication::applicationFilePath().split('/').last(),
+			QSettings::IniFormat
+		);
+		if(settings.value("cache/backend", "RamCache") == "RamCache")
+		{
+			RamCache::setMaxSize(settings.value("RamCache/maxSize", 10 * 1024 * 1024).toInt());
+			return true;
+		}
+		return false;
+	}
+
+	void RamCache::setMaxSize(int size)
+	{
+		m_cache.setMaxCost(size);
 	}
 
 	CacheEntry RamCache::value(const QString& key) const
