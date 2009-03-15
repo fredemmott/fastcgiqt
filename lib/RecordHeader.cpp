@@ -76,7 +76,7 @@ namespace FastCgiQt
 		header.version = 1;
 		header.type = type;
 		///@todo deal with data.length >= 2^16
-		Q_ASSERT(data.length() < 2^16);
+		Q_ASSERT(data.length() < 65536);
 		header.requestIdB1 = requestId >> 8;
 		header.requestIdB0 = requestId & 0xff;
 		header.contentLengthB1 = data.length() >> 8;
