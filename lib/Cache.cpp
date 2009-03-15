@@ -6,16 +6,17 @@
 
 namespace FastCgiQt
 {
+	CacheBackend::Factory* Cache::m_backendFactory(NULL);
+
 	Cache::Cache(const QString& cacheName)
-		:
-			m_backend(new RamCache(cacheName))
 	{
+		Q_ASSERT(m_backendFactory);
+		m_backend = m_backendFactory->getCacheBackend(cacheName);
 	}
 
 	Cache::~Cache()
 	{
 	}
-
 
 	void Cache::remove(const QString& key)
 	{

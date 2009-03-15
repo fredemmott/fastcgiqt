@@ -23,6 +23,7 @@ OPTION(WITH_SQL_SUPPORT "Build helper classes for interacting with databases" ON
 OPTION(WITH_XSLT_SUPPORT "Build helper class for XSLT-based applications - needs Qt 4.5" OFF)
 
 # Find Qt4
+ADD_DEFINITIONS(-DQT_STATICPLUGIN)
 FIND_PACKAGE( Qt4 REQUIRED )
 
 SET(QT_DONT_USE_QTGUI TRUE)
