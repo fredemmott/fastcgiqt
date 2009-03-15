@@ -10,6 +10,7 @@
 
 namespace FastCgiQt
 {
+	///@internal @brief QCache-based CacheBackend implemntation.
 	class RamCache : public CacheBackend
 	{
 		public:
