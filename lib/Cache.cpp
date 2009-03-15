@@ -10,13 +10,6 @@ typedef QCache<QString, FastCgiQt::CacheEntry> super;
 
 namespace FastCgiQt
 {
-	CacheEntry::CacheEntry(const QDateTime& _timeStamp, const QByteArray& _data)
-		:
-			timeStamp(_timeStamp),
-			data(_data)
-	{
-	}
-
 	Cache::Cache(int maxSize)
 		:
 			super(maxSize),

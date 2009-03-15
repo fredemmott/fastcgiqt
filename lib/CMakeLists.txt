@@ -12,6 +12,7 @@ SET(
 	PRIVATE_CLASSES
 	BeginRequestRecord
 	Cache
+	CacheEntry
 	Caches
 	DebugHandler
 	EndRequestRecord
