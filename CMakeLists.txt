@@ -18,9 +18,10 @@ ELSE()
 	ENDIF()
 ENDIF()
 
-# Optionally, add database stuff
+# Options
 OPTION(WITH_SQL_SUPPORT "Build helper classes for interacting with databases" ON)
 OPTION(WITH_XSLT_SUPPORT "Build helper class for XSLT-based applications - needs Qt 4.5" OFF)
+OPTION(WITH_MEMCACHED_SUPPORT "Build plugin for using memcached - needs libmemcached" OFF)
 
 # Find Qt4
 ADD_DEFINITIONS(-DQT_STATICPLUGIN)
@@ -39,6 +40,11 @@ IF(WITH_XSLT_SUPPORT)
 	MESSAGE(STATUS "XSLT support is enabled.")
 ELSE()
 	MESSAGE(STATUS "XSLT support is *NOT* enabled.")
+ENDIF()
+IF(WITH_MEMCACHED_SUPPORT)
+	MESSAGE(STATUS "memcached support is enabled")
+ELSE()
+	MESSAGE(STATUS "memcached support is *NOT* enabled")
 ENDIF()
 
 # Include the cmake file needed to use qt4

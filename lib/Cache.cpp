@@ -1,7 +1,9 @@
 #include "Cache.h"
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QPluginLoader>
+#include <QStringList>
 
 Q_IMPORT_PLUGIN(FastCgiQt_CacheBackend_RamCache)
 
@@ -20,6 +22,7 @@ namespace FastCgiQt
 
 	void Cache::loadBackendFactory()
 	{
+		qDebug() << QCoreApplication::libraryPaths();
 		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
 		{
 			CacheBackend::Factory* factory(qobject_cast<CacheBackend::Factory*>(object));

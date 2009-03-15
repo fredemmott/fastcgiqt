@@ -3,6 +3,14 @@ SET(
 	RamCache
 )
 
+IF(WITH_MEMCACHED_SUPPORT)
+	LIST(
+		APPEND
+		STATIC_PLUGINS
+		MemcachedCache
+	)
+ENDIF()
+
 # Probably don't want to edit below here
 
 SET(
