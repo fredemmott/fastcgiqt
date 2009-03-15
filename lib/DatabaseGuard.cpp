@@ -10,6 +10,7 @@ namespace FastCgiQt
 		: m_database(connectionName)
 	{
 	}
+
 	DatabaseGuard::~DatabaseGuard()
 	{
 		qDebug() << "Shutting down database connection in thread" << QThread::currentThread();

@@ -17,6 +17,7 @@ namespace FastCgiQt
 			static QSqlDatabase addDatabase(const QString& type);
 			static bool haveConnection();
 		private:
+			static void removeConnection();
 			static QString connectionName();
 			static int threadId();
 

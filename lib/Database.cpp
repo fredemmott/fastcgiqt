@@ -1,6 +1,8 @@
 #include "Database.h"
 #include "DatabasePrivate.h"
 
+#include <QSqlError>
+#include <QSqlQuery>
 #include <QStringList>
 #include <QThread>
 
@@ -30,7 +32,36 @@ namespace FastCgiQt
 		bool sqlThinksSo = QSqlDatabase::connectionNames().contains(connectionName());
 		bool localStorageThinksSo = m_databases.hasLocalData();
 		Q_ASSERT(sqlThinksSo == localStorageThinksSo);
-		return sqlThinksSo;
+
+		if(!sqlThinksSo)
+		{
+			// Nothing indicates it's open, it's not
+			return false;
+		}
+		// Just because we /had/ a connection doesn't mean it's still open
+		if(!database().isOpen())
+		{
+			removeConnection();
+			return false;
+		}
+		if(sqlThinksSo)
+		{
+			QSqlQuery query(database());
+			query.exec("SELECT 1");
+			if(query.lastError().isValid())
+			{
+				removeConnection();
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void DatabasePrivate::removeConnection()
+	{
+		m_databases.setLocalData(NULL);
+		Q_ASSERT(!m_databases.hasLocalData());
+		QSqlDatabase::removeDatabase(connectionName());
 	}
 
 	int DatabasePrivate::threadId()
