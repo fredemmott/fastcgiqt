@@ -1,94 +1,66 @@
 #include "Cache.h"
 
-#include <QDebug>
-#include <QReadWriteLock>
-#include <QReadLocker>
-#include <QThread>
-#include <QWriteLocker>
+#include "RamCache.h"
 
-typedef QCache<QString, FastCgiQt::CacheEntry> super;
+#include <QDebug>
 
 namespace FastCgiQt
 {
-	Cache::Cache(int maxSize)
+	Cache::Cache()
 		:
-			super(maxSize),
-			m_lock(new QReadWriteLock(QReadWriteLock::Recursive))
+			m_backend(new RamCache())
 	{
 	}
 
 	Cache::~Cache()
 	{
-		delete m_lock;
 	}
 
-	bool Cache::insert(const QString& key, CacheEntry* object)
+
+	void Cache::remove(const QString& key)
 	{
-		QWriteLocker lock(m_lock);
-		return super::insert(key, object, object->data().length());
+		m_backend->remove(key);
 	}
-	
+
 	bool Cache::contains(const QString& key) const
 	{
-		QReadLocker lock(m_lock);
-		return super::contains(key);
+		if(m_cache.contains(key))
+		{
+			return true;
+		}
+
+		CacheEntry entry = m_backend->value(key);
+		if(entry.isValid())
+		{
+			m_cache.insert(key, entry);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
-	bool Cache::remove(const QString& key)
+	CacheEntry Cache::value(const QString& key) const
 	{
-		QWriteLocker lock(m_lock);
-		return super::remove(key);
+		if(contains(key))
+		{
+			return m_cache.value(key);
+		}
+		else
+		{
+			return CacheEntry();
+		}
+	}
+
+	void Cache::setValue(const QString& key, const CacheEntry& entry)
+	{
+		m_cache[key] = entry;
+		m_backend->setValue(key, entry);
 	}
 
 	QReadWriteLock* Cache::readWriteLock() const
 	{
-		return m_lock;
-	}
-
-	CacheEntry* Cache::operator[](const QString& key) const
-	{
-		QReadLocker lock(m_lock);
-		return super::operator[](key);
-	}
-
-	void Cache::clear()
-	{
-		QWriteLocker lock(m_lock);
-		super::clear();
-	}
-
-	int Cache::maxCost() const
-	{
-		QReadLocker lock(m_lock);
-		return super::maxCost();
-	}
-
-	int Cache::totalCost() const
-	{
-		QReadLocker lock(m_lock);
-		return super::totalCost();
-	}
-
-	int Cache::count() const
-	{
-		QReadLocker lock(m_lock);
-		return super::count();
-	}
-
-	QList<QString> Cache::keys() const
-	{
-		QReadLocker lock(m_lock);
-		return super::keys();
-	}
-
-	int Cache::size() const
-	{
-		return count();
-	}
-
-	void Cache::setMaxCost(int cost)
-	{
-		QWriteLocker lock(m_lock);
-		super::setMaxCost(cost);
+		return m_backend->readWriteLock();
 	}
 }

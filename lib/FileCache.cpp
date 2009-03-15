@@ -7,31 +7,20 @@
 
 namespace FastCgiQt
 {
-	FileCache::FileCache(int maxSize, QObject* parent)
+	FileCache::FileCache(QObject* parent)
 		:
-			FileDependentCache(maxSize, parent)
+			FileDependentCache(parent)
 
 	{
 	}
 
-	void FileCache::clear()
+	void FileCache::setValue(const QString& key, const CacheEntry& entry)
 	{
-		QMutexLocker lock(&m_watcherMutex);
-		Q_FOREACH(const QString& path, m_watcher->files())
-		{
-			m_watcher->removePath(path);
-		}
-		FileDependentCache::clear();
-	}
-
-	bool FileCache::insert(const QString& key, CacheEntry* entry)
-	{
-		bool success = FileDependentCache::insert(key, entry);
+		FileDependentCache::setValue(key, entry);
 		addDependency(key, key);
-		return success;
 	}
 
-	bool FileCache::remove(const QString& path)
+	void FileCache::remove(const QString& path)
 	{
 		removeAssociatedEntries(path);
 		return FileDependentCache::remove(path);

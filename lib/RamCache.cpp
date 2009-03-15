@@ -1,12 +1,13 @@
 #include "RamCache.h"
 
+#include <QDebug>
 #include <QReadLocker>
 #include <QWriteLocker>
 
 namespace FastCgiQt
 {
-	QCache<QString, CacheEntry> RamCache::m_cache(10240);
-	QReadWriteLock RamCache::m_lock;
+	QCache<QString, CacheEntry> RamCache::m_cache(10*1024*1024);
+	QReadWriteLock RamCache::m_lock(QReadWriteLock::Recursive);
 
 	CacheBackend* RamCacheFactory::getCacheBackend() const
 	{
@@ -25,6 +26,11 @@ namespace FastCgiQt
 		{
 			return CacheEntry();
 		}
+	}
+
+	QReadWriteLock* RamCache::readWriteLock() const
+	{
+		return &m_lock;
 	}
 
 	void RamCache::setValue(const QString& key, const CacheEntry& entry)

@@ -2,17 +2,13 @@
 #define _FASTCGI_QT_CACHE_H
 
 #include "CacheEntry.h"
-
-#include <QByteArray>
-#include <QCache>
-#include <QDateTime>
-#include <QSet>
-#include <QString>
+#include <QHash>
 
 class QReadWriteLock;
 
 namespace FastCgiQt
 {
+	class CacheBackend;
 	/** @internal @brief A read-write-locked cache structure.
 	 *
 	 * This is a QCache<QString, CacheEntry> with a recursive QReadWriteLock.
@@ -24,27 +20,25 @@ namespace FastCgiQt
 	 * the same type; for example, all the writing calls will deadlock
 	 * if called while a read lock is open.
 	 */
-	class Cache : private QCache<QString, CacheEntry>
+	class Cache
 	{
 		public:
-			Cache(int maxSize);
+			Cache();
 			~Cache();
+
+			void remove(const QString& key);
+			CacheEntry value(const QString& key) const;
+			void setValue(const QString& key, const CacheEntry& object);
+
+			bool contains(const QString& key) const;
+
+//			CacheEntryRef operator[](const QString& key) const;
+		protected:
 			/// Return a pointer to the QReadWriteLock.
 			QReadWriteLock* readWriteLock() const;
-
-			QList<QString> keys() const;
-			void clear();
-			bool insert(const QString& key, CacheEntry* object);
-			bool contains(const QString& key) const;
-			bool remove(const QString& key);
-			int totalCost() const;
-			int maxCost() const;
-			int count() const;
-			int size() const;
-			void setMaxCost(int cost);
-			CacheEntry* operator[](const QString& key) const;
 		private:
-			QReadWriteLock* m_lock;
+			CacheBackend* m_backend;
+			mutable QHash<QString, CacheEntry> m_cache;
 	};
 }
 

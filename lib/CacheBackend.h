@@ -3,6 +3,8 @@
 
 #include "CacheEntry.h"
 
+class QReadWriteLock;
+
 namespace FastCgiQt
 {
 	class CacheBackend
@@ -11,6 +13,8 @@ namespace FastCgiQt
 			virtual void remove(const QString& key) = 0;
 			virtual CacheEntry value(const QString& key) const = 0;
 			virtual void setValue(const QString& key, const CacheEntry& entry) = 0;
+
+			virtual QReadWriteLock* readWriteLock() const = 0;
 
 			class Factory
 			{

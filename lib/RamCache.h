@@ -15,6 +15,7 @@ namespace FastCgiQt
 			virtual void remove(const QString& key);
 			virtual CacheEntry value(const QString& key) const;
 			virtual void setValue(const QString& key, const CacheEntry& entry);
+			virtual QReadWriteLock* readWriteLock() const;
 		private:
 			static QCache<QString, CacheEntry> m_cache;
 			static QReadWriteLock m_lock;

@@ -22,14 +22,12 @@ namespace FastCgiQt
 		Q_OBJECT
 		public:
 			/// Create a FileCache, containing up to @p maxSize bytes.
-			FileCache(int maxSize = 100, QObject* parent = NULL);
-			/// Remove all entries from the cache, and stop watching them.
-			void clear();
+			FileCache(QObject* parent = NULL);
 			/// Add an entry to the cache, and start watching it.
-			bool insert(const QString& path, CacheEntry* object);
-			/// Remove an entry and stop watching it.
+			void setValue(const QString& path, const CacheEntry& object);
 		public slots:
-			bool remove(const QString& path);
+			/// Remove an entry and stop watching it.
+			void remove(const QString& path);
 	};
 }
 

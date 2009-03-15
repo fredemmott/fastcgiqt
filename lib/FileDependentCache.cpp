@@ -8,10 +8,10 @@
 
 namespace FastCgiQt
 {
-	FileDependentCache::FileDependentCache(int maxSize, QObject* parent)
+	FileDependentCache::FileDependentCache(QObject* parent)
 		:
 			QObject(parent),
-			Cache(maxSize),
+			Cache(),
 			m_watcher(new QFileSystemWatcher(this)),
 			m_watcherMutex(QMutex::Recursive)
 

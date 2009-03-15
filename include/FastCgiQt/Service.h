@@ -94,8 +94,6 @@ namespace FastCgiQt
 
 			/// Destructor.
 			virtual ~Service();
-		public slots:
-			void dumpCacheInformation();
 		protected:
 			/** @internal
 			 * @brief Call a slot based on an URL fragment.
@@ -120,30 +118,12 @@ namespace FastCgiQt
 					void append(const QString& regexp, const char* slot);
 			};
 
-			/** The size of the request cache.
-			 *
-			 * @see cacheThisRequest()
-			 * @see isExpired()
-			 * @see setRequestCacheSize()
-			 */
-			static int requestCacheSize();
-
-			/** Set the size of the request cache.
-			 *
-			 * @see cacheThisRequest()
-			 * @see isExpired()
-			 * @see requestCacheSize()
-			 */
-			static void setRequestCacheSize(int newSize);
-
 			/** Next time a similar request is made, return the same data.
 			 *
 			 * To have effect, this must be called before any data
 			 * is written to the output device.
 			 *
 			 * @see isExpired()
-			 * @see requestCacheSize()
-			 * @see setRequestCacheSize()
 			 */
 			void cacheThisRequest();
 
@@ -163,9 +143,6 @@ namespace FastCgiQt
 			 * cache size.
 			 *
 			 * @see setUsingFileCache
-			 * @see clearFileCache
-			 * @see fileCacheSize
-			 * @see setFileCacheSize
 			 * @see readFile
 			 */
 			bool usingFileCache();
@@ -173,42 +150,9 @@ namespace FastCgiQt
 			/** Set whether or not file reads via readFile() are cached.
 			 *
 			 * @see usingFileCache
-			 * @see clearFileCache
-			 * @see fileCacheSize
-			 * @see setFileCacheSize
 			 * @see readFile
 			 */
 			void setUsingFileCache(bool use);
-
-			/** Clear the file cache used by readFile().
-			 *
-			 * @see usingFileCache
-			 * @see setUsingFileCache
-			 * @see fileCacheSize
-			 * @see setFileCacheSize
-			 * @see readFile
-			 */
-			static void clearFileCache();
-
-			/** The maximum size of the cache for readFile().
-			 *
-			 * @see usingFileCache
-			 * @see clearFileCache
-			 * @see setUsingFileCache
-			 * @see setFileCacheSize
-			 * @see readFile
-			 */
-			static int fileCacheSize();
-
-			/** Set the maximum size of the cache for readFile().
-			 *
-			 * @see usingFileCache
-			 * @see clearFileCache
-			 * @see setUsingFileCache
-			 * @see fileCacheSize
-			 * @see readFile
-			 */
-			static void setFileCacheSize(int maximumSize);
 
 			/** Read a file, optionally using a per-process file cache.
 			 *
@@ -224,10 +168,7 @@ namespace FastCgiQt
 			 * is modified.
 			 *
 			 * @see usingFileCache
-			 * @see clearFileCache
 			 * @see setUsingFileCache
-			 * @see fileCacheSize
-			 * @see setFileCacheSize
 			 */
 			QByteArray readFile(const QString& path, bool useCache = true);
 
