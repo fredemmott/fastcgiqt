@@ -68,7 +68,7 @@ namespace FastCgiQt
 			&rt
 		);
 
-		Q_ASSERT(rawDataLength >= sizeof(quint64));
+		Q_ASSERT(rawDataLength >= sizeof(quint64) || !rawData);
 		if(rawDataLength < sizeof(quint64) || !rawData)
 		{
 			return CacheEntry();
