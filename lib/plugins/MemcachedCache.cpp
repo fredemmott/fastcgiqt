@@ -41,6 +41,10 @@ namespace FastCgiQt
 			"." + QCoreApplication::applicationFilePath().split('/').last(),
 			QSettings::IniFormat
 		);
+		if(settings.value("cache/backend") == "MemcachedCache")
+		{
+			return true;
+		}
 		return false;
 	}
 
