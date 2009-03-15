@@ -9,6 +9,8 @@ namespace FastCgiQt
 	/**A cache entry composed of data and a timestamp.
 	 *
 	 * Cache entries can be invalid.
+	 *
+	 * @ingroup plugins
 	 */
 	class CacheEntry
 	{

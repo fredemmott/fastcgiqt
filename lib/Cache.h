@@ -20,6 +20,8 @@ namespace FastCgiQt
 	 * Keep in mind that even with a recursive lock, the locks must be of
 	 * the same type; for example, all the writing calls will deadlock
 	 * if called while a read lock is open.
+	 *
+	 * @ingroup plugins
 	 */
 	class Cache
 	{

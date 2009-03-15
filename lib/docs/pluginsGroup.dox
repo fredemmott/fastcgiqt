@@ -1,0 +1,7 @@
+/** @defGroup plugins Plugins
+@ingroup plugins
+@brief Classes providing ways to extend FastCgiQt's functionality.
+
+These classes are semi-private interfaces, only of interest to those wanting
+extend core functionality of FastCgiQt - not to application developers.
+*/
