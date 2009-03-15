@@ -1,11 +1,11 @@
 #include "Cache.h"
 
+#include "plugins/config.h"
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QPluginLoader>
 #include <QStringList>
-
-Q_IMPORT_PLUGIN(FastCgiQt_CacheBackend_RamCache)
 
 namespace FastCgiQt
 {

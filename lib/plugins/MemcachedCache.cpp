@@ -117,4 +117,4 @@ namespace FastCgiQt
 	}
 }
 
-Q_EXPORT_PLUGIN2(FastCgiQt_CacheBackend_MemcachedCache, FastCgiQt::MemcachedCacheFactory)
+Q_EXPORT_PLUGIN2(FastCgiQt_MemcachedCache, FastCgiQt::MemcachedCacheFactory)

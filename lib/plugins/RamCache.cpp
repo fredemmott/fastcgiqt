@@ -74,4 +74,4 @@ namespace FastCgiQt
 	}
 }
 
-Q_EXPORT_PLUGIN2(FastCgiQt_CacheBackend_RamCache, FastCgiQt::RamCacheFactory)
+Q_EXPORT_PLUGIN2(FastCgiQt_RamCache, FastCgiQt::RamCacheFactory)
