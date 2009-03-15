@@ -31,8 +31,6 @@ namespace FastCgiQt
 			void setValue(const QString& key, const CacheEntry& object);
 
 			bool contains(const QString& key) const;
-
-//			CacheEntryRef operator[](const QString& key) const;
 		protected:
 			/// Return a pointer to the QReadWriteLock.
 			QReadWriteLock* readWriteLock() const;
