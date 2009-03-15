@@ -21,7 +21,7 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
-			/// Create a FileCache, containing up to @p maxSize bytes.
+			/// Create a FileCache.
 			FileCache(const QString& cacheName, QObject* parent = NULL);
 			/// Add an entry to the cache, and start watching it.
 			void setValue(const QString& path, const CacheEntry& object);
