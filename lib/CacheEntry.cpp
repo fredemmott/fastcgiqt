@@ -2,10 +2,20 @@
 
 namespace FastCgiQt
 {
-	CacheEntry::CacheEntry(const QDateTime& _timeStamp, const QByteArray& _data)
+	CacheEntry::CacheEntry(const QDateTime& timeStamp, const QByteArray& data)
 		:
-			timeStamp(_timeStamp),
-			data(_data)
+			m_timeStamp(timeStamp),
+			m_data(data)
 	{
+	}
+
+	QDateTime CacheEntry::timeStamp() const
+	{
+		return m_timeStamp;
+	}
+
+	QByteArray CacheEntry::data() const
+	{
+		return m_data;
 	}
 }

@@ -7,11 +7,15 @@
 namespace FastCgiQt
 {
 	///@internal @brief A cache entry composed of data and a timestamp.
-	struct CacheEntry
+	class CacheEntry
 	{
-		CacheEntry(const QDateTime& timeStamp, const QByteArray& data);
-		const QDateTime timeStamp;
-		const QByteArray data;
+		public:
+			CacheEntry(const QDateTime& timeStamp, const QByteArray& data);
+			QDateTime timeStamp() const;
+			QByteArray data() const;
+		private:
+			const QDateTime m_timeStamp;
+			const QByteArray m_data;
 	};
 };
 

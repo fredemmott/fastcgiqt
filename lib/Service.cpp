@@ -61,7 +61,7 @@ namespace FastCgiQt
 
 		if(useCache && Caches::fileCache().contains(fullPath))
 		{
-			return Caches::fileCache()[fullPath]->data;
+			return Caches::fileCache()[fullPath]->data();
 		}
 
 		QFile file(fullPath);
@@ -73,7 +73,7 @@ namespace FastCgiQt
 			CacheEntry* entry = new CacheEntry(QDateTime::currentDateTime(), file.readAll());
 			QWriteLocker lock(Caches::fileCache().readWriteLock());
 			Caches::fileCache().insert(fullPath, entry);
-			return entry->data;
+			return entry->data();
 		}
 		else
 		{
@@ -119,10 +119,10 @@ namespace FastCgiQt
 			{
 				CacheEntry* cacheEntry = Caches::requestCache()[d->cacheKey];
 	
-				if(!isExpired(urlFragment, cacheEntry->timeStamp))
+				if(!isExpired(urlFragment, cacheEntry->timeStamp()))
 				{
 					outputDevice->setSendingHeadersEnabled(false);
-					outputDevice->write(cacheEntry->data);
+					outputDevice->write(cacheEntry->data());
 					return;
 				}
 			}
@@ -188,7 +188,7 @@ namespace FastCgiQt
 						xml.writeStartElement("ul");
 							Q_FOREACH(const QString& file, Caches::fileCache().keys())
 							{
-								xml.writeTextElement("li", QString("'%1' (%2 bytes)").arg(file).arg(Caches::fileCache()[file]->data.length()));
+								xml.writeTextElement("li", QString("'%1' (%2 bytes)").arg(file).arg(Caches::fileCache()[file]->data().length()));
 							}
 						xml.writeEndElement();
 					xml.writeEndElement();
@@ -203,7 +203,7 @@ namespace FastCgiQt
 							Q_FOREACH(const QString& urlFragment, Caches::requestCache().keys())
 							{
 								xml.writeStartElement("li");
-									xml.writeCharacters(QString("'%1' (%2 bytes)").arg(urlFragment).arg(Caches::requestCache()[urlFragment]->data.length()));
+									xml.writeCharacters(QString("'%1' (%2 bytes)").arg(urlFragment).arg(Caches::requestCache()[urlFragment]->data().length()));
 									xml.writeTextElement("p", tr("File dependencies:"));
 									xml.writeStartElement("ul");
 										Q_FOREACH(const QString& file, Caches::requestCache().dependencies(urlFragment))
