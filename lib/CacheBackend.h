@@ -23,6 +23,7 @@ namespace FastCgiQt
 	class CacheBackend
 	{
 		public:
+			virtual ~CacheBackend();
 			/// Remove an entry from the cache.
 			virtual void remove(const QString& key) = 0;
 			/// Fetch a value from the cache.
