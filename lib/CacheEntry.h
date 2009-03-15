@@ -14,8 +14,8 @@ namespace FastCgiQt
 			QDateTime timeStamp() const;
 			QByteArray data() const;
 		private:
-			const QDateTime m_timeStamp;
-			const QByteArray m_data;
+			QDateTime m_timeStamp;
+			QByteArray m_data;
 	};
 };
 

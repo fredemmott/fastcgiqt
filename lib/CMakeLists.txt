@@ -13,6 +13,7 @@ SET(
 	BeginRequestRecord
 	Cache
 	CacheEntry
+	CacheEntryRef
 	Caches
 	DebugHandler
 	EndRequestRecord
