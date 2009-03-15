@@ -24,6 +24,7 @@ SET(
 	ManagerPrivate
 	OutputDevice
 	ParametersRecord
+	RamCache
 	RecordHeader
 	RequestDataProvider
 	SocketManager

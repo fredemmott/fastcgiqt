@@ -11,9 +11,12 @@ namespace FastCgiQt
 	{
 		public:
 			CacheEntry(const QDateTime& timeStamp, const QByteArray& data);
+			CacheEntry();
+			bool isValid() const;
 			QDateTime timeStamp() const;
 			QByteArray data() const;
 		private:
+			bool m_isValid;
 			QDateTime m_timeStamp;
 			QByteArray m_data;
 	};
