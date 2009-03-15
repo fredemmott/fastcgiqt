@@ -3,6 +3,8 @@
 
 #include "CacheEntry.h"
 
+#include <QtPlugin>
+
 class QReadWriteLock;
 
 namespace FastCgiQt
@@ -19,9 +21,12 @@ namespace FastCgiQt
 			class Factory
 			{
 				public:
+					virtual void loadSettings();
 					virtual CacheBackend* getCacheBackend(const QString& cacheName) const = 0;
 			};
 	};
 }
+
+Q_DECLARE_INTERFACE(FastCgiQt::CacheBackend::Factory, "uk.co.fredemmott.FastCgiQt.CacheBackend/1.0");
 
 #endif

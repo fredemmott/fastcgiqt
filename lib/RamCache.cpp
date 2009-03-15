@@ -51,3 +51,5 @@ namespace FastCgiQt
 		m_cache.remove(m_keyPrefix + key);
 	}
 }
+
+Q_EXPORT_PLUGIN2(FastCgiQt_CacheBackend_RamCache, FastCgiQt::RamCacheFactory)

@@ -5,6 +5,7 @@
 
 #include <QCache>
 #include <QHash>
+#include <QObject>
 #include <QReadWriteLock>
 
 namespace FastCgiQt
@@ -23,8 +24,10 @@ namespace FastCgiQt
 			static QReadWriteLock m_lock;
 	};
 
-	class RamCacheFactory : public CacheBackend::Factory
+	class RamCacheFactory : public QObject, public CacheBackend::Factory
 	{
+		Q_OBJECT
+		Q_INTERFACES(FastCgiQt::CacheBackend::Factory)
 		public:
 			virtual CacheBackend* getCacheBackend(const QString& cacheName) const;
 	};
