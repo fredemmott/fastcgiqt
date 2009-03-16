@@ -8,7 +8,7 @@ make -j5
 sudo make install
 
 Currently, this will build and install FastCgiQt with core and database support, but
-not with XSLT support.
+not with XSLT or memcached support.
 
 DATABASE SUPPORT
 ----------------
@@ -16,7 +16,7 @@ DATABASE SUPPORT
 By default, FastCgiQt builds with database support (the FastCgiQt::Database class).
 This can be disabled by passing WITH_SQL_SUPPORT=OFF to cmake, like so:
 
-cmake .. -DWITH_SQL_SUPPORT=OFF
+cmake . -DWITH_SQL_SUPPORT=OFF
 
 XSLT SUPPORT
 ------------
@@ -24,4 +24,15 @@ XSLT SUPPORT
 If you are building against Qt 4.5 or later, you can enable the FastCgiQt::XsltService
 class by passing WITH_XSLT_SUPPORT=ON to cmake, like so:
 
-cmake .. -DWITH_XSLT_SUPPORT=ON
+cmake . -DWITH_XSLT_SUPPORT=ON
+
+MEMCACHED SUPPORT
+-----------------
+
+Memcached is a very high-performance distributed caching system.
+
+If libmemcached is installed, you can enable support for it like so:
+
+cmake . -DWITH_MEMCACHED_SUPPORT=ON
+
+See the file "CONFIGURATION" for information on how to use this.
