@@ -39,6 +39,7 @@ namespace FastCgiQt
 			};
 			static void setServers(const QList<Server>& servers);
 		private:
+			QByteArray fullKey(const QString& key) const;
 			memcached_st* m_memcached;
 			const QString m_keyPrefix;
 			static QList<Server> m_servers;

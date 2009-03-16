@@ -31,6 +31,11 @@ namespace FastCgiQt
 			}
 		}
 	}
+
+	QByteArray MemcachedCache::fullKey(const QString& key) const
+	{
+		return QString(m_keyPrefix + key).toUtf8();
+	}
 	
 	MemcachedCache::~MemcachedCache()
 	{
@@ -102,7 +107,7 @@ namespace FastCgiQt
 	{
 		QReadLocker lock(&m_lock);
 
-		const QByteArray rawKey(key.toUtf8());
+		const QByteArray rawKey(fullKey(key));
 
 		char* rawData;
 		size_t rawDataLength;
@@ -144,7 +149,7 @@ namespace FastCgiQt
 		QWriteLocker lock(&m_lock);
 
 		// Binary key
-		const QByteArray rawKey(key.toUtf8());
+		const QByteArray rawKey(fullKey(key));
 
 		// Binary data
 		const quint64 dateTime(qToLittleEndian(static_cast<quint64>(entry.timeStamp().toTime_t())));
@@ -170,8 +175,18 @@ namespace FastCgiQt
 
 	void MemcachedCache::remove(const QString& key)
 	{
-		Q_UNUSED(key);
 		QWriteLocker lock(&m_lock);
+		const QByteArray rawKey(fullKey(key));
+		const memcached_return rt = memcached_delete(
+			m_memcached,
+			rawKey.constData(),
+			rawKey.length(),
+			0
+		);
+		if(rt != MEMCACHED_SUCCESS)
+		{
+			qFatal("Memcached error: %s", memcached_strerror(m_memcached, rt));
+		}
 	}
 }
 
