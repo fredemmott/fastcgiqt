@@ -168,10 +168,19 @@ namespace FastCgiQt
 	QString Request::baseUri() const
 	{
 		const QString uri(serverData("REQUEST_URI").replace(QRegExp("\\?.*"),""));
-		const QString redirectUrl(serverData("REDIRECT_URL"));
-		const QString pathInfo(serverData("PATH_INFO"));
+		const QString redirectUrl(QUrl::toPercentEncoding(serverData("REDIRECT_URL"), "/"));
+		const QString pathInfo(QUrl::toPercentEncoding(serverData("PATH_INFO"), "/"));
 		const QString pathPart(redirectUrl.isNull() ? pathInfo : redirectUrl);
 		const QString baseUri(uri.left(uri.length() - pathPart.length()));
+		/*
+		qDebug() << "-----";
+		qDebug() << "URI:" << uri;
+		qDebug() << "REDIRECT:" << redirectUrl;
+		qDebug() << "PATH:" << pathInfo;
+		qDebug() << "PART:" << pathPart;
+		qDebug() << "BASE: " << baseUri;
+		qDebug() << "-----";
+		*/
 		return baseUri;
 	}
 }
