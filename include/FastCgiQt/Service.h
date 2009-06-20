@@ -106,7 +106,7 @@ namespace FastCgiQt
 			virtual void dispatchUncachedRequest(const QString& urlFragment);
 
 			/// A pointer to the current request.
-			const Request* currentRequest() const;
+			const FastCgiQt::Request* currentRequest() const;
 
 			/** A map of regular expressions to slots.
 			 *
