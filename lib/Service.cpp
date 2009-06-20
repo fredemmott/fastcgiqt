@@ -37,6 +37,12 @@ namespace FastCgiQt
 			ClientIOInterface(request, NULL, NULL, parent)
 	{
 		d = new Service::Private();
+		d->currentRequest = &request;
+	}
+
+	const Request* Service::currentRequest() const 
+	{
+		return d->currentRequest;
 	}
 
 	Service::Private::Private()

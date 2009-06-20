@@ -19,6 +19,7 @@
 #include "Caches.h"
 #include "FileCache.h"
 #include "FileDependentCache.h"
+#include "Request.h"
 
 #include <QFileSystemWatcher>
 #include <QList>
@@ -44,6 +45,7 @@ namespace FastCgiQt
 			bool dispatchingRequest;
 			bool canCacheThisRequest;
 			QString cacheKey;
+			const Request* currentRequest;
 			bool usingFileCache;
 		private:
 			// scope guard
