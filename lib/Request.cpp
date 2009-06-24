@@ -139,7 +139,9 @@ namespace FastCgiQt
 				QString value;
 				if(nameValuePair.size() > 1)
 				{
-					value = QUrl::fromPercentEncoding(nameValuePair.value(1).toLatin1());
+					value = nameValuePair.value(1);
+					value.replace('+', ' ');
+					value = QUrl::fromPercentEncoding(value.toLatin1());
 				}
 				m_postData.insert(name, value);
 			}
