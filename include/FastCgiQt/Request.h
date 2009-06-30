@@ -208,6 +208,9 @@ namespace FastCgiQt
 			 * This is useful for creating relative links.
 			 */
 			QString baseUri() const;
+
+			/// Full URI, including query string.
+			QString fullUri() const;
 		private:
 			/** Add some newly-received server variables to this
 			 * Request object.
