@@ -17,6 +17,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QRegExp>
 #include <QStringList>
 #include <QUrl>
 
@@ -131,7 +132,7 @@ namespace FastCgiQt
 		m_content.append(data);
 		if(static_cast<quint64>(m_content.length()) == contentLength() && contentType() == "application/x-www-form-urlencoded")
 		{
-			QStringList nameValuePairs = QString::fromUtf8(m_content).split("&");
+			QStringList nameValuePairs = QString::fromUtf8(m_content).split(QRegExp("&|&amp;"));
 			Q_FOREACH(const QString& pair, nameValuePairs)
 			{
 				QStringList nameValuePair = pair.split("=");
