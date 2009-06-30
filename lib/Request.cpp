@@ -130,7 +130,7 @@ namespace FastCgiQt
 	{
 		Q_ASSERT(data.length() + m_content.length() <= m_contentLength);
 		m_content.append(data);
-		if(static_cast<quint64>(m_content.length()) == contentLength() && contentType() == "application/x-www-form-urlencoded")
+		if(static_cast<quint64>(m_content.length()) == contentLength() && contentType().startsWith("application/x-www-form-urlencoded")) // may have "; charset=FOO afterwards"
 		{
 			QStringList nameValuePairs = QString::fromUtf8(m_content).split(QRegExp("&|&amp;"));
 			Q_FOREACH(const QString& pair, nameValuePairs)
@@ -151,7 +151,7 @@ namespace FastCgiQt
 
 	QString Request::postData(const QString& name) const
 	{
-		if(contentType() == QLatin1String("application/x-www-form-urlencoded"))
+		if(contentType().startsWith(QLatin1String("application/x-www-form-urlencoded")) && !m_postData.contains(name))
 		{
 			waitForAllContent();
 		}
