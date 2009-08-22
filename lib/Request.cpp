@@ -35,6 +35,12 @@ namespace FastCgiQt
 		return data;
 	}
 
+	QUrl Request::url() const
+	{
+		///@fixme HTTPS, alternative ports
+		return QUrl::fromPercentEncoding(QString("http://%1%2").arg(serverData("HTTP_HOST")).arg(serverData("REQUEST_URI")).toLatin1());
+	}
+
 	Request::Request()
 		:
 			m_isValid(false)

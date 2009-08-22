@@ -18,6 +18,7 @@
 
 #include <QHash>
 #include <QString>
+#include <QUrl>
 
 namespace FastCgiQt
 {
@@ -209,8 +210,11 @@ namespace FastCgiQt
 			 */
 			QString baseUri() const;
 
-			/// Full URI, including query string.
+			/// Full path, including query string.
 			QString fullUri() const;
+
+			/// Full URL
+			QUrl url() const;
 		private:
 			/** Add some newly-received server variables to this
 			 * Request object.
