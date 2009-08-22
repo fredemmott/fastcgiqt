@@ -43,7 +43,7 @@ namespace FastCgiQt
 			{
 				// Four bytes of name length
 				nameLength = 
-					((data[i] ^ highBitMask) << 24)
+					((data[i] & ~highBitMask) << 24)
 					+ (data[i+1] << 16)
 					+ (data[i+2] << 8)
 					+ data[i+3]
