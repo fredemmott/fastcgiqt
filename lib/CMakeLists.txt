@@ -4,8 +4,6 @@ SET(
 	Manager
 	Request
 	Responder
-	Service
-	ServiceMapper
 )
 
 SET(
@@ -30,6 +28,15 @@ SET(
 	StandardInputRecord
 	StandardOutputRecord
 )
+
+IF(WITH_SERVICE_SUPPORT)
+	LIST(
+		APPEND
+		PUBLIC_CLASSES
+		Service
+		ServiceMapper
+	)
+ENDIF()
 
 IF(WITH_SQL_SUPPORT)
 	LIST(

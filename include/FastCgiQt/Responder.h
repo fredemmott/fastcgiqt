@@ -41,14 +41,23 @@ namespace FastCgiQt
 			 */
 			typedef Responder* (*Generator)(const Request&, QIODevice*, QIODevice* inputDevice, QObject*);
 
-			/// Respond to a web request.
-			virtual void respond() = 0;
+			/// Start a response
+			virtual void start() = 0;
+
 			/** Clean up the responder.
 			 *
 			 * Among other things, this will flush the output stream.
 			 */
 			virtual ~Responder();
+		signals:
+			/** Signal indicating that this request has been dealt with.
+			 *
+			 * @see finished() for convenience
+			 */
+			void finished(Responder* responder, const Request& request);
 		protected:
+			/// Convenience accessor for emitting finished(Responder*, const Request&);
+			void finished();
 			/** Construct a responder.
 			 *
 			 * You shouldn't actually have to do anything with these
@@ -65,6 +74,15 @@ namespace FastCgiQt
 			Responder(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent = NULL);
 	};
 }
+
+#define FASTCGIQT_RESPONDER_OLD_API \
+	public: \
+		void start() \
+		{ \
+			respond(); \
+			finished(); \
+		} \
+	private:
 
 /** Convenience macro for creating constructor and factories of Responder
  * subclasses.

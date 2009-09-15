@@ -170,27 +170,12 @@ namespace FastCgiQt
 		QTimer::singleShot(0, this, SLOT(processSocketData()));
 	}
 
-	void SocketManager::respond()
+	void SocketManager::cleanupResponder(Responder* responder, const Request& request)
 	{
-		quint16 requestId = m_recordHeader.requestId();
-		Responder* responder = (*m_responderGenerator)(
-			m_requests.at(requestId),
-			m_socket,
-			m_inputDevices.at(requestId),
-			this
-		);
-		// in case we have more local data...
-		m_recordHeader = RecordHeader();
-		queueSocketCheck();
-		
-		// actually start the response
-		responder->respond();
-
-		// clean up any pending events
-		QCoreApplication::processEvents();
-
 		// clean up the responder
 		delete responder; // clean up IO devices before cleaning up socket.
+
+		const quint16 requestId = request.requestId();
 
 		// cleanup the socket
 		m_socket->write(EndRequestRecord::create(requestId));
@@ -205,6 +190,25 @@ namespace FastCgiQt
 		m_requests[requestId] = Request();
 		delete m_inputDevices[requestId];
 		m_inputDevices[requestId] = 0;
+	}
+
+	void SocketManager::respond()
+	{
+		quint16 requestId = m_recordHeader.requestId();
+		Responder* responder = (*m_responderGenerator)(
+			m_requests.at(requestId),
+			m_socket,
+			m_inputDevices.at(requestId),
+			this
+		);
+		// in case we have more local data...
+		m_recordHeader = RecordHeader();
+		queueSocketCheck();
+
+		connect(responder, SIGNAL(finished(Responder*,Request)), SLOT(cleanupResponder(Responder*,Request)));
+		
+		// actually start the response
+		responder->start();
 	}
 
 	bool SocketManager::processNewRecord()

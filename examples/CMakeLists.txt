@@ -3,8 +3,15 @@ SET(SUBDIRS
 	GetGreeter
 	HelloWorld
 	PostGreeter
-	ServiceExample
 )
+
+IF(WITH_SERVICE_SUPPORT)
+	LIST(
+		APPEND
+		SUBDIRS
+		ServiceExample
+	)
+ENDIF()
 
 ### don't edit below here ###
 

@@ -19,9 +19,16 @@ ELSE()
 ENDIF()
 
 # Options
+OPTION(WITH_SERVICE_SUPPORT "Build helper classes for service-based applications" ON)
 OPTION(WITH_SQL_SUPPORT "Build helper classes for interacting with databases" ON)
-OPTION(WITH_XSLT_SUPPORT "Build helper class for XSLT-based applications - needs Qt 4.5" OFF)
 OPTION(WITH_MEMCACHED_SUPPORT "Build plugin for using memcached - needs libmemcached" OFF)
+
+IF(WITH_SERVICE_SUPPORT)
+	MESSAGE(STATUS "Service support is enabled.")
+	OPTION(WITH_XSLT_SUPPORT "Build helper class for XSLT-based applications - needs Qt 4.5" OFF)
+ELSE()
+	MESSAGE(STATUS "Service support is *NOT* enabled.")
+ENDIF()
 
 # Find Qt4
 ADD_DEFINITIONS(-DQT_STATICPLUGIN)

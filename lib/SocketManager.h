@@ -78,6 +78,7 @@ namespace FastCgiQt
 			 */
 			void finished(QThread* inThread);
 		private slots:
+			void cleanupResponder(Responder* responder, const Request& request);
 			/** Process new data on the socket.
 			 *
 			 * If there is sufficient data, this will call either
