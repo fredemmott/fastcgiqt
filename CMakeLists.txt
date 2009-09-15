@@ -19,6 +19,7 @@ ELSE()
 ENDIF()
 
 # Options
+OPTION(BUILD_EXAMPLES "Build several example applications" OFF)
 OPTION(WITH_SERVICE_SUPPORT "Build helper classes for service-based applications" ON)
 OPTION(WITH_SQL_SUPPORT "Build helper classes for interacting with databases" ON)
 OPTION(WITH_MEMCACHED_SUPPORT "Build plugin for using memcached - needs libmemcached" OFF)
@@ -59,9 +60,6 @@ INCLUDE( ${QT_USE_FILE} )
 
 # Subdirs
 ADD_SUBDIRECTORY(lib)
-IF("${BUILD_EXAMPLES}" STREQUAL "")
-	OPTION(BUILD_EXAMPLES "Build examples" ON)
-ENDIF()
 IF(BUILD_EXAMPLES)
 	ADD_SUBDIRECTORY(examples)
 ENDIF()
