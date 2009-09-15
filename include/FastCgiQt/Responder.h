@@ -75,6 +75,11 @@ namespace FastCgiQt
 	};
 }
 
+/** Macro for quickly getting subclasses using the old respond() API to
+ * work with this new API.
+ *
+ * @deprecated please switch to using the new start() -> finished() API.
+ */
 #define FASTCGIQT_RESPONDER_OLD_API \
 	public: \
 		void start() \
