@@ -27,6 +27,7 @@ SET(
 	SocketManager
 	StandardInputRecord
 	StandardOutputRecord
+	UnsignedByteArray
 )
 
 IF(WITH_SERVICE_SUPPORT)

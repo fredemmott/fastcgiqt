@@ -16,13 +16,15 @@
 #include "ParametersRecord.h"
 
 #include "RecordHeader.h"
+#include "UnsignedByteArray.h"
 
 #include <QDebug>
 
 namespace FastCgiQt
 {
-	ParametersRecord::ParametersRecord(const RecordHeader& header, const QByteArray& data)
+	ParametersRecord::ParametersRecord(const RecordHeader& header, const QByteArray& _data)
 	{
+		const UnsignedByteArray data(_data);
 		Q_ASSERT(header.type() == RecordHeader::ParametersRecord);
 		Q_ASSERT(data.length() >= header.contentLength());
 
@@ -61,7 +63,7 @@ namespace FastCgiQt
 			{
 				// Four bytes of value length
 				valueLength = 
-					((data[i] ^ highBitMask) << 24)
+					((data[i] & ~highBitMask) << 24)
 					+ (data[i+1] << 16)
 					+ (data[i+2] << 8)
 					+ data[i+3]
