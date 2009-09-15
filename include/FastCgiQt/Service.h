@@ -77,6 +77,7 @@ namespace FastCgiQt
 			 * @endcode
 			 */
 			typedef Service* (*Generator)(const Request& request, QObject* parent);
+
 			/** @internal
 			 * @brief Call a slot based on an url fragment.
 			 *

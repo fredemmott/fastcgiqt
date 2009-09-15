@@ -30,7 +30,8 @@ namespace FastCgiQt
 	 */
 	class ServiceMapper : public Responder
 	{
-		Q_OBJECT
+		Q_OBJECT;
+		FASTCGIQT_RESPONDER_OLD_API;
 		public:
 			/// Destructor.
 			virtual ~ServiceMapper();
