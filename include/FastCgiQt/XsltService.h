@@ -30,7 +30,7 @@ namespace FastCgiQt
 			virtual ~XsltService();
 		protected:
 			/// Main implementation
-			virtual void dispatchUncachedRequest(const QString& urlFragment);
+			virtual void finished();
 			/// Constructor.
 			XsltService(const FastCgiQt::Request&, QObject* parent = NULL);
 

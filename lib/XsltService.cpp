@@ -77,9 +77,8 @@ namespace FastCgiQt
 		return d->prettyPrint;
 	}
 	
-	void XsltService::dispatchUncachedRequest(const QString& urlFragment)
+	void XsltService::finished()
 	{
-		Service::dispatchUncachedRequest(urlFragment);
 		if(d->source != Private::NoXslt)
 		{
 			xmlOut.writeEndDocument();
@@ -90,11 +89,11 @@ namespace FastCgiQt
 			QBuffer buffer(&data);
 			buffer.open(QIODevice::ReadOnly);
 	
-	
 			bool haveSetFocus = query.setFocus(&buffer);
 			Q_ASSERT(haveSetFocus);
 			if(!haveSetFocus)
 			{
+				Service::finished();
 				return;
 			}
 	
@@ -147,5 +146,6 @@ namespace FastCgiQt
 	
 			out << d->xml << flush;
 		}
+		Service::finished();
 	}
 }

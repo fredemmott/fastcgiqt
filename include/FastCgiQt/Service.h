@@ -106,7 +106,7 @@ namespace FastCgiQt
 			 *
 			 * @see isAsynchronous()
 			 */
-			void finished();
+			virtual void finished();
 			/** Wether or not every single slot explicitly calls finished().
 			 *
 			 * If false, it will be automatically emitted.
