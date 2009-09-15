@@ -205,7 +205,11 @@ namespace FastCgiQt
 		m_recordHeader = RecordHeader();
 		queueSocketCheck();
 
-		connect(responder, SIGNAL(finished(Responder*,Request)), SLOT(cleanupResponder(Responder*,Request)));
+		connect(
+			responder,
+			SIGNAL(finished(Responder*,Request)),
+			SLOT(cleanupResponder(Responder*,Request))
+		);
 		
 		// actually start the response
 		responder->start();

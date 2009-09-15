@@ -10,5 +10,4 @@ int main(int argc, char** argv)
 
 	FastCgiQt::Manager manager(&ServiceExample::create);
 	return application.exec();
-	return 0;
 }

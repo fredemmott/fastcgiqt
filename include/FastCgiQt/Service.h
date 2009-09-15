@@ -95,7 +95,26 @@ namespace FastCgiQt
 
 			/// Destructor.
 			virtual ~Service();
+		signals:
+			/** Indicates that the request has been dealt with.
+			 * @see isAsynchronous()
+			 * @see finished()
+			 */
+			void finished(Service*);
 		protected:
+			/** Convenience wrapper around finished(Service*)
+			 *
+			 * @see isAsynchronous()
+			 */
+			void finished();
+			/** Wether or not every single slot explicitly calls finished().
+			 *
+			 * If false, it will be automatically emitted.
+			 *
+			 * @returns false
+			 */
+			virtual bool isAsynchronous() const;
+
 			/** @internal
 			 * @brief Call a slot based on an URL fragment.
 			 *

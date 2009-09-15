@@ -17,6 +17,7 @@
 
 #include "Caches.h"
 #include "OutputDevice.h"
+#include "ScopedCaller.h"
 #include "ServicePrivate.h"
 
 #include <QCoreApplication>
@@ -30,8 +31,15 @@
 #include <QThread>
 #include <QXmlStreamWriter>
 
+#include <memory> //std::auto_ptr TODO replace with QScopedPointer in Qt 4.6
+
 namespace FastCgiQt
 {
+	void Service::finished()
+	{
+		emit finished(this);
+	}
+
 	Service::Service(const Request& request, QObject* parent)
 		:
 			ClientIOInterface(request, NULL, NULL, parent)
@@ -112,6 +120,10 @@ namespace FastCgiQt
 			return;
 		}
 
+		// If we're not asynchronous, automatically emit finished() when this function is left
+		ScopedCaller<Service> finished(this, isAsynchronous() ? 0 : static_cast<void(Service::*)()>(&Service::finished));
+
+		// Lookup this page in the cache
 		d->cacheKey = QString("%1::%2").arg(metaObject()->className()).arg(urlFragment);
 
 		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
@@ -267,6 +279,11 @@ namespace FastCgiQt
 	{
 		Q_UNUSED(urlFragment);
 		Q_UNUSED(generated);
+		return false;
+	}
+
+	bool Service::isAsynchronous() const
+	{
 		return false;
 	}
 

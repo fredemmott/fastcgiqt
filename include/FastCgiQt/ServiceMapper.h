@@ -31,12 +31,11 @@ namespace FastCgiQt
 	class ServiceMapper : public Responder
 	{
 		Q_OBJECT;
-		FASTCGIQT_RESPONDER_API_V1;
 		public:
 			/// Destructor.
 			virtual ~ServiceMapper();
 			/// Respond by calling Service::dispatchRequest on the appropriate Service.
-			void respond();
+			void start();
 		protected:
 			/// Add a service to the mapping.
 			void addService(const QString& serviceName, Service::Generator service);

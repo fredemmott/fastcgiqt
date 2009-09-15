@@ -16,6 +16,7 @@
 #include "ServiceMapper.h"
 
 #include "Service.h"
+#include "ServiceMapperPrivate.h"
 
 #include <QDebug>
 #include <QMutex>
@@ -26,20 +27,10 @@
 
 namespace FastCgiQt
 {
-	class ServiceMapper::Private
-	{
-		public:
-			typedef QMap<QString, Service::Generator> ServiceMap;
-			static ServiceMap services;
-			static QMutex serviceLock;
-	};
-	ServiceMapper::Private::ServiceMap ServiceMapper::Private::services;
-	QMutex ServiceMapper::Private::serviceLock;
-
 	ServiceMapper::ServiceMapper(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent)
 		:
 			Responder(request, socket, inputDevice, parent),
-			d(new Private)
+			d(new Private(this))
 	{
 	}
 
@@ -48,7 +39,7 @@ namespace FastCgiQt
 		d->services.insert(serviceName, service);
 	}
 
-	void ServiceMapper::respond()
+	void ServiceMapper::start()
 	{
 		{
 			QMutexLocker lock(&d->serviceLock);
@@ -97,11 +88,13 @@ namespace FastCgiQt
 			{
 				fragment.append('/');
 			}
+			connect(
+				service,
+				SIGNAL(finished(Service*)),
+				d,
+				SLOT(cleanup(Service*))
+			);
 			service->dispatchRequest(fragment);
-
-			// flush the text stream
-			service->out << flush;
-			delete service;
 		}
 		else
 		{
@@ -132,6 +125,5 @@ namespace FastCgiQt
 
 	ServiceMapper::~ServiceMapper()
 	{
-		delete d;
 	}
 }

@@ -37,6 +37,11 @@ IF(WITH_SERVICE_SUPPORT)
 		Service
 		ServiceMapper
 	)
+	LIST(
+		APPEND
+		PRIVATE_CLASSES
+		ServiceMapperPrivate
+	)
 ENDIF()
 
 IF(WITH_SQL_SUPPORT)
