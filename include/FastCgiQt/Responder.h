@@ -80,7 +80,7 @@ namespace FastCgiQt
  *
  * @deprecated please switch to using the new start() -> finished() API.
  */
-#define FASTCGIQT_RESPONDER_OLD_API \
+#define FASTCGIQT_RESPONDER_API_V1 \
 	public: \
 		void start() \
 		{ \
