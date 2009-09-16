@@ -19,6 +19,7 @@
 
 #include <QDebug>
 #include <QIODevice>
+#include <QNetworkCookie>
 
 namespace FastCgiQt
 {
@@ -64,5 +65,10 @@ namespace FastCgiQt
 		OutputDevice* outDevice = qobject_cast<OutputDevice*>(out.device());
 		Q_ASSERT(outDevice);
 		return outDevice->header(name);
+	}
+
+	void ClientIOInterface::setCookie(const QNetworkCookie& cookie)
+	{
+		addHeader("set-cookie", cookie.toRawForm());
 	}
 }

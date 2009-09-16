@@ -17,6 +17,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QNetworkCookie>
 #include <QRegExp>
 #include <QStringList>
 #include <QUrl>
@@ -92,6 +93,21 @@ namespace FastCgiQt
 	quint16 Request::requestId() const
 	{
 		return m_requestId;
+	}
+
+	QList<QNetworkCookie> Request::cookies() const
+	{
+		const QHash<QString, QString> serverData = this->serverData();
+		QList<QNetworkCookie> cookies;
+		for(QHash<QString, QString>::ConstIterator it = serverData.constBegin(); it != serverData.constEnd(); ++it)
+		{
+			if(it.key().toUpper() == "HTTP_COOKIE")
+			{
+				cookies.append(QNetworkCookie::parseCookies(it.value().toLatin1()));
+				qDebug() << Q_FUNC_INFO << it.value() << cookies.count();
+			}
+		}
+		return cookies;
 	}
 
 	QString Request::serverData(const QString& name) const

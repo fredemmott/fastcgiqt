@@ -20,6 +20,8 @@
 #include <QString>
 #include <QUrl>
 
+class QNetworkCookie;
+
 namespace FastCgiQt
 {
 	/** Class containing information about a request.
@@ -215,6 +217,9 @@ namespace FastCgiQt
 
 			/// Full URL
 			QUrl url() const;
+
+			/// A list of all the cookies provided by the client
+			QList<QNetworkCookie> cookies() const;
 		private:
 			/** Add some newly-received server variables to this
 			 * Request object.

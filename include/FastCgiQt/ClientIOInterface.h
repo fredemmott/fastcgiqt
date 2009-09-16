@@ -22,6 +22,7 @@
 #include <QTextStream>
 
 class QIODevice;
+class QNetworkCookie;
 
 namespace FastCgiQt
 {
@@ -116,6 +117,8 @@ namespace FastCgiQt
 			 * 	client).
 			 */
 			bool addHeader(const QString& name, const QString& value);
+			/// Give the browser a cookie.
+			void setCookie(const QNetworkCookie&);
 	};
 }
 
