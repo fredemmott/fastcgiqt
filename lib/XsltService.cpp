@@ -79,8 +79,10 @@ namespace FastCgiQt
 	
 	void XsltService::finished()
 	{
+		qDebug() << Q_FUNC_INFO << __LINE__;
 		if(d->source != Private::NoXslt)
 		{
+			qDebug() << Q_FUNC_INFO << __LINE__;
 			xmlOut.writeEndDocument();
 	
 			QXmlQuery query(QXmlQuery::XSLT20);
@@ -93,6 +95,7 @@ namespace FastCgiQt
 			Q_ASSERT(haveSetFocus);
 			if(!haveSetFocus)
 			{
+				qDebug() << Q_FUNC_INFO << __LINE__;
 				Service::finished();
 				return;
 			}
@@ -141,11 +144,13 @@ namespace FastCgiQt
 		}
 		else if(!d->xml.isEmpty())
 		{
+		qDebug() << Q_FUNC_INFO << __LINE__;
 			setHeader("content-type", "application/xml");
 			xmlOut.writeEndDocument();
 	
 			out << d->xml << flush;
 		}
+		qDebug() << Q_FUNC_INFO << __LINE__;
 		Service::finished();
 	}
 }

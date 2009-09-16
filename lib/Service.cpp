@@ -37,6 +37,13 @@ namespace FastCgiQt
 {
 	void Service::finished()
 	{
+		d->dispatchingRequest = false;
+
+		if(d->canCacheThisRequest)
+		{
+			Caches::requestCache().setValue(d->cacheKey, CacheEntry(QDateTime::currentDateTime(), qobject_cast<OutputDevice*>(out.device())->buffer()));
+		}
+
 		emit finished(this);
 	}
 
@@ -119,6 +126,7 @@ namespace FastCgiQt
 			);
 			return;
 		}
+		d->canCacheThisRequest = false;
 
 		// If we're not asynchronous, automatically emit finished() when this function is left
 		ScopedCaller<Service> finished(this, isAsynchronous() ? 0 : static_cast<void(Service::*)()>(&Service::finished));
@@ -137,16 +145,8 @@ namespace FastCgiQt
 			return;
 		}
 
-		d->canCacheThisRequest = false;
-
 		d->dispatchingRequest = true;
 		dispatchUncachedRequest(urlFragment);
-		d->dispatchingRequest = false;
-
-		if(d->canCacheThisRequest)
-		{
-			Caches::requestCache().setValue(d->cacheKey, CacheEntry(QDateTime::currentDateTime(), outputDevice->buffer()));
-		}
 	}
 
 	void Service::dispatchUncachedRequest(const QString& urlFragment)
