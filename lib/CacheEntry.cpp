@@ -1,39 +1,49 @@
 #include "CacheEntry.h"
+#include "CacheEntryPrivate.h"
 
 namespace FastCgiQt
 {
 	CacheEntry::CacheEntry(const QDateTime& timeStamp, const QByteArray& data)
-	: m_timeStamp(timeStamp)
-	, m_data(data)
+	: d(new Private(timeStamp, data))
 	{
 	}
 
 	void CacheEntry::setTimeStamp(const QDateTime& timeStamp)
 	{
-		m_timeStamp = timeStamp;
+		d->timeStamp = timeStamp;
 	}
 
 	void CacheEntry::setData(const QByteArray& data)
 	{
-		m_data = data;
+		d->data = data;
 	}
 
 	CacheEntry::CacheEntry()
+	: d(new Private())
+	{
+	}
+
+	CacheEntry::~CacheEntry()
 	{
 	}
 
 	bool CacheEntry::isValid() const
 	{
-		return m_timeStamp.isValid() && !m_data.isNull();
+		return d->timeStamp.isValid() && !d->data.isNull();
 	}
 
 	QDateTime CacheEntry::timeStamp() const
 	{
-		return m_timeStamp;
+		return d->timeStamp;
 	}
 
 	QByteArray CacheEntry::data() const
 	{
-		return m_data;
+		return d->data;
+	}
+
+	CacheEntry::CacheEntry(const CacheEntry& other)
+	: d(other.d)
+	{
 	}
 }

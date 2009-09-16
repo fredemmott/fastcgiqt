@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <QDateTime>
+#include <QSharedDataPointer>
 
 namespace FastCgiQt
 {
@@ -14,10 +15,13 @@ namespace FastCgiQt
 	class CacheEntry
 	{
 		public:
+			~CacheEntry();
 			/// Constructs a valid CacheEntry.
 			CacheEntry(const QDateTime& timeStamp, const QByteArray& data);
 			/// Constructs an invalid CacheEntry.
 			CacheEntry();
+			/// Copy-construct a cache entry
+			CacheEntry(const CacheEntry& other);
 			/// Whether or not the CacheEntry is valid.
 			bool isValid() const;
 			/// The time stamp associated with this CacheEntry.
@@ -28,7 +32,7 @@ namespace FastCgiQt
 			void setTimeStamp(const QDateTime&);
 			void setData(const QByteArray&);
 		private:
-			QDateTime m_timeStamp;
-			QByteArray m_data;
+			class Private;
+			QSharedDataPointer<Private> d;
 	};
 };
