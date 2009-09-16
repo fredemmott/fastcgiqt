@@ -1,6 +1,8 @@
 SET(
 	PUBLIC_CLASSES
 	ClientIOInterface
+	Cache
+	CacheEntry
 	Manager
 	Request
 	Responder
@@ -9,9 +11,7 @@ SET(
 SET(
 	PRIVATE_CLASSES
 	BeginRequestRecord
-	Cache
 	CacheBackend
-	CacheEntry
 	CachePrivate
 	Caches
 	DebugHandler
