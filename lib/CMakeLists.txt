@@ -12,6 +12,7 @@ SET(
 	Cache
 	CacheBackend
 	CacheEntry
+	CachePrivate
 	Caches
 	DebugHandler
 	EndRequestRecord

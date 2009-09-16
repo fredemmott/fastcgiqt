@@ -1,39 +1,13 @@
 #include "Cache.h"
-
-#include "plugins/config.h"
-
-#include <QCoreApplication>
-#include <QDebug>
-#include <QPluginLoader>
-#include <QStringList>
+#include "CachePrivate.h"
 
 namespace FastCgiQt
 {
-	CacheBackend::Factory* Cache::m_backendFactory(NULL);
-
 	Cache::Cache(const QString& cacheName)
+	: d(new Private(cacheName))
 	{
-		if(!m_backendFactory)
-		{
-			loadBackendFactory();
-		}
-		m_backend = m_backendFactory->getCacheBackend(cacheName);
 	}
 
-	void Cache::loadBackendFactory()
-	{
-		qDebug() << QCoreApplication::libraryPaths();
-		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
-		{
-			CacheBackend::Factory* factory(qobject_cast<CacheBackend::Factory*>(object));
-			if(factory && factory->loadSettings())
-			{
-				m_backendFactory = factory;
-				break;
-			}
-		}
-		Q_ASSERT(m_backendFactory);
-	}
 
 	Cache::~Cache()
 	{
@@ -41,21 +15,21 @@ namespace FastCgiQt
 
 	void Cache::remove(const QString& key)
 	{
-		m_backend->remove(key);
+		d->backend->remove(key);
 	}
 
 	CacheEntry Cache::value(const QString& key) const
 	{
-		return m_backend->value(key);
+		return d->backend->value(key);
 	}
 
 	void Cache::setValue(const QString& key, const CacheEntry& entry)
 	{
-		m_backend->setValue(key, entry);
+		d->backend->setValue(key, entry);
 	}
 
 	QReadWriteLock* Cache::readWriteLock() const
 	{
-		return m_backend->readWriteLock();
+		return d->backend->readWriteLock();
 	}
 }

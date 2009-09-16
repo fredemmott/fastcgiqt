@@ -1,9 +1,6 @@
-#ifndef _FASTCGI_QT_CACHE_H
-#define _FASTCGI_QT_CACHE_H
+#pragma once
 
-#include "CacheBackend.h"
 #include "CacheEntry.h"
-#include <QHash>
 
 class QReadWriteLock;
 
@@ -11,8 +8,8 @@ namespace FastCgiQt
 {
 	/** @internal @brief A read-write-locked cache structure.
 	 *
-	 * This is can use multiple backends, but currently uses only a
-	 * QCache-based backend.
+	 * Depending on the FastCgiQt configuration, this will use one of
+	 * several backends; for example, QCache-based, or memcached-based.
 	 *
 	 * All backends should lock as neccessary, but you may want to lock at
 	 * an outer scope for performance.
@@ -51,11 +48,7 @@ namespace FastCgiQt
 			/// Return a pointer to the QReadWriteLock.
 			QReadWriteLock* readWriteLock() const;
 		private:
-			/// Load the backend for the cache.
-			void loadBackendFactory();
-			static CacheBackend::Factory* m_backendFactory;
-			CacheBackend* m_backend;
+			class Private;
+			Private* d;
 	};
 }
-
-#endif

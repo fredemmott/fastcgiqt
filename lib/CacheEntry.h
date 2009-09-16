@@ -1,5 +1,4 @@
-#ifndef _FASTCGI_QT_CACHE_ENTRY_H
-#define _FASTCGI_QT_CACHE_ENTRY_H
+#pragma once
 
 #include <QByteArray>
 #include <QDateTime>
@@ -31,5 +30,3 @@ namespace FastCgiQt
 			QByteArray m_data;
 	};
 };
-
-#endif
