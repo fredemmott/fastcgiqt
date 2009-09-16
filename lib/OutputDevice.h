@@ -46,6 +46,7 @@ namespace FastCgiQt
 			 * @see setSendingHeadersEnabled
 			 */
 			bool isSendingHeadersEnabled() const;
+
 			/** Set whether or not to output headers.
 			 *
 			 * Default is true.
@@ -76,7 +77,10 @@ namespace FastCgiQt
 			 */
 			QString header(const QString& name) const;
 
-			/** Try and set the a header value.
+			/** Try and set a header value.
+			 *
+			 * Unlike addHeader, this will replace any existing value
+			 * for the specified header.
 			 *
 			 * @returns true if the header was set.
 			 * @returns false if the header could not be set - for
@@ -84,6 +88,18 @@ namespace FastCgiQt
 			 * 	client.
 			 */
 			bool setHeader(const QString& name, const QString& value);
+
+			/** Try and add a header value.
+			 *
+			 * Unlike setHeader, this will not replace any existing
+			 * value for the specified header.
+			 *
+			 * @returns true if the header was set.
+			 * @returns false if the header could not be set - for
+			 * 	example, if data has already been sent to the
+			 * 	client.
+			 */
+			bool addHeader(const QString& name, const QString& value);
 
 			/// Wait until all data has been sent.
 			bool waitForBytesWritten(int msecs);

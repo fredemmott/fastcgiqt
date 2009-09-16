@@ -161,4 +161,16 @@ namespace FastCgiQt
 		m_headers[name.toUpper()] = value;
 		return true;
 	}
+
+	bool OutputDevice::addHeader(const QString& name, const QString& value)
+	{
+		if(m_haveSentData)
+		{
+			qCritical("Attempted to set a header after data has been sent.");
+			return false;
+		}
+
+		m_headers.insertMulti(name.toUpper(), value);
+		return true;
+	}
 }

@@ -89,6 +89,9 @@ namespace FastCgiQt
 
 			/** Attempt to set an HTTP header.
 			 *
+			 * Unlike addHeader, this will replace any existing header
+			 * with the same name.
+			 *
 			 * @param name is the name of the header.
 			 * @param value is the value to assign to the header.
 			 *
@@ -98,6 +101,21 @@ namespace FastCgiQt
 			 * 	client).
 			 */
 			bool setHeader(const QString& name, const QString& value);
+
+			/** Attempt to append an HTTP header.
+			 *
+			 * Unlike setHeader, this will not replace the header if
+			 * it already is set.
+			 *
+			 * @param name is the name of the header.
+			 * @param value is the value to assign to the header.
+			 *
+			 * @returns true if the header was set.
+			 * @returns false if the header could not be set (for
+			 * 	example, if data has already been sent to the
+			 * 	client).
+			 */
+			bool addHeader(const QString& name, const QString& value);
 	};
 }
 
