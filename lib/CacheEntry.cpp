@@ -3,23 +3,28 @@
 namespace FastCgiQt
 {
 	CacheEntry::CacheEntry(const QDateTime& timeStamp, const QByteArray& data)
-		:
-			m_isValid(true),
-			m_timeStamp(timeStamp),
-			m_data(data)
+	: m_timeStamp(timeStamp)
+	, m_data(data)
 	{
 	}
 
-	CacheEntry::CacheEntry()
-		:
-			m_isValid(false)
+	void CacheEntry::setTimeStamp(const QDateTime& timeStamp)
+	{
+		m_timeStamp = timeStamp;
+	}
 
+	void CacheEntry::setData(const QByteArray& data)
+	{
+		m_data = data;
+	}
+
+	CacheEntry::CacheEntry()
 	{
 	}
 
 	bool CacheEntry::isValid() const
 	{
-		return m_isValid;
+		return m_timeStamp.isValid() && !m_data.isNull();
 	}
 
 	QDateTime CacheEntry::timeStamp() const

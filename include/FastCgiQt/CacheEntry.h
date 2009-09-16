@@ -24,8 +24,10 @@ namespace FastCgiQt
 			QDateTime timeStamp() const;
 			/// The data associated with this CacheEntry.
 			QByteArray data() const;
+		protected:
+			void setTimeStamp(const QDateTime&);
+			void setData(const QByteArray&);
 		private:
-			bool m_isValid;
 			QDateTime m_timeStamp;
 			QByteArray m_data;
 	};
