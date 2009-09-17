@@ -27,6 +27,11 @@ namespace FastCgiQt
 	{
 	}
 
+	void CacheEntry::operator=(const CacheEntry& other)
+	{
+		d = other.d;
+	}
+
 	bool CacheEntry::isValid() const
 	{
 		return d->timeStamp.isValid() && !d->data.isNull();
