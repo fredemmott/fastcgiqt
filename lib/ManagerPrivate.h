@@ -71,6 +71,9 @@ namespace FastCgiQt
 			 */
 			static bool hasLessLoadThan(QThread* t1, QThread* t2);
 
+			/// Socket handle
+			int m_socket;
+
 			/** Notifier used to watch for new connections to the
 			 * FastCGI socket.
 			 */

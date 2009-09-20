@@ -20,6 +20,7 @@
 
 #include "fastcgi.h"
 
+#include <QtEndian>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFileSystemWatcher>
@@ -34,13 +35,13 @@
 #include <sys/file.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <netinet/ip.h>
 
 namespace FastCgiQt
 {
 	ManagerPrivate::ManagerPrivate(Responder::Generator responderGenerator, QObject* parent)
 		:
 			QObject(parent),
-			m_socketNotifier(new QSocketNotifier(FCGI_LISTENSOCK_FILENO, QSocketNotifier::Read, this)),
 			m_responderGenerator(responderGenerator),
 			m_applicationWatcher(new QFileSystemWatcher(this)),
 			m_caches(new Caches())
@@ -49,23 +50,56 @@ namespace FastCgiQt
 		sockaddr_un sa;
 		socklen_t len = sizeof(sa);
 		::memset(&sa, 0, len);
+		m_socket = FCGI_LISTENSOCK_FILENO;
 
 		// The recommended way of telling if we're running as fastcgi or not.
 		int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
 		if(error == -1 && errno != ENOTCONN)
 		{
-			// Not a FastCGI application
-			if(QCoreApplication::arguments().contains("--configure-database"))
+			Settings settings;
+			if(settings.value("FastCGI/socketType", "FILE").toString() == "TCP")
 			{
-				configureDatabase();
-				exit(0);
+				m_socket = ::socket(AF_INET, SOCK_STREAM, 0);
+				in_port_t port = settings.value("FastCGI/portNumber", 0).value<in_port_t>();
+				if(port == 0)
+				{
+					qFatal("Configured to listen on TCP, but there isn't a valid Port Number configured. Try --configure-fastcgi");
+					return;
+				}
+				sockaddr_in sa;
+				::memset(&sa, 0, sizeof(sa));
+				sa.sin_family = AF_INET;
+				sa.sin_port = ::htons(port);
+				if(::bind(m_socket, reinterpret_cast<sockaddr*>(&sa), sizeof(sa)) == -1)
+				{
+					qFatal("Failed to bind() to TCP port %d, with error %d", port, errno);
+					return;
+				}
+				if(::listen(m_socket, 1) == -1)
+				{
+					qFatal("Failed to listen() on port %d, with error %d", port, errno);
+					return;
+				}
+				QTextStream cout(stdout);
+				cout << "Following configuration in '" << settings.fileName() << "' and listening on TCP port " << port << endl;
 			}
-			QTextStream cerr(stderr);
-			cerr << "This application must be ran as a FastCGI application (eg from Apache via mod_fastcgi)." << endl;
-			cerr << "Perhaps you wanted --configure-database?" << endl;
-			exit(1);
-			return;
+			else
+			{
+				// Not a FastCGI application
+				if(QCoreApplication::arguments().contains("--configure-database"))
+				{
+					configureDatabase();
+					exit(0);
+				}
+				QTextStream cerr(stderr);
+				cerr << "This application must be ran as a FastCGI application (eg from Apache via mod_fastcgi)." << endl;
+				cerr << "Perhaps you wanted --configure-database?" << endl;
+				exit(1);
+				return;
+			}
 		}
+
+		m_socketNotifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this),
 
 		connect(
 			m_socketNotifier,
@@ -168,9 +202,9 @@ namespace FastCgiQt
 		::memset(&sa, 0, len);
 
 		// Listen on the socket
-		lockSocket(FCGI_LISTENSOCK_FILENO);
-		int newSocket = ::accept(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
-		releaseSocket(FCGI_LISTENSOCK_FILENO);
+		lockSocket(m_socket);
+		int newSocket = ::accept(m_socket, reinterpret_cast<sockaddr*>(&sa), &len);
+		releaseSocket(m_socket);
 
 		/* We're connected, setup a SocketManager.
 		 * This will delete itself when appropriate (via deleteLater())
