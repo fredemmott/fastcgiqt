@@ -24,6 +24,7 @@
 #include <QFileSystemWatcher>
 #include <QHostAddress>
 #include <QSocketNotifier>
+#include <QTextStream>
 #include <QThread>
 #include <QTime>
 #include <QTimer>
@@ -43,6 +44,21 @@ namespace FastCgiQt
 			m_applicationWatcher(new QFileSystemWatcher(this)),
 			m_caches(new Caches())
 	{
+		// Check we're running as a FastCGI application
+		sockaddr_un sa;
+		socklen_t len = sizeof(sa);
+		::memset(&sa, 0, len);
+
+		// The recommended way of telling if we're running as fastcgi or not.
+		int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
+		if(error == -1 && errno != ENOTCONN)
+		{
+			QTextStream cerr(stderr);
+			cerr << "This application must be ran as a FastCGI application (eg from Apache via mod_fastcgi)." << endl;
+			exit(1);
+			return;
+		}
+
 		connect(
 			m_socketNotifier,
 			SIGNAL(activated(int)),
@@ -142,15 +158,6 @@ namespace FastCgiQt
 		sockaddr_un sa;
 		socklen_t len = sizeof(sa);
 		::memset(&sa, 0, len);
-
-		// The recommended way of telling if we're running as fastcgi or not.
-		int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
-		if(error == -1 && errno != ENOTCONN)
-		{
-			qDebug() << tr("CGI not supported.");
-			QCoreApplication::exit(-1);
-			return;
-		}
 
 		// Listen on the socket
 		lockSocket(FCGI_LISTENSOCK_FILENO);
