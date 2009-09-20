@@ -23,7 +23,6 @@ namespace FastCgiQt
 
 	void Cache::Private::loadBackendFactory()
 	{
-		qDebug() << QCoreApplication::libraryPaths();
 		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
 		{
 			CacheBackend::Factory* factory(qobject_cast<CacheBackend::Factory*>(object));
