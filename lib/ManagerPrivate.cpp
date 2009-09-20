@@ -53,8 +53,14 @@ namespace FastCgiQt
 		int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
 		if(error == -1 && errno != ENOTCONN)
 		{
+			// Not a FastCGI application
+			if(QCoreApplication::arguments().contains("--configure-database"))
+			{
+				exit(0);
+			}
 			QTextStream cerr(stderr);
 			cerr << "This application must be ran as a FastCGI application (eg from Apache via mod_fastcgi)." << endl;
+			cerr << "Perhaps you wanted --configure-database?" << endl;
 			exit(1);
 			return;
 		}
