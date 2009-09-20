@@ -26,18 +26,19 @@ namespace FastCgiQt
 
 	QSqlDatabase Database::addDatabase()
 	{
-		const Settings settings;
-		const QString name = settings.value("database/name").toString();
+		Settings settings;
+		settings.beginGroup("database");
+		const QString name = settings.value("name").toString();
 		if(name.isEmpty())
 		{
 			qFatal("In FastCgiQt::Database::addDatabase(), with no database configuration. Try running the application with --configure-database");
 			return QSqlDatabase();
 		}
 
-		const QString driver = settings.value("database/driver", "QMYSQL").toString();
-		const QString host = settings.value("database/host").toString();
-		const QString user = settings.value("database/user").toString();
-		const QString password = settings.value("database/password").toString();
+		const QString driver = settings.value("driver", "QMYSQL").toString();
+		const QString host = settings.value("host").toString();
+		const QString user = settings.value("user").toString();
+		const QString password = settings.value("password").toString();
 
 		QSqlDatabase database = Database::addDatabase(driver);
 		database.setHostName(host);

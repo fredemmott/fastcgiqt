@@ -15,6 +15,7 @@
 */
 #include "ManagerPrivate.h"
 
+#include "Settings.h"
 #include "SocketManager.h"
 
 #include "fastcgi.h"
@@ -56,6 +57,51 @@ namespace FastCgiQt
 			// Not a FastCGI application
 			if(QCoreApplication::arguments().contains("--configure-database"))
 			{
+				QTextStream cin(stdin);
+				QTextStream cout(stdout);
+				QString driver;
+				QString host;
+				QString name;
+				QString user;
+				QString password;
+				cout << "********************************************" << endl;
+				cout << "***** FastCgiQt Database Configuration *****" << endl;
+				cout << "********************************************" << endl;
+
+				cout << "Driver [QMYSQL]: " << flush;
+				driver = cin.readLine();
+				if(driver.isEmpty())
+				{
+					driver = "QMYSQL";
+				}
+
+				cout << "Host [localhost]: " << flush;
+				host = cin.readLine();
+				if(host.isEmpty())
+				{
+					host = "localhost";
+				}
+
+				cout << "Database: " << flush;
+				name = cin.readLine();
+
+				cout << "User: " << flush;
+				user = cin.readLine();
+
+				cout << "Password: " << flush;
+				password = cin.readLine();
+
+				Settings settings;
+				settings.beginGroup("database");
+				settings.setValue("driver", driver);
+				settings.setValue("host", host);
+				settings.setValue("name", name);
+				settings.setValue("user", user);
+				settings.setValue("password", password);
+				settings.endGroup();
+				settings.sync();
+
+				cout << "Settings saved in " << settings.fileName() << endl;
 				exit(0);
 			}
 			QTextStream cerr(stderr);
