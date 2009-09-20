@@ -1,4 +1,5 @@
 #include "MemcachedCache.h"
+#include "Settings.h"
 
 #include <libmemcached/memcached.h>
 
@@ -6,7 +7,6 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QReadLocker>
-#include <QSettings>
 #include <QStringList>
 #include <QWriteLocker>
 
@@ -71,10 +71,7 @@ namespace FastCgiQt
 
 	bool MemcachedCacheFactory::loadSettings()
 	{
-		QSettings settings(
-			"." + QCoreApplication::applicationFilePath().split('/').last(),
-			QSettings::IniFormat
-		);
+		Settings settings;
 		if(settings.value("cache/backend") == "MemcachedCache")
 		{
 			QList<MemcachedCache::Server> servers;

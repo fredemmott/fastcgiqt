@@ -1,9 +1,9 @@
 #include "RamCache.h"
+#include "Settings.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QReadLocker>
-#include <QSettings>
 #include <QStringList>
 #include <QWriteLocker>
 
@@ -25,10 +25,7 @@ namespace FastCgiQt
 
 	bool RamCacheFactory::loadSettings()
 	{
-		QSettings settings(
-			"." + QCoreApplication::applicationFilePath().split('/').last(),
-			QSettings::IniFormat
-		);
+		Settings settings;
 		if(settings.value("cache/backend", "RamCache") == "RamCache")
 		{
 			RamCache::setMaxSize(settings.value("RamCache/maxSize", 10 * 1024 * 1024).toInt());
