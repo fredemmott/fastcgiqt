@@ -55,6 +55,8 @@ namespace FastCgiQt
 			/// Decrease the load counter for the specified thread.
 			void reduceLoadCount(QThread* thread);
 		private:
+			/// Show options for configuring the database
+			void configureDatabase();
 			/// Lock the socket with the specified socket id.
 			void lockSocket(int socket);
 			/// Unlock the socket with the specified socket id.
