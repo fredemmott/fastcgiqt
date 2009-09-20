@@ -73,7 +73,7 @@ namespace FastCgiQt
 				exit(0);
 			}
 			Settings settings;
-			if(settings.value("FastCGI/socketType", "UNIX-FD").toString() == "TCP")
+			if(settings.value("FastCGI/socketType", "FCGI-UNIX").toString() == "FCGI-TCP")
 			{
 				m_socket = ::socket(AF_INET, SOCK_STREAM, 0);
 				in_port_t port = settings.value("FastCGI/portNumber", 0).value<in_port_t>();
@@ -254,22 +254,22 @@ namespace FastCgiQt
 		cout << "***** FastCgiQt HTTPD Configuration *****" << endl;
 		cout << "*****************************************" << endl;
 		cout << "FastCgiQt supports two interfaces for communications with the HTTPD:" << endl;
-		cout << "- UNIX-FD: Good for Apache with mod_fastcgi/mod_fcgid." << endl;
+		cout << "- FCGI-UNIX: Good for Apache with mod_fastcgi/mod_fcgid." << endl;
 		cout << "   FastCgiQt tries to use the unix socket bound to file descriptor 0." << endl;
 		cout << "   This is what the FastCGI specification says, but doesn't work too" << endl;
 		cout << "   well with anything except Apache." << endl;
-		cout << "- TCP: Good for lighttpd, cherokee, and others." << endl;
+		cout << "- FCGI-TCP: Good for lighttpd, cherokee, and others." << endl;
 		cout << "   FastCgiQt listens on a user-configured TCP port." << endl;
 		cout << "   This works with pretty much anything that isn't Apache." << endl;
-		cout << "Interface [UNIX-FD]: " << flush;
+		cout << "Interface [FCGI-UNIX]: " << flush;
 		interface = cin.readLine();
-		if(interface.toUpper() == "UNIX-FD" || interface.isEmpty())
+		if(interface.toUpper() == "FCGI-UNIX" || interface.isEmpty())
 		{
-			settings.setValue("socketType", "UNIX-FD");
+			settings.setValue("socketType", "FCGI-UNIX");
 		}
-		else if(interface.toUpper() == "TCP")
+		else if(interface.toUpper() == "FCGI-TCP")
 		{
-			settings.setValue("socketType", "TCP");
+			settings.setValue("socketType", "FCGI-TCP");
 			QString portString;
 			cout << "Port number: " << flush;
 			portString = cin.readLine();
