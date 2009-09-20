@@ -19,6 +19,8 @@ namespace FastCgiQt
 			static bool haveConnection();
 			static QSqlDatabase database(bool open = true);
 			static QSqlDatabase addDatabase(const QString& type);
+			/// Reads configuration file variables
+			static QSqlDatabase addDatabase();
 	};
 }
 

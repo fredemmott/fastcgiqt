@@ -1,6 +1,8 @@
 #include "Database.h"
 #include "DatabasePrivate.h"
 
+#include <QCoreApplication>
+#include <QSettings>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStringList>
@@ -20,6 +22,38 @@ namespace FastCgiQt
 	QSqlDatabase Database::addDatabase(const QString& type)
 	{
 		return DatabasePrivate::addDatabase(type);
+	}
+
+	QSqlDatabase Database::addDatabase()
+	{
+		const QSettings settings(	
+			QCoreApplication::applicationDirPath() + "/." + QCoreApplication::applicationFilePath().split("/").last(),
+			QSettings::IniFormat
+		);
+		const QString name = settings.value("database/name").toString();
+		if(name.isEmpty())
+		{
+			qFatal("In FastCgiQt::Database::addDatabase(), with no database configuration. Try running the application with --configure-database");
+			return QSqlDatabase();
+		}
+
+		const QString driver = settings.value("database/driver", "QMYSQL").toString();
+		const QString host = settings.value("database/host").toString();
+		const QString user = settings.value("database/user").toString();
+		const QString password = settings.value("database/password").toString();
+
+		QSqlDatabase database = Database::addDatabase(driver);
+		database.setHostName(host);
+		database.setUserName(user);
+		database.setPassword(password);
+		database.setDatabaseName(name);
+		if(!database.open())
+		{
+			qFatal("In FastCgiQt::Database::addDatabase(), couldn't open database '%s' with configured values (%s). Try re-running --configure-database", qPrintable(name), qPrintable(database.lastError().text()));
+			return QSqlDatabase();
+		}
+
+		return database;
 	}
 
 	bool Database::haveConnection()
