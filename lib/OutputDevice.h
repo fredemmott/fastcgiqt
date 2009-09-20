@@ -94,6 +94,10 @@ namespace FastCgiQt
 			 * Unlike setHeader, this will not replace any existing
 			 * value for the specified header.
 			 *
+			 * This will let you send two headers with the same name and
+			 * differing values, but it will not let you send the same name/value
+			 * pair multiple times.
+			 *
 			 * @returns true if the header was set.
 			 * @returns false if the header could not be set - for
 			 * 	example, if data has already been sent to the

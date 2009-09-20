@@ -170,7 +170,11 @@ namespace FastCgiQt
 			return false;
 		}
 
-		m_headers.insertMulti(name.toUpper(), value);
+		const QString upperName(name.toUpper());
+		if(!m_headers.values(upperName).contains(value))
+		{
+			m_headers.insertMulti(upperName, value);
+		}
 		return true;
 	}
 }

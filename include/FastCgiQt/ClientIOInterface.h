@@ -108,6 +108,10 @@ namespace FastCgiQt
 			 * Unlike setHeader, this will not replace the header if
 			 * it already is set.
 			 *
+			 * This will let you send two headers with the same name and
+			 * differing values, but it will not let you send the same name/value
+			 * pair multiple times.
+			 *
 			 * @param name is the name of the header.
 			 * @param value is the value to assign to the header.
 			 *
