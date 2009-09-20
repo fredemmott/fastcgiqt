@@ -1,8 +1,8 @@
 #include "Database.h"
 #include "DatabasePrivate.h"
 
-#include <QCoreApplication>
-#include <QSettings>
+#include "Settings.h"
+
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStringList>
@@ -26,10 +26,7 @@ namespace FastCgiQt
 
 	QSqlDatabase Database::addDatabase()
 	{
-		const QSettings settings(	
-			QCoreApplication::applicationDirPath() + "/." + QCoreApplication::applicationFilePath().split("/").last(),
-			QSettings::IniFormat
-		);
+		const Settings settings;
 		const QString name = settings.value("database/name").toString();
 		if(name.isEmpty())
 		{

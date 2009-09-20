@@ -26,6 +26,7 @@ SET(
 	ParametersRecord
 	RecordHeader
 	RequestDataProvider
+	Settings
 	SocketManager
 	StandardInputRecord
 	StandardOutputRecord
