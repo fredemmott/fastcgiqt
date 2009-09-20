@@ -8,6 +8,11 @@ namespace FastCgiQt
 	{
 	}
 
+	CacheEntry::CacheEntry(const QByteArray& data)
+	: d(new Private(QDateTime::currentDateTime().toUTC(), data))
+	{
+	}
+
 	void CacheEntry::setTimeStamp(const QDateTime& timeStamp)
 	{
 		d->timeStamp = timeStamp;

@@ -16,6 +16,8 @@ namespace FastCgiQt
 	{
 		public:
 			~CacheEntry();
+			/// Construct a valid CacheEntry with the current date and time
+			CacheEntry(const QByteArray& data);
 			/// Constructs a valid CacheEntry.
 			CacheEntry(const QDateTime& timeStamp, const QByteArray& data);
 			/// Constructs an invalid CacheEntry.
