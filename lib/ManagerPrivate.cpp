@@ -56,8 +56,24 @@ namespace FastCgiQt
 		int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
 		if(error == -1 && errno != ENOTCONN)
 		{
+			if(QCoreApplication::arguments().contains("--configure"))
+			{
+				configureHttpd();
+				configureDatabase();
+				exit(0);
+			}
+			if(QCoreApplication::arguments().contains("--configure-httpd"))
+			{
+				configureHttpd();
+				exit(0);
+			}
+			if(QCoreApplication::arguments().contains("--configure-database"))
+			{
+				configureDatabase();
+				exit(0);
+			}
 			Settings settings;
-			if(settings.value("FastCGI/socketType", "FILE").toString() == "TCP")
+			if(settings.value("FastCGI/socketType", "UNIX-FD").toString() == "TCP")
 			{
 				m_socket = ::socket(AF_INET, SOCK_STREAM, 0);
 				in_port_t port = settings.value("FastCGI/portNumber", 0).value<in_port_t>();
@@ -86,14 +102,9 @@ namespace FastCgiQt
 			else
 			{
 				// Not a FastCGI application
-				if(QCoreApplication::arguments().contains("--configure-database"))
-				{
-					configureDatabase();
-					exit(0);
-				}
 				QTextStream cerr(stderr);
 				cerr << "This application must be ran as a FastCGI application (eg from Apache via mod_fastcgi)." << endl;
-				cerr << "Perhaps you wanted --configure-database?" << endl;
+				cerr << "Perhaps you wanted --configure?" << endl;
 				exit(1);
 				return;
 			}
@@ -227,6 +238,56 @@ namespace FastCgiQt
 	{
 		m_threadLoads[thread].deref();
 		exitIfFinished();
+	}
+
+	void ManagerPrivate::configureHttpd()
+	{
+		QTextStream cin(stdin);
+		QTextStream cout(stdout);
+
+		Settings settings;
+		settings.beginGroup("FastCGI");
+
+		QString interface;
+
+		cout << "*****************************************" << endl;
+		cout << "***** FastCgiQt HTTPD Configuration *****" << endl;
+		cout << "*****************************************" << endl;
+		cout << "FastCgiQt supports two interfaces for communications with the HTTPD:" << endl;
+		cout << "- UNIX-FD: Good for Apache with mod_fastcgi/mod_fcgid." << endl;
+		cout << "   FastCgiQt tries to use the unix socket bound to file descriptor 0." << endl;
+		cout << "   This is what the FastCGI specification says, but doesn't work too" << endl;
+		cout << "   well with anything except Apache." << endl;
+		cout << "- TCP: Good for lighttpd, cherokee, and others." << endl;
+		cout << "   FastCgiQt listens on a user-configured TCP port." << endl;
+		cout << "   This works with pretty much anything that isn't Apache." << endl;
+		cout << "Interface [UNIX-FD]: " << flush;
+		interface = cin.readLine();
+		if(interface.toUpper() == "UNIX-FD" || interface.isEmpty())
+		{
+			settings.setValue("socketType", "UNIX-FD");
+		}
+		else if(interface.toUpper() == "TCP")
+		{
+			settings.setValue("socketType", "TCP");
+			QString portString;
+			cout << "Port number: " << flush;
+			portString = cin.readLine();
+			bool ok;
+			quint32 portNumber = portString.toUInt(&ok);
+			if(!(ok && portNumber))
+			{
+				qFatal("Not a valid port number.");
+				return;
+			}
+			settings.setValue("portNumber", portNumber);
+		}
+		else
+		{
+			qFatal("Not a valid communication method: '%s'", qPrintable(interface));
+			return;
+		}
+		settings.sync();
 	}
 
 	void ManagerPrivate::configureDatabase()
