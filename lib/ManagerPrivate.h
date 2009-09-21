@@ -25,12 +25,10 @@
 #include <QStringList>
 
 class QFileSystemWatcher;
-class QSocketNotifier;
-class QThread;
 
 namespace FastCgiQt
 {
-	class SocketManager;
+	class CommunicationInterface;
 	/** @internal
 	 * @brief Class managing new FastCGI connections.
 	 *
@@ -46,63 +44,22 @@ namespace FastCgiQt
 			/// Create a ManagerPrivate object.
 			ManagerPrivate(Responder::Generator responderGenerator, QObject* parent = NULL);
 			~ManagerPrivate();
-			QList<int> threadLoads() const;
 		private slots:
 			/// Request that the application shuts down.
 			void shutdown();
-			/// Listen for a new FastCGI connection.
-			void listen();
-			/// Decrease the load counter for the specified thread.
-			void reduceLoadCount(QThread* thread);
 		private:
 			/// Show CLI for configuring the way FastCgiQt communicates with the web server
 			void configureHttpd();
 			/// Show CLI for configuring the database
 			void configureDatabase();
-			/// Lock the socket with the specified socket id.
-			void lockSocket(int socket);
-			/// Unlock the socket with the specified socket id.
-			void releaseSocket(int socket);
-			/// If we're shutting down, and the loads are zero, exit.
-			void exitIfFinished();
-			/** Comparison for thread loads.
-			 *
-			 * @returns true if thread @p t1 is currently handling
-			 * 	less requests than @p t2.
-			 * @returns false otherwise.
-			 */
-			static bool hasLessLoadThan(QThread* t1, QThread* t2);
-
-			/// Socket handle
-			int m_socket;
-
-			/** Notifier used to watch for new connections to the
-			 * FastCGI socket.
-			 */
-			QSocketNotifier* m_socketNotifier;
-			/// Pointer to function creating new Responder objects.
-			Responder::Generator m_responderGenerator;
-
-			/** List of IP addresses that FastCGI-capable web
-			 * servers may connect to this process from.
-			 *
-			 * @todo use this.
-			 */
-			QStringList m_allowedAddresses;
-
-			/// The thread pool.
-			QList<QThread*> m_threads;
-
-			/** The number of requests each thread is currently
-			 * handling.
-			 */
-			QMap<const QObject*, QAtomicInt> m_threadLoads;
 
 			/// Watcher to call shutdown() if the executable is modified.
 			QFileSystemWatcher* m_applicationWatcher;
 
 			/// Scope guard to create and cleanup global caches
 			Caches* m_caches;
+
+			CommunicationInterface* m_interface;
 	};
 };
 

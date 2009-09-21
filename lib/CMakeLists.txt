@@ -15,9 +15,11 @@ SET(
 	CacheEntryPrivate
 	CachePrivate
 	Caches
+	CommunicationInterface
 	DebugHandler
 	EndRequestRecord
 	EnumHelpers
+	FastCgiInterface
 	FastCgiOutputBackend
 	FileCache
 	FileDependentCache
