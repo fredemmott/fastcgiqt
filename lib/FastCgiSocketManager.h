@@ -13,8 +13,7 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef _FASTCGI_QT_SOCKET_MANAGER_H
-#define _FASTCGI_QT_SOCKET_MANAGER_H
+#pragma once
 
 #include "RecordHeader.h"
 #include "Responder.h"
@@ -35,19 +34,19 @@ namespace FastCgiQt
 	 *
 	 * There can be multiple simultaneous requests over one socket.
 	 */
-	class SocketManager : public QObject
+	class FastCgiSocketManager : public QObject
 	{
 		Q_OBJECT
 		public:
-			/** Create a SocketManager.
+			/** Create a FastCgiSocketManager.
 			 * @param responderGenerator is a function to use to
 			 * 	create Responder objects.
 			 * @param socketId is the file descriptor for a socket.
 			 * @param parent is a parent object.
 			 */
-			SocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent = NULL);
+			FastCgiSocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent = NULL);
 			/// Destroy this socket manager.
-			~SocketManager();
+			~FastCgiSocketManager();
 		private:
 			/// Put a call to processSocketData() into the event queue.
 			void queueSocketCheck();
@@ -75,7 +74,7 @@ namespace FastCgiQt
 		signals:
 			/** This socket manager is done.
 			 *
-			 * @param inThread is the thread that this SocketManager
+			 * @param inThread is the thread that this FastCgiSocketManager
 			 * 	is running in.
 			 */
 			void finished(QThread* inThread);
@@ -93,7 +92,7 @@ namespace FastCgiQt
 			RecordHeader m_recordHeader;
 			/// The function to use to create new Responder objects.
 			Responder::Generator m_responderGenerator;
-			/// The socket this SocketManager managers.
+			/// The socket this FastCgiSocketManager managers.
 			QLocalSocket* m_socket;
 
 			// FastCGI spec says request IDs will be tightly packed near zero.
@@ -123,4 +122,3 @@ namespace FastCgiQt
 			QHash<Responder*, quint64> m_requestMap;
 	};
 }
-#endif

@@ -24,7 +24,7 @@
 #include "ParametersRecord.h"
 #include "RecordHeader.h"
 #include "Request_Backend.h"
-#include "SocketManager.h"
+#include "FastCgiSocketManager.h"
 #include "StandardInputRecord.h"
 
 #include "fastcgi.h"
@@ -37,7 +37,7 @@
 
 namespace FastCgiQt
 {
-	SocketManager::SocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent)
+	FastCgiSocketManager::FastCgiSocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent)
 		:
 			QObject(parent),
 			m_responderGenerator(responderGenerator)
@@ -54,11 +54,11 @@ namespace FastCgiQt
 		);
 	}
 
-	SocketManager::~SocketManager()
+	FastCgiSocketManager::~FastCgiSocketManager()
 	{
 	}
 
-	void SocketManager::processSocketData()
+	void FastCgiSocketManager::processSocketData()
 	{
 		bool success;
 		do
@@ -75,7 +75,7 @@ namespace FastCgiQt
 		while(success && m_socket->bytesAvailable() > 0);
 	}
 
-	bool SocketManager::processRecordData()
+	bool FastCgiSocketManager::processRecordData()
 	{
 		RecordHeader header(m_recordHeader);
 
@@ -114,7 +114,7 @@ namespace FastCgiQt
 		return true;
 	}
 
-	bool SocketManager::loadParameters(const QByteArray& data)
+	bool FastCgiSocketManager::loadParameters(const QByteArray& data)
 	{
 		quint16 requestId = m_recordHeader.requestId();
 		Q_ASSERT(m_recordHeader.type() == RecordHeader::ParametersRecord);
@@ -131,7 +131,7 @@ namespace FastCgiQt
 		}
 	}
 
-	void SocketManager::readStandardInput(const QByteArray& data)
+	void FastCgiSocketManager::readStandardInput(const QByteArray& data)
 	{
 		quint16 requestId = m_recordHeader.requestId();
 		Q_ASSERT(m_recordHeader.type() == RecordHeader::StandardInputRecord);
@@ -141,7 +141,7 @@ namespace FastCgiQt
 		m_inputDevices[requestId]->appendData(record.streamData());
 	}
 
-	void SocketManager::beginRequest(const QByteArray& data)
+	void FastCgiSocketManager::beginRequest(const QByteArray& data)
 	{
 		quint16 requestId = m_recordHeader.requestId();
 		Q_ASSERT(m_recordHeader.type() == RecordHeader::BeginRequestRecord);
@@ -167,12 +167,12 @@ namespace FastCgiQt
 		m_inputDevices[requestId] = new InputDevice(this);
 	}
 
-	void SocketManager::queueSocketCheck()
+	void FastCgiSocketManager::queueSocketCheck()
 	{
 		QTimer::singleShot(0, this, SLOT(processSocketData()));
 	}
 
-	void SocketManager::cleanupResponder(Responder* responder)
+	void FastCgiSocketManager::cleanupResponder(Responder* responder)
 	{
 		// clean up the responder
 		const quint16 requestId = m_requestMap.value(responder);
@@ -195,7 +195,7 @@ namespace FastCgiQt
 		m_inputDevices[requestId] = 0;
 	}
 
-	void SocketManager::respond()
+	void FastCgiSocketManager::respond()
 	{
 		const quint16 requestId = m_recordHeader.requestId();
 		Responder* responder = (*m_responderGenerator)(
@@ -219,7 +219,7 @@ namespace FastCgiQt
 		responder->start();
 	}
 
-	bool SocketManager::processNewRecord()
+	bool FastCgiSocketManager::processNewRecord()
 	{
 		if(m_socket->bytesAvailable() < FCGI_HEADER_LEN)
 		{

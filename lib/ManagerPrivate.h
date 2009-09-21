@@ -33,7 +33,7 @@ namespace FastCgiQt
 	 * @brief Class managing new FastCGI connections.
 	 *
 	 * This class listens to the main FastCGI socket, spawns new
-	 * connections, and passes them off to a SocketManager.
+	 * connections, and passes them off to a FastCgiSocketManager.
 	 *
 	 * It will spread the load over QThread::idealThreadCount() threads.
 	 */

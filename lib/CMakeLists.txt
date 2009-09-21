@@ -31,7 +31,7 @@ SET(
 	RecordHeader
 	Request_Backend
 	Settings
-	SocketManager
+	FastCgiSocketManager
 	StandardInputRecord
 	StandardOutputRecord
 	UnsignedByteArray

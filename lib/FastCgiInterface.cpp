@@ -16,7 +16,7 @@
 #include "FastCgiInterface.h"
 
 #include "Settings.h"
-#include "SocketManager.h"
+#include "FastCgiSocketManager.h"
 
 #include "fastcgi.h"
 
@@ -189,14 +189,14 @@ namespace FastCgiQt
 		int newSocket = ::accept(m_socket, reinterpret_cast<sockaddr*>(&sa), &len);
 		releaseSocket(m_socket);
 
-		/* We're connected, setup a SocketManager.
+		/* We're connected, setup a FastCgiSocketManager.
 		 * This will delete itself when appropriate (via deleteLater())
 		 */
 		// Pick a thread to put it in
 		qSort(m_threads.begin(), m_threads.end(), hasLessLoadThan);
 		QThread* thread = m_threads.first();
 		m_threadLoads[thread].ref();
-		SocketManager* socket = new SocketManager(m_responderGenerator, newSocket, NULL);
+		FastCgiSocketManager* socket = new FastCgiSocketManager(m_responderGenerator, newSocket, NULL);
 		connect(
 			socket,
 			SIGNAL(finished(QThread*)),
