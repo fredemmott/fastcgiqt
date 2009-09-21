@@ -62,7 +62,7 @@ namespace FastCgiQt
 		m_servers = servers;
 	}
 
-	CacheBackend* MemcachedCacheFactory::getCacheBackend(const QString& cacheName) const
+	CacheBackend* MemcachedCacheFactory::createCacheBackend(const QString& cacheName) const
 	{
 		return new MemcachedCache(cacheName);
 	}

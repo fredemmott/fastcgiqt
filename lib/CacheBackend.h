@@ -68,7 +68,7 @@ namespace FastCgiQt
 					 */
 					virtual bool loadSettings() = 0;
 					/// Create a CacheBackend*
-					virtual CacheBackend* getCacheBackend(const QString& cacheName) const = 0;
+					virtual CacheBackend* createCacheBackend(const QString& cacheName) const = 0;
 			};
 	};
 }

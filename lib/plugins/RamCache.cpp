@@ -33,7 +33,7 @@ namespace FastCgiQt
 	{
 	}
 
-	CacheBackend* RamCacheFactory::getCacheBackend(const QString& cacheName) const
+	CacheBackend* RamCacheFactory::createCacheBackend(const QString& cacheName) const
 	{
 		return new RamCache(cacheName);
 	}

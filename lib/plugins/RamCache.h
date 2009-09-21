@@ -47,7 +47,7 @@ namespace FastCgiQt
 		Q_INTERFACES(FastCgiQt::CacheBackend::Factory)
 		public:
 			virtual bool loadSettings();
-			virtual CacheBackend* getCacheBackend(const QString& cacheName) const;
+			virtual CacheBackend* createCacheBackend(const QString& cacheName) const;
 	};
 }
 

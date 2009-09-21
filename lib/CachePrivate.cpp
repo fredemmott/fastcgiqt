@@ -33,7 +33,7 @@ namespace FastCgiQt
 		{
 			loadBackendFactory();
 		}
-		backend = m_backendFactory->getCacheBackend(cacheName);
+		backend = m_backendFactory->createCacheBackend(cacheName);
 	}
 
 	void Cache::Private::loadBackendFactory()
