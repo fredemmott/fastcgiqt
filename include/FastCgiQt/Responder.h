@@ -54,7 +54,7 @@ namespace FastCgiQt
 			 *
 			 * @see finished() for convenience
 			 */
-			void finished(Responder* responder, const Request& request);
+			void finished(Responder* responder);
 		protected:
 			/// Convenience accessor for emitting finished(Responder*, const Request&);
 			void finished();

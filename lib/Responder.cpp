@@ -28,7 +28,7 @@ namespace FastCgiQt
 
 	void Responder::finished()
 	{
-		emit finished(this, request);
+		emit finished(this);
 	}
 
 	Responder::~Responder()

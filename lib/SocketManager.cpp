@@ -210,7 +210,7 @@ namespace FastCgiQt
 
 		connect(
 			responder,
-			SIGNAL(finished(Responder*,Request)),
+			SIGNAL(finished(Responder*)),
 			SLOT(cleanupResponder(Responder*))
 		);
 		
