@@ -29,16 +29,14 @@ namespace FastCgiQt
 	 */
 	class Request
 	{
-		friend class RequestDataProvider;
 		public:
+			class Backend;
 			/// Construct an invalid Request object.
 			Request();
-			/** Construct a valid Request object, for the specified
-			 * request id.
-			 *
-			 * @param requestId is a FastCGI request ID.
-			 */
-			Request(quint16 requestId);
+			/// @internal @brief Construct a valid Request object, with the specified backend.
+			Request(Backend* backend);
+			/// @internal @brief Retrieve the backend for this Request object.
+			Backend* backend() const;
 
 			/** If this Request object is actually valid.
 			 *
@@ -46,8 +44,6 @@ namespace FastCgiQt
 			 * with a client request.
 			 */
 			bool isValid() const;
-			/// The FastCGI request ID.
-			quint16 requestId() const;
 
 			/** The type of the POST-data (if any).
 			 *
@@ -221,28 +217,7 @@ namespace FastCgiQt
 			/// A list of all the cookies provided by the client
 			QList<QNetworkCookie> cookies() const;
 		private:
-			/** Add some newly-received server variables to this
-			 * Request object.
-			 *
-			 * This should be called by RequestDataProvider.
-			 */
-			void addServerData(const QHash<QString, QString>& data);
-
-			/** Add some newly-received post data.
-			 *
-			 * This should be called by RequestDataProvider.
-			 */
-			void appendContent(const QByteArray& data);
-
-			bool m_isValid;
-			quint16 m_requestId;
-			QHash<QString, QString> m_serverData;
-			QHash<QString, QString> m_getData;
-			QHash<QString, QString> m_postData;
-
-			QString m_contentType;
-			quint16 m_contentLength;
-			QByteArray m_content;
+			Backend* m_backend;
 	};
 }
 

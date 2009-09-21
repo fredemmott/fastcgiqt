@@ -25,7 +25,7 @@ SET(
 	OutputDevice
 	ParametersRecord
 	RecordHeader
-	RequestDataProvider
+	Request_Backend
 	Settings
 	SocketManager
 	StandardInputRecord

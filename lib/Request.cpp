@@ -14,12 +14,13 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include "Request.h"
+#include "Request_Backend.h"
 
 #include <QCoreApplication>
+
 #include <QDebug>
 #include <QNetworkCookie>
 #include <QRegExp>
-#include <QStringList>
 #include <QUrl>
 
 namespace FastCgiQt
@@ -43,27 +44,27 @@ namespace FastCgiQt
 	}
 
 	Request::Request()
-		:
-			m_isValid(false)
+	: m_backend(0)
 	{
+		if(m_backend)
+		{
+			m_backend->setRequest(this);
+		}
 	}
 
-	Request::Request(quint16 requestId)
-		:
-			m_isValid(true),
-			m_requestId(requestId),
-			m_contentLength(0)
+	Request::Request(Backend* backend)
+	: m_backend(backend)
 	{
 	}
 
 	QString Request::contentType() const
 	{
-		return m_contentType;
+		return m_backend->contentType();
 	}
 
 	quint64 Request::contentLength() const
 	{
-		return m_contentLength;
+		return m_backend->contentLength();
 	}
 
 	void Request::waitForAllContent() const
@@ -76,35 +77,28 @@ namespace FastCgiQt
 
 	QByteArray Request::content() const
 	{
-		waitForAllContent();
-		return m_content;
+		return m_backend->content();
 	}
 
 	bool Request::haveAllContent() const
 	{
-		return contentLength() == static_cast<quint64>(m_content.length());
+		return contentLength() == static_cast<quint64>(content().length());
 	}
 
 	bool Request::isValid() const
 	{
-		return m_isValid;
-	}
-
-	quint16 Request::requestId() const
-	{
-		return m_requestId;
+		return m_backend;
 	}
 
 	QList<QNetworkCookie> Request::cookies() const
 	{
-		const QHash<QString, QString> serverData = this->serverData();
+		const QHash<QString, QString> serverData = m_backend->serverData();
 		QList<QNetworkCookie> cookies;
 		for(QHash<QString, QString>::ConstIterator it = serverData.constBegin(); it != serverData.constEnd(); ++it)
 		{
 			if(it.key().toUpper() == "HTTP_COOKIE")
 			{
 				cookies.append(QNetworkCookie::parseCookies(it.value().toLatin1()));
-				qDebug() << Q_FUNC_INFO << it.value() << cookies.count();
 			}
 		}
 		return cookies;
@@ -112,93 +106,32 @@ namespace FastCgiQt
 
 	QString Request::serverData(const QString& name) const
 	{
-		return m_serverData.value(name);
+		return serverData().value(name);
 	}
 
 	QHash<QString, QString> Request::serverData() const
 	{
-		return m_serverData;
+		return m_backend->serverData();
 	}
 
 	QString Request::getData(const QString& name) const
 	{
-		return m_getData.value(name);
+		return getData().value(name);
 	}
 
 	QHash<QString, QString> Request::getData() const
 	{
-		return m_getData;
-	}
-
-	void Request::addServerData(const QHash<QString, QString>& data)
-	{
-		if(data.contains("QUERY_STRING"))
-		{
-			QStringList nameValuePairs = data.value("QUERY_STRING").split("&");
-			Q_FOREACH(const QString& pair, nameValuePairs)
-			{
-				QStringList nameValuePair = pair.split("=");
-				QString name = QUrl::fromPercentEncoding(nameValuePair.first().toLatin1());
-				QString value;
-				if(nameValuePair.size() > 1)
-				{
-					value = QUrl::fromPercentEncoding(nameValuePair.value(1).toLatin1());
-				}
-				m_getData.insert(name, value);
-			}
-		}
-		if(data.contains("CONTENT_TYPE"))
-		{
-			m_contentType = data.value("CONTENT_TYPE");
-		}
-		if(data.contains("CONTENT_LENGTH"))
-		{
-			m_contentLength = data.value("CONTENT_LENGTH").toULongLong();
-		}
-
-		m_serverData.unite(data);
-	}
-
-	void Request::appendContent(const QByteArray& data)
-	{
-		Q_ASSERT(data.length() + m_content.length() <= m_contentLength);
-		m_content.append(data);
-		if(static_cast<quint64>(m_content.length()) == contentLength() && contentType().startsWith("application/x-www-form-urlencoded")) // may have "; charset=FOO afterwards"
-		{
-			QStringList nameValuePairs = QString::fromUtf8(m_content).split(QRegExp("&|&amp;"));
-			Q_FOREACH(const QString& pair, nameValuePairs)
-			{
-				QStringList nameValuePair = pair.split("=");
-				QString name = QUrl::fromPercentEncoding(nameValuePair.first().toLatin1());
-				QString value;
-				if(nameValuePair.size() > 1)
-				{
-					value = nameValuePair.value(1);
-					value.replace('+', ' ');
-					value = QUrl::fromPercentEncoding(value.toLatin1());
-				}
-				m_postData.insert(name, value);
-			}
-		}
+		return m_backend->getData();
 	}
 
 	QString Request::postData(const QString& name) const
 	{
-		if(contentType().startsWith(QLatin1String("application/x-www-form-urlencoded")) && !m_postData.contains(name))
-		{
-			waitForAllContent();
-		}
-		return m_postData.value(name);
+		return postData().value(name);
 	}
 
 	QHash<QString, QString> Request::postData() const
 	{
-		if(contentType() == QLatin1String("application/x-www-form-urlencoded"))
-		{
-			waitForAllContent();
-		}
-		waitForAllContent();
-		return m_postData;
+		return m_backend->postData();
 	}
 
 	QString Request::baseUri() const
@@ -218,5 +151,10 @@ namespace FastCgiQt
 		qDebug() << "-----";
 		*/
 		return baseUri;
+	}
+
+	Request::Backend* Request::backend() const
+	{
+		return m_backend;
 	}
 }
