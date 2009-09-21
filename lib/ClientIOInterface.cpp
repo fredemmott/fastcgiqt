@@ -23,19 +23,17 @@
 
 namespace FastCgiQt
 {
-	ClientIOInterface::ClientIOInterface(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent)
+	ClientIOInterface::ClientIOInterface(const Request& request, QIODevice* outputDevice, QIODevice* inputDevice, QObject* parent)
 		:
 			QObject(parent),
 			request(request),
 			in(inputDevice),
-			out(
-				new OutputDevice(
-					request.requestId(),
-					socket,
-					this
-				)
-			)
+			out(outputDevice)
 	{
+		if(outputDevice)
+		{
+			outputDevice->setParent(this);
+		}
 	}
 
 	ClientIOInterface::~ClientIOInterface()

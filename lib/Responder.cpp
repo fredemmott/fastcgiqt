@@ -22,9 +22,9 @@
 
 namespace FastCgiQt
 {
-	Responder::Responder(const Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent)
+	Responder::Responder(const Request& request, QIODevice* outputDevice, QIODevice* inputDevice, QObject* parent)
 		:
-			ClientIOInterface(request, socket, inputDevice, parent)
+			ClientIOInterface(request, outputDevice, inputDevice, parent)
 	{
 	}
 

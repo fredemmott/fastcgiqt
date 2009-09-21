@@ -19,6 +19,7 @@
 #include "EndRequestRecord.h"
 #include "EnumHelpers.h"
 #include "InputDevice.h"
+#include "OutputDevice.h"
 #include "ParametersRecord.h"
 #include "RecordHeader.h"
 #include "RequestDataProvider.h"
@@ -197,7 +198,7 @@ namespace FastCgiQt
 		quint16 requestId = m_recordHeader.requestId();
 		Responder* responder = (*m_responderGenerator)(
 			m_requests.at(requestId),
-			m_socket,
+			new OutputDevice(requestId, m_socket),
 			m_inputDevices.at(requestId),
 			this
 		);

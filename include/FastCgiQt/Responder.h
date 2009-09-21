@@ -39,7 +39,7 @@ namespace FastCgiQt
 			 * void myResponderGenerator(const Request&, QIODevice*, QIODevice*, QObject*);
 			 * @endcode
 			 */
-			typedef Responder* (*Generator)(const Request&, QIODevice*, QIODevice* inputDevice, QObject*);
+			typedef Responder* (*Generator)(const Request&, QIODevice* outputDevice, QIODevice* inputDevice, QObject*);
 
 			/// Start a response
 			virtual void start() = 0;
@@ -101,9 +101,9 @@ namespace FastCgiQt
  */
 #define RESPONDER(className) \
 	public: \
-		className(const FastCgiQt::Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent = NULL) \
-			: Responder(request, socket, inputDevice, parent) {} \
-		static Responder* create(const FastCgiQt::Request& request, QIODevice* socket, QIODevice* inputDevice, QObject* parent) \
-			{ return new className(request, socket, inputDevice, parent); } \
+		className(const FastCgiQt::Request& request, QIODevice* outputDevice, QIODevice* inputDevice, QObject* parent = NULL) \
+			: Responder(request, outputDevice, inputDevice, parent) {} \
+		static Responder* create(const FastCgiQt::Request& request, QIODevice* outputDevice, QIODevice* inputDevice, QObject* parent) \
+			{ return new className(request, outputDevice, inputDevice, parent); } \
 	private:
 #endif
