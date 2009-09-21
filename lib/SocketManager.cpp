@@ -171,12 +171,13 @@ namespace FastCgiQt
 		QTimer::singleShot(0, this, SLOT(processSocketData()));
 	}
 
-	void SocketManager::cleanupResponder(Responder* responder, const Request& request)
+	void SocketManager::cleanupResponder(Responder* responder)
 	{
 		// clean up the responder
+		const quint16 requestId = m_requestMap.value(responder);
+		m_requestMap.remove(responder);
 		delete responder; // clean up IO devices before cleaning up socket.
 
-		const quint16 requestId = request.requestId();
 
 		// cleanup the socket
 		m_socket->write(EndRequestRecord::create(requestId));
@@ -195,13 +196,14 @@ namespace FastCgiQt
 
 	void SocketManager::respond()
 	{
-		quint16 requestId = m_recordHeader.requestId();
+		const quint16 requestId = m_recordHeader.requestId();
 		Responder* responder = (*m_responderGenerator)(
 			m_requests.at(requestId),
 			new OutputDevice(requestId, m_socket),
 			m_inputDevices.at(requestId),
 			this
 		);
+		m_requestMap.insert(responder, requestId);
 		// in case we have more local data...
 		m_recordHeader = RecordHeader();
 		queueSocketCheck();
@@ -209,7 +211,7 @@ namespace FastCgiQt
 		connect(
 			responder,
 			SIGNAL(finished(Responder*,Request)),
-			SLOT(cleanupResponder(Responder*,Request))
+			SLOT(cleanupResponder(Responder*))
 		);
 		
 		// actually start the response

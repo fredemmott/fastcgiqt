@@ -20,6 +20,8 @@
 #include "Responder.h"
 #include "Request.h"
 
+#include <QHash>
+
 class QLocalSocket;
 
 namespace FastCgiQt
@@ -78,7 +80,7 @@ namespace FastCgiQt
 			 */
 			void finished(QThread* inThread);
 		private slots:
-			void cleanupResponder(Responder* responder, const Request& request);
+			void cleanupResponder(Responder* responder);
 			/** Process new data on the socket.
 			 *
 			 * If there is sufficient data, this will call either
@@ -116,6 +118,9 @@ namespace FastCgiQt
 			 * This is indexed by request id.
 			 */
 			QVector<InputDevice* > m_inputDevices;
+
+			/// Responder -> requestId map
+			QHash<Responder*, quint64> m_requestMap;
 	};
 }
 #endif
