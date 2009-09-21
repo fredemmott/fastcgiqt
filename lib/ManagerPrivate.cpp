@@ -88,12 +88,12 @@ namespace FastCgiQt
 				sa.sin_port = qToBigEndian(port);
 				if(::bind(m_socket, reinterpret_cast<sockaddr*>(&sa), sizeof(sa)) == -1)
 				{
-					qFatal("Failed to bind() to TCP port %d, with error %d", port, errno);
+					qFatal("Failed to bind() to TCP port %d, with error %s", port, ::strerror(errno));
 					return;
 				}
 				if(::listen(m_socket, 1) == -1)
 				{
-					qFatal("Failed to listen() on port %d, with error %d", port, errno);
+					qFatal("Failed to listen() on port %d, with error %s", port, ::strerror(errno));
 					return;
 				}
 				QTextStream cout(stdout);
