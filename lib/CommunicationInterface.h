@@ -15,6 +15,10 @@
 */
 #pragma once
 
+#include "Responder.h"
+
+#include <QtPlugin>
+
 #include <QObject>
 
 namespace FastCgiQt
@@ -23,6 +27,8 @@ namespace FastCgiQt
 	 *
 	 * This might be modified once multiple interfaces are supported,
 	 * and it becomes more apparent what code can be shared.
+	 *
+	 * @ingroup plugins
 	 */
 	class CommunicationInterface : public QObject
 	{
@@ -30,7 +36,22 @@ namespace FastCgiQt
 		public:
 			virtual ~CommunicationInterface();
 			virtual bool start() = 0;
+
+			/** Factory class constructing a CommunicationInterface.
+			 *
+			 * This is a qt plugin interface.
+			 *
+			 * @ingroup plugins
+			 */
+			class Factory
+			{
+				public:
+					/// Create a CommunicationInterface*
+					virtual CommunicationInterface* createInterface(Responder::Generator, QObject* parent) const = 0;
+			};
 		protected:
 			CommunicationInterface(QObject* parent);
 	};
 };
+
+Q_DECLARE_INTERFACE(FastCgiQt::CommunicationInterface::Factory, "uk.co.fredemmott.FastCgiQt.CommunicationInterface/1.0");

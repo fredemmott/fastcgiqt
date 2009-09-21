@@ -10,30 +10,21 @@ SET(
 
 SET(
 	PRIVATE_CLASSES
-	BeginRequestRecord
 	CacheBackend
 	CacheEntryPrivate
 	CachePrivate
 	Caches
 	CommunicationInterface
 	DebugHandler
-	EndRequestRecord
 	EnumHelpers
-	FastCgiInterface
-	FastCgiOutputBackend
 	FileCache
 	FileDependentCache
 	InputDevice
 	ManagerPrivate
 	OutputDevice
 	OutputDevice_Backend
-	ParametersRecord
-	RecordHeader
 	Request_Backend
 	Settings
-	FastCgiSocketManager
-	StandardInputRecord
-	StandardOutputRecord
 	UnsignedByteArray
 )
 

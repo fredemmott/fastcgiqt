@@ -15,12 +15,14 @@
 */
 #include "ManagerPrivate.h"
 
-#include "FastCgiInterface.h"
+#include "CommunicationInterface.h"
 #include "Settings.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFileSystemWatcher>
+#include <QPluginLoader>
+#include <QStringList>
 #include <QTextStream>
 
 namespace FastCgiQt
@@ -30,9 +32,22 @@ namespace FastCgiQt
 			QObject(parent),
 			m_applicationWatcher(new QFileSystemWatcher(this)),
 			m_caches(new Caches()),
-			m_interface(new FastCgiInterface(responderGenerator, this))
+			m_interface(0)
 	{
-		if(!m_interface->start())
+		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
+		{
+			CommunicationInterface::Factory* factory(qobject_cast<CommunicationInterface::Factory*>(object));
+			if(factory)
+			{
+				m_interface = factory->createInterface(responderGenerator, this);
+				if(m_interface)
+				{
+					break;
+				}
+			}
+		}
+
+		if(!(m_interface && m_interface->start()))
 		{
 			if(QCoreApplication::arguments().contains("--configure"))
 			{
