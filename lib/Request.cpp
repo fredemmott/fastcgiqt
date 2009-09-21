@@ -153,7 +153,21 @@ namespace FastCgiQt
 		return baseUri;
 	}
 
-	Request::Backend* Request::backend() const
+	Request::~Request()
+	{
+	}
+
+	void Request::operator=(const Request& other)
+	{
+		m_backend = other.backend();
+	}
+
+	Request::Request(const Request& other)
+	: m_backend(other.backend())
+	{
+	}
+
+	QSharedPointer<Request::Backend> Request::backend() const
 	{
 		return m_backend;
 	}

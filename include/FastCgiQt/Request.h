@@ -17,6 +17,7 @@
 #define _FASTCGI_QT_REQUEST_H
 
 #include <QHash>
+#include <QSharedPointer>
 #include <QString>
 #include <QUrl>
 
@@ -31,12 +32,15 @@ namespace FastCgiQt
 	{
 		public:
 			class Backend;
+			~Request();
+			void operator=(const Request& other);
+			Request(const Request& other);
 			/// Construct an invalid Request object.
 			Request();
 			/// @internal @brief Construct a valid Request object, with the specified backend.
 			Request(Backend* backend);
 			/// @internal @brief Retrieve the backend for this Request object.
-			Backend* backend() const;
+			QSharedPointer<Backend> backend() const;
 
 			/** If this Request object is actually valid.
 			 *
@@ -217,7 +221,7 @@ namespace FastCgiQt
 			/// A list of all the cookies provided by the client
 			QList<QNetworkCookie> cookies() const;
 		private:
-			Backend* m_backend;
+			QSharedPointer<Backend> m_backend;
 	};
 }
 
