@@ -15,8 +15,6 @@
 */
 #include "Responder.h"
 
-#include "OutputDevice.h"
-
 #include <QDebug>
 #include <QIODevice>
 
