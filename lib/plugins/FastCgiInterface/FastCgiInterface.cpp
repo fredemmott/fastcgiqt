@@ -21,13 +21,10 @@
 #include "fastcgi.h"
 
 #include <QtEndian>
-#include <QCoreApplication>
-#include <QDebug>
 #include <QFileSystemWatcher>
 #include <QHostAddress>
 #include <QSocketNotifier>
 #include <QTextStream>
-#include <QThread>
 #include <QTimer>
 
 #include <errno.h>
@@ -98,15 +95,6 @@ namespace FastCgiQt
 			SLOT(listen())
 		);
 
-		// Spawn some threads
-		for(int i = 0; i < qMax(QThread::idealThreadCount(), 1); ++i)
-		{
-			QThread* thread = new QThread(this);
-			thread->start();
-			m_threads.append(thread);
-			m_threadLoads[thread] = 0;
-		}
-
 		// Wait for the event loop to start up before running
 		QTimer::singleShot(0, this, SLOT(listen()));
 
@@ -118,16 +106,6 @@ namespace FastCgiQt
 		shutdown();
 	}
 
-	QList<int> FastCgiInterface::threadLoads() const
-	{
-		QList<int> data;
-		Q_FOREACH(const QAtomicInt& load, m_threadLoads)
-		{
-			data.append(load);
-		}
-		return data;
-	}
-
 	void FastCgiInterface::shutdown()
 	{
 		qDebug() << "Starting shutdown process";
@@ -135,45 +113,11 @@ namespace FastCgiQt
 		::close(m_socketNotifier->socket());
 		// stop watching it
 		m_socketNotifier->setEnabled(false);
-		// If there's no load, exit
-		exitIfFinished();
 	}
 
-	void FastCgiInterface::exitIfFinished()
+	bool FastCgiInterface::isFinished() const
 	{
-		if(m_socketNotifier->isEnabled())
-		{
-			return;
-		}
-		qDebug() << "Waiting for threads - thread loads:" << threadLoads();
-		Q_FOREACH(QThread* thread, m_threads)
-		{
-			if(m_threadLoads.value(thread) != 0)
-			{
-				return;
-			}
-		}
-		qDebug() << "Shutting down threads";
-		Q_FOREACH(QThread* thread, m_threads)
-		{
-			thread->quit();
-			bool done = thread->wait(10000);
-			if(!done)
-			{
-				qDebug() << "One thread took longer than 10 seconds to shut down, terminating";
-				thread->terminate();
-			}
-		}
-		qDebug() << "Shutdown complete. No thread load.";
-		QCoreApplication::exit();
-	}
-
-	bool FastCgiInterface::hasLessLoadThan(QThread* t1, QThread* t2)
-	{
-		Q_ASSERT(t1->parent() == t2->parent());
-		FastCgiInterface* p = qobject_cast<FastCgiInterface*>(t1->parent());
-		Q_ASSERT(p);
-		return p->m_threadLoads.value(t1) < p->m_threadLoads.value(t2);
+		return !m_socketNotifier->isEnabled();
 	}
 
 	void FastCgiInterface::listen()
@@ -191,25 +135,10 @@ namespace FastCgiQt
 		/* We're connected, setup a FastCgiSocketManager.
 		 * This will delete itself when appropriate (via deleteLater())
 		 */
-		// Pick a thread to put it in
-		qSort(m_threads.begin(), m_threads.end(), hasLessLoadThan);
-		QThread* thread = m_threads.first();
-		m_threadLoads[thread].ref();
 		FastCgiSocketManager* socket = new FastCgiSocketManager(m_responderGenerator, newSocket, NULL);
-		connect(
-			socket,
-			SIGNAL(finished(QThread*)),
-			this,
-			SLOT(reduceLoadCount(QThread*))
-		);
-		socket->moveToThread(thread);
+		addWorker(socket);
 	}
 
-	void FastCgiInterface::reduceLoadCount(QThread* thread)
-	{
-		m_threadLoads[thread].deref();
-		exitIfFinished();
-	}
 
 	void FastCgiInterface::lockSocket(int socket)
 	{

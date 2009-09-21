@@ -19,7 +19,11 @@
 
 #include <QtPlugin>
 
+#include <QAtomicInt>
+#include <QMap>
 #include <QObject>
+
+class QThread;
 
 namespace FastCgiQt
 {
@@ -34,8 +38,12 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
+			/// Worker job that can be put in a separate thread
+			class Worker;
+
 			virtual ~CommunicationInterface();
 			virtual bool start() = 0;
+			virtual bool isFinished() const = 0;
 
 			/** Factory class constructing a CommunicationInterface.
 			 *
@@ -49,8 +57,33 @@ namespace FastCgiQt
 					/// Create a CommunicationInterface*
 					virtual CommunicationInterface* createInterface(Responder::Generator, QObject* parent) const = 0;
 			};
+
+		protected slots:
+			/// Decrease the load counter for the specified thread.
+			void reduceLoadCount(QThread* thread);
 		protected:
 			CommunicationInterface(QObject* parent);
+			QList<int> threadLoads() const;
+			void addWorker(Worker* worker);
+		private:
+			/** Comparison for thread loads.
+			 *
+			 * @returns true if thread @p t1 is currently handling
+			 * 	less requests than @p t2.
+			 * @returns false otherwise.
+			 */
+			static bool hasLessLoadThan(QThread* t1, QThread* t2);
+
+			/// If we're shutting down, and the loads are zero, exit.
+			void exitIfFinished();
+
+			/// The thread pool.
+			QList<QThread*> m_threads;
+
+			/** The number of requests each thread is currently
+			 * handling.
+			 */
+			QMap<const QObject*, QAtomicInt> m_threadLoads;
 	};
 };
 

@@ -39,7 +39,7 @@ namespace FastCgiQt
 {
 	FastCgiSocketManager::FastCgiSocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent)
 		:
-			QObject(parent),
+			CommunicationInterface::Worker(parent),
 			m_responderGenerator(responderGenerator)
 	{
 		// We're connected, setup a QLocalSocket

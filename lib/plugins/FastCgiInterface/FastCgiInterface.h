@@ -19,14 +19,10 @@
 
 #include "Responder.h"
 
-#include <QAtomicInt>
-#include <QMap>
-#include <QObject>
 #include <QStringList>
 
 class QFileSystemWatcher;
 class QSocketNotifier;
-class QThread;
 
 namespace FastCgiQt
 {
@@ -47,28 +43,17 @@ namespace FastCgiQt
 			FastCgiInterface(Responder::Generator responderGenerator, QObject* parent = NULL);
 			~FastCgiInterface();
 			bool start();
+			bool isFinished() const;
 		private slots:
 			/// Request that the application shuts down.
 			void shutdown();
 			/// Listen for a new FastCGI connection.
 			void listen();
-			/// Decrease the load counter for the specified thread.
-			void reduceLoadCount(QThread* thread);
 		private:
-			QList<int> threadLoads() const;
 			/// Lock the socket with the specified socket id.
 			void lockSocket(int socket);
 			/// Unlock the socket with the specified socket id.
 			void releaseSocket(int socket);
-			/// If we're shutting down, and the loads are zero, exit.
-			void exitIfFinished();
-			/** Comparison for thread loads.
-			 *
-			 * @returns true if thread @p t1 is currently handling
-			 * 	less requests than @p t2.
-			 * @returns false otherwise.
-			 */
-			static bool hasLessLoadThan(QThread* t1, QThread* t2);
 
 			/// Socket handle
 			int m_socket;
@@ -87,12 +72,5 @@ namespace FastCgiQt
 			 */
 			QStringList m_allowedAddresses;
 
-			/// The thread pool.
-			QList<QThread*> m_threads;
-
-			/** The number of requests each thread is currently
-			 * handling.
-			 */
-			QMap<const QObject*, QAtomicInt> m_threadLoads;
 	};
 };

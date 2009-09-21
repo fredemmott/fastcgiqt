@@ -15,6 +15,7 @@
 */
 #pragma once
 
+#include "CommunicationInterface_Worker.h"
 #include "RecordHeader.h"
 #include "Responder.h"
 #include "Request.h"
@@ -34,7 +35,7 @@ namespace FastCgiQt
 	 *
 	 * There can be multiple simultaneous requests over one socket.
 	 */
-	class FastCgiSocketManager : public QObject
+	class FastCgiSocketManager : public CommunicationInterface::Worker
 	{
 		Q_OBJECT
 		public:
@@ -71,13 +72,6 @@ namespace FastCgiQt
 			void readStandardInput(const QByteArray& data);
 			/// Create a Responder, run it, and cleanup.
 			void respond();
-		signals:
-			/** This socket manager is done.
-			 *
-			 * @param inThread is the thread that this FastCgiSocketManager
-			 * 	is running in.
-			 */
-			void finished(QThread* inThread);
 		private slots:
 			void cleanupResponder(Responder* responder);
 			/** Process new data on the socket.
