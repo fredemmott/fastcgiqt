@@ -2,6 +2,7 @@
 
 #include "StandardOutputRecord.h"
 
+#include <QDebug>
 #include <QLocalSocket>
 
 namespace FastCgiQt
@@ -11,12 +12,12 @@ namespace FastCgiQt
 	, m_requestId(requestId)
 	, m_socket(socket)
 	{
+		open(QIODevice::WriteOnly | QIODevice::Unbuffered);
 	}
 
 	qint64 FastCgiOutputBackend::writeData(const char* data, qint64 dataSize)
 	{
 		qint64 remaining = dataSize;
-		QByteArray copy;
 		while(remaining > 0)
 		{
 			const qint64 toWrite(qMin(remaining, static_cast<qint64>(65535)));
@@ -33,6 +34,7 @@ namespace FastCgiQt
 			{
 				if(socket->state() != QLocalSocket::ConnectedState)
 				{
+					qDebug() << "NOT CONNECTED" << socket->state();
 					return -1;
 				}
 				qFatal("Couldn't write to socket: %s %d", qPrintable(m_socket->errorString()), m_socket->isOpen());
@@ -40,6 +42,7 @@ namespace FastCgiQt
 			Q_ASSERT(wrote == record.length());
 			if(wrote != record.length())
 			{
+				qDebug() << "LENGTH MISMATCH";
 				return -1;
 			}
 			remaining -= toWrite;

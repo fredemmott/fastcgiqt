@@ -24,6 +24,7 @@ namespace FastCgiQt
 		:
 			ClientIOInterface(request, outputDevice, inputDevice, parent)
 	{
+		outputDevice->setParent(this);
 	}
 
 	void Responder::finished()
