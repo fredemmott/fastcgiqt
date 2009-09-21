@@ -25,6 +25,10 @@ namespace FastCgiQt
 	 *
 	 * This is a read-only stream device, which provides access to POST
 	 * data.
+	 *
+	 * It's pretty much equivalent to a QBuffer, however, for things that only
+	 * know how to deal with a QIODevice, not this specific subclass,
+	 * it's read-only.
 	 */
 	class InputDevice : public QIODevice
 	{
