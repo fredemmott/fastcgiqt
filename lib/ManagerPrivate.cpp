@@ -85,7 +85,7 @@ namespace FastCgiQt
 				sockaddr_in sa;
 				::memset(&sa, 0, sizeof(sa));
 				sa.sin_family = AF_INET;
-				sa.sin_port = ::htons(port);
+				sa.sin_port = qToBigEndian(port);
 				if(::bind(m_socket, reinterpret_cast<sockaddr*>(&sa), sizeof(sa)) == -1)
 				{
 					qFatal("Failed to bind() to TCP port %d, with error %d", port, errno);
