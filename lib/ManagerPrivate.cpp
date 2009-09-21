@@ -22,9 +22,6 @@
 #include <QDebug>
 #include <QFileSystemWatcher>
 #include <QTextStream>
-#include <QThread>
-#include <QTime>
-#include <QTimer>
 
 namespace FastCgiQt
 {

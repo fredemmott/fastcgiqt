@@ -28,7 +28,6 @@
 #include <QSocketNotifier>
 #include <QTextStream>
 #include <QThread>
-#include <QTime>
 #include <QTimer>
 
 #include <errno.h>

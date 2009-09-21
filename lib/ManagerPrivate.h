@@ -19,10 +19,7 @@
 #include "Caches.h"
 #include "Responder.h"
 
-#include <QAtomicInt>
-#include <QMap>
 #include <QObject>
-#include <QStringList>
 
 class QFileSystemWatcher;
 
@@ -30,12 +27,10 @@ namespace FastCgiQt
 {
 	class CommunicationInterface;
 	/** @internal
-	 * @brief Class managing new FastCGI connections.
+	 * @brief Class doing main application setup.
 	 *
-	 * This class listens to the main FastCGI socket, spawns new
-	 * connections, and passes them off to a FastCgiSocketManager.
-	 *
-	 * It will spread the load over QThread::idealThreadCount() threads.
+	 * This sets up caches, and sets up a CommunicationInterface, such
+	 * as FastCgiInterface.
 	 */
 	class ManagerPrivate : public QObject
 	{
