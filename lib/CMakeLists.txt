@@ -18,11 +18,13 @@ SET(
 	DebugHandler
 	EndRequestRecord
 	EnumHelpers
+	FastCgiOutputBackend
 	FileCache
 	FileDependentCache
 	InputDevice
 	ManagerPrivate
 	OutputDevice
+	OutputDevice_Backend
 	ParametersRecord
 	RecordHeader
 	Request_Backend

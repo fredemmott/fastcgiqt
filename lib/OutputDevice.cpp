@@ -14,23 +14,21 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include "OutputDevice.h"
-
-#include "StandardOutputRecord.h"
+#include "OutputDevice_Backend.h"
 
 #include <QDebug>
-#include <QLocalSocket>
 
 namespace FastCgiQt
 {
-	OutputDevice::OutputDevice(quint16 requestId, QIODevice* socket, QObject* parent)
+	OutputDevice::OutputDevice(Backend* backend, QObject* parent)
 		:
 			QIODevice(parent),
 			m_haveSentData(false),
-			m_requestId(requestId),
-			m_socket(socket),
 			m_mode(Streamed),
-			m_sendHeaders(true)
+			m_sendHeaders(true),
+			m_backend(backend)
 	{
+		backend->setParent(this);
 		open(QIODevice::WriteOnly);
 		m_headers.insert("CONTENT-TYPE", "text/html; charset=UTF-8");
 		m_headers.insert("STATUS", "200 OK");
@@ -83,13 +81,7 @@ namespace FastCgiQt
 
 	bool OutputDevice::waitForBytesWritten(int msecs)
 	{
-		QLocalSocket* socket = qobject_cast<QLocalSocket*>(m_socket);
-		Q_ASSERT(socket);
-		if(socket->state() != QLocalSocket::ConnectedState)
-		{
-			return false;
-		}
-		return m_socket->waitForBytesWritten(msecs);
+		return m_backend->waitForBytesWritten(msecs);
 	}
 
 	qint64 OutputDevice::writeData(const char* data, const qint64 dataSize)
@@ -110,44 +102,15 @@ namespace FastCgiQt
 			QByteArray raw = headerData.toUtf8();
 			writeData(raw.constData(), raw.length());
 		}
+		
+		const qint64 written = m_backend->write(data, dataSize);
 
-		qint64 remaining = dataSize;
-		QByteArray copy;
-		while(remaining > 0)
+		if(mode() == Logged && written == dataSize)
 		{
-			const qint64 toWrite(qMin(remaining, static_cast<qint64>(65535)));
-			const qint64 offset(dataSize - remaining);
-
-			QByteArray record = StandardOutputRecord::create(
-				m_requestId,
-				QByteArray(&data[offset], toWrite)
-			);
-			qint64 wrote = m_socket->write(record);
-			QLocalSocket* socket = qobject_cast<QLocalSocket*>(m_socket);
-			Q_ASSERT(socket);
-			if(!waitForBytesWritten(1000))
-			{
-				if(socket->state() != QLocalSocket::ConnectedState)
-				{
-					return -1;
-				}
-				qFatal("Couldn't write to socket: %s %d", qPrintable(m_socket->errorString()), m_socket->isOpen());
-			}
-			Q_ASSERT(wrote == record.length());
-			if(wrote == record.length())
-			{
-				if(mode() == Logged)
-				{
-					m_buffer.append(QByteArray(&data[offset], toWrite));
-				}
-			}
-			else
-			{
-				return -1;
-			}
-			remaining -= toWrite;
+			m_buffer.append(data, dataSize);
 		}
-		return dataSize;
+
+		return written;
 	}
 
 	bool OutputDevice::setHeader(const QString& name, const QString& value)
