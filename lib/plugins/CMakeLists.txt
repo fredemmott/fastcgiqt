@@ -19,6 +19,15 @@ ELSE()
 	MESSAGE(STATUS "SCGI support is *NOT* enabled.")
 ENDIF()
 
+IF(WITH_HTTP_SUPPORT)
+	LIST(APPEND SUBDIR_STATIC_PLUGINS HttpInterface)
+	MESSAGE(STATUS "HTTP support is enabled.")
+ELSE()
+# Experimental, don't advertise
+#	MESSAGE(STATUS "HTTP support is *NOT* enabled.")
+ENDIF()
+
+
 IF(WITH_MEMCACHED_SUPPORT)
 	LIST(APPEND STATIC_PLUGINS MemcachedCache)
 	MESSAGE(STATUS "memcached support is enabled")
