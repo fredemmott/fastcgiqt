@@ -51,6 +51,8 @@ namespace FastCgiQt
 			exit(0);
 		}
 
+		const QString interface = Settings().value("FastCGI/socketType", "FCGI-UNIX").toString();
+
 		// FIXME - use configured interface
 		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
 		{
@@ -58,13 +60,18 @@ namespace FastCgiQt
 			if(factory)
 			{
 				m_interface = factory->createInterface(responderGenerator, this);
-				if(m_interface)
+				if(m_interface && m_interface->backends().contains(interface))
 				{
 					break;
 				}
+				else
+				{
+					delete m_interface;
+					m_interface = 0;
+				}
 			}
 		}
-		if(!(m_interface && m_interface->start(QString())))
+		if(!(m_interface && m_interface->start(interface)))
 		{
 			// Not a FastCGI application
 			QTextStream cerr(stderr);
@@ -114,14 +121,7 @@ namespace FastCgiQt
 		{
 			interface = "FCGI-UNIX";
 		}
-		if(interface == "FCGI-UNIX")
-		{
-			settings.setValue("socketType", "FCGI-UNIX");
-		}
-		else
-		{
-			settings.setValue("socketType", interface);
-		}
+		settings.setValue("socketType", interface);
 		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
 		{
 			CommunicationInterface::Factory* factory(qobject_cast<CommunicationInterface::Factory*>(object));

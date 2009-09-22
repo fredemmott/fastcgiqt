@@ -77,7 +77,6 @@ namespace FastCgiQt
 
 	bool FastCgiInterface::startBackend(const QString& backend)
 	{
-		Q_UNUSED(backend);
 		// Check we're running as a FastCGI application
 		sockaddr_un sa;
 		socklen_t len = sizeof(sa);
@@ -89,7 +88,7 @@ namespace FastCgiQt
 		if(error == -1 && errno != ENOTCONN)
 		{
 			Settings settings;
-			if(settings.value("FastCGI/socketType", "FCGI-UNIX").toString() == "FCGI-TCP")
+			if(backend == "FCGI-TCP")
 			{
 				m_socket = ::socket(AF_INET, SOCK_STREAM, 0);
 				in_port_t port = settings.value("FastCGI/portNumber", 0).value<in_port_t>();
