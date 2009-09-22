@@ -115,13 +115,26 @@ namespace FastCgiQt
 		Settings settings;
 		settings.beginGroup("FastCGI");
 
-		QString interface;
+		QStringList availableInterfaces;
+		Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
+		{
+			CommunicationInterface* interface = factory->createInterface(0, this);
+			availableInterfaces.append(interface->backends());
+			delete interface;
+		}
+		qSort(availableInterfaces);
 
 		cout << "*****************************************" << endl;
 		cout << "***** FastCgiQt HTTPD Configuration *****" << endl;
 		cout << "*****************************************" << endl;
 		cout << "The following interfaces are available:" << endl;
+		Q_FOREACH(const QString& interface, availableInterfaces)
+		{
+			cout << " - " << interface << endl;
+		}
 		cout << "Interface [FCGI-UNIX]: " << flush;
+
+		QString interface;
 		interface = cin.readLine().toUpper();
 		if(interface.isEmpty())
 		{
