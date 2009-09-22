@@ -3,18 +3,27 @@ SET(
 	RamCache
 )
 
-SET(
-	SUBDIR_STATIC_PLUGINS
-	FastCgiInterface
-	ScgiInterface
-)
+SET(SUBDIR_STATIC_PLUGINS)
+
+IF(WITH_FASTCGI_SUPPORT)
+	LIST(APPEND SUBDIR_STATIC_PLUGINS FastCgiInterface)
+	MESSAGE(STATUS "FastCGI support is enabled.")
+ELSE()
+	MESSAGE(STATUS "FastCGI support is *NOT* enabled.")
+ENDIF()
+
+IF(WITH_SCGI_SUPPORT)
+	LIST(APPEND SUBDIR_STATIC_PLUGINS ScgiInterface)
+	MESSAGE(STATUS "SCGI support is enabled.")
+ELSE()
+	MESSAGE(STATUS "SCGI support is *NOT* enabled.")
+ENDIF()
 
 IF(WITH_MEMCACHED_SUPPORT)
-	LIST(
-		APPEND
-		STATIC_PLUGINS
-		MemcachedCache
-	)
+	LIST(APPEND STATIC_PLUGINS MemcachedCache)
+	MESSAGE(STATUS "memcached support is enabled")
+ELSE()
+	MESSAGE(STATUS "memcached support is *NOT* enabled.")
 ENDIF()
 
 # Probably don't want to edit below here
