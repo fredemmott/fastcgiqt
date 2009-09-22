@@ -55,7 +55,6 @@ namespace FastCgiQt
 
 	void ScgiRequest::cleanup(Responder* responder)
 	{
-		qDebug() << "RESPONDED";
 		m_socket->close();
 		delete responder;
 		emit finished(thread());
