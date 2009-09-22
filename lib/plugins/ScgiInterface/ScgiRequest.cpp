@@ -25,6 +25,7 @@ namespace FastCgiQt
 	, m_request(new Request::Backend())
 	, m_state(NewConnection)
 	{
+		socket->setParent(this);
 		socket->open(QIODevice::ReadWrite);
 		Q_ASSERT(socket->isOpen());
 		Q_ASSERT(socket->isReadable());
