@@ -41,8 +41,43 @@ namespace FastCgiQt
 	{
 	}
 
-	bool FastCgiInterface::start()
+	QStringList FastCgiInterface::backends() const
 	{
+		return QStringList() << "FCGI-UNIX" << "FCGI-TCP";
+	}
+
+	void FastCgiInterface::configureHttpd(const QString& backend)
+	{
+		QTextStream cin(stdin);
+		QTextStream cout(stdout);
+		Settings settings;
+		settings.beginGroup("FastCGI");
+
+		if(backend.toUpper() == "FCGI-UNIX")
+		{
+			return;
+		}
+		if(backend.toUpper() == "FCGI-TCP")
+		{
+			QString portString;
+			cout << "Port number: " << flush;
+			portString = cin.readLine();
+			bool ok;
+			quint32 portNumber = portString.toUInt(&ok);
+			if(!(ok && portNumber))
+			{
+				qFatal("Not a valid port number.");
+				return;
+			}
+			settings.setValue("portNumber", portNumber);
+			return;
+		}
+		qFatal("Unknown FastCGI backend: %s", qPrintable(backend));
+	}
+
+	bool FastCgiInterface::startBackend(const QString& backend)
+	{
+		Q_UNUSED(backend);
 		// Check we're running as a FastCGI application
 		sockaddr_un sa;
 		socklen_t len = sizeof(sa);
@@ -103,7 +138,10 @@ namespace FastCgiQt
 
 	FastCgiInterface::~FastCgiInterface()
 	{
-		shutdown();
+		if(m_responderGenerator)
+		{
+			shutdown();
+		}
 	}
 
 	void FastCgiInterface::shutdown()

@@ -42,8 +42,10 @@ namespace FastCgiQt
 			class Worker;
 
 			virtual ~CommunicationInterface();
-			virtual bool start() = 0;
 			virtual bool isFinished() const = 0;
+			virtual QStringList backends() const = 0;
+			virtual void configureHttpd(const QString& backend);
+			bool start(const QString& backend);
 
 			/** Factory class constructing a CommunicationInterface.
 			 *
@@ -62,6 +64,8 @@ namespace FastCgiQt
 			/// Decrease the load counter for the specified thread.
 			void reduceLoadCount(QThread* thread);
 		protected:
+			virtual bool startBackend(const QString& backend) = 0;
+
 			CommunicationInterface(QObject* parent);
 			QList<int> threadLoads() const;
 			void addWorker(Worker* worker);

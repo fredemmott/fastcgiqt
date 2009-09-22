@@ -34,6 +34,24 @@ namespace FastCgiQt
 			m_caches(new Caches()),
 			m_interface(0)
 	{
+		if(QCoreApplication::arguments().contains("--configure"))
+		{
+			configureHttpd();
+			configureDatabase();
+			exit(0);
+		}
+		if(QCoreApplication::arguments().contains("--configure-httpd"))
+		{
+			configureHttpd();
+			exit(0);
+		}
+		if(QCoreApplication::arguments().contains("--configure-database"))
+		{
+			configureDatabase();
+			exit(0);
+		}
+
+		// FIXME - use configured interface
 		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
 		{
 			CommunicationInterface::Factory* factory(qobject_cast<CommunicationInterface::Factory*>(object));
@@ -46,25 +64,8 @@ namespace FastCgiQt
 				}
 			}
 		}
-
-		if(!(m_interface && m_interface->start()))
+		if(!(m_interface && m_interface->start(QString())))
 		{
-			if(QCoreApplication::arguments().contains("--configure"))
-			{
-				configureHttpd();
-				configureDatabase();
-				exit(0);
-			}
-			if(QCoreApplication::arguments().contains("--configure-httpd"))
-			{
-				configureHttpd();
-				exit(0);
-			}
-			if(QCoreApplication::arguments().contains("--configure-database"))
-			{
-				configureDatabase();
-				exit(0);
-			}
 			// Not a FastCGI application
 			QTextStream cerr(stderr);
 			cerr << "This application must be ran as a FastCGI application (eg from Apache via mod_fastcgi)." << endl;
@@ -107,34 +108,41 @@ namespace FastCgiQt
 		cout << "*****************************************" << endl;
 		cout << "***** FastCgiQt HTTPD Configuration *****" << endl;
 		cout << "*****************************************" << endl;
-		cout << "FastCgiQt supports two interfaces for communications with the HTTPD:" << endl;
-		cout << "- FCGI-UNIX: Good for Apache with mod_fastcgi/mod_fcgid." << endl;
-		cout << "   FastCgiQt tries to use the unix socket bound to file descriptor 0." << endl;
-		cout << "   This is what the FastCGI specification says, but doesn't work too" << endl;
-		cout << "   well with anything except Apache." << endl;
-		cout << "- FCGI-TCP: Good for lighttpd, cherokee, and others." << endl;
-		cout << "   FastCgiQt listens on a user-configured TCP port." << endl;
-		cout << "   This works with pretty much anything that isn't Apache." << endl;
 		cout << "Interface [FCGI-UNIX]: " << flush;
-		interface = cin.readLine();
-		if(interface.toUpper() == "FCGI-UNIX" || interface.isEmpty())
+		interface = cin.readLine().toUpper();
+		if(interface.isEmpty())
+		{
+			interface = "FCGI-UNIX";
+		}
+		if(interface == "FCGI-UNIX")
 		{
 			settings.setValue("socketType", "FCGI-UNIX");
 		}
-		else if(interface.toUpper() == "FCGI-TCP")
+		else
 		{
-			settings.setValue("socketType", "FCGI-TCP");
-			QString portString;
-			cout << "Port number: " << flush;
-			portString = cin.readLine();
-			bool ok;
-			quint32 portNumber = portString.toUInt(&ok);
-			if(!(ok && portNumber))
+			settings.setValue("socketType", interface);
+		}
+		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
+		{
+			CommunicationInterface::Factory* factory(qobject_cast<CommunicationInterface::Factory*>(object));
+			if(factory)
 			{
-				qFatal("Not a valid port number.");
-				return;
+				m_interface = factory->createInterface(0, this);
+				if(m_interface && m_interface->backends().contains(interface))
+				{
+					m_interface->configureHttpd(interface);
+					break;
+				}
+				else
+				{
+					delete m_interface;
+					m_interface = 0;
+				}
 			}
-			settings.setValue("portNumber", portNumber);
+		}
+		if(m_interface)
+		{
+			delete m_interface;
 		}
 		else
 		{

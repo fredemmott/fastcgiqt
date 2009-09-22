@@ -42,8 +42,11 @@ namespace FastCgiQt
 			/// Create a FastCgiInterface object.
 			FastCgiInterface(Responder::Generator responderGenerator, QObject* parent = NULL);
 			~FastCgiInterface();
-			bool start();
 			bool isFinished() const;
+			QStringList backends() const;
+			void configureHttpd(const QString& backend);
+		protected:
+			bool startBackend(const QString& backend);
 		private slots:
 			/// Request that the application shuts down.
 			void shutdown();

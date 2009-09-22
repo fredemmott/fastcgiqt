@@ -25,6 +25,10 @@ namespace FastCgiQt
 	CommunicationInterface::CommunicationInterface(QObject* parent)
 	: QObject(parent)
 	{
+	}
+
+	bool CommunicationInterface::start(const QString& backend)
+	{
 		// Spawn some threads
 		for(int i = 0; i < qMax(QThread::idealThreadCount(), 1); ++i)
 		{
@@ -33,6 +37,12 @@ namespace FastCgiQt
 			m_threads.append(thread);
 			m_threadLoads[thread] = 0;
 		}
+		return startBackend(backend);
+	}
+
+	void CommunicationInterface::configureHttpd(const QString& backend)
+	{
+		Q_UNUSED(backend);
 	}
 
 	void CommunicationInterface::exitIfFinished()
@@ -77,6 +87,11 @@ namespace FastCgiQt
 
 	CommunicationInterface::~CommunicationInterface()
 	{
+		Q_FOREACH(QThread* thread, m_threads)
+		{
+			thread->quit();
+			thread->wait(500);
+		}
 	}
 
 	bool CommunicationInterface::hasLessLoadThan(QThread* t1, QThread* t2)
