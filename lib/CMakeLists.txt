@@ -24,6 +24,7 @@ SET(
 	ManagerPrivate
 	OutputDevice
 	OutputDevice_Backend
+	ProxyOutputBackend
 	Request_Backend
 	Settings
 	UnsignedByteArray

@@ -6,6 +6,7 @@ SET(
 SET(
 	SUBDIR_STATIC_PLUGINS
 	FastCgiInterface
+	ScgiInterface
 )
 
 IF(WITH_MEMCACHED_SUPPORT)

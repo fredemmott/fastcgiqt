@@ -37,6 +37,7 @@ namespace FastCgiQt
 {
 	FastCgiInterface::FastCgiInterface(Responder::Generator responderGenerator, QObject* parent)
 	: CommunicationInterface(parent)
+	, m_socketNotifier(0)
 	, m_responderGenerator(responderGenerator)
 	{
 	}
@@ -146,10 +147,13 @@ namespace FastCgiQt
 	void FastCgiInterface::shutdown()
 	{
 		qDebug() << "Starting shutdown process";
-		// stop listening on the main socket
-		::close(m_socketNotifier->socket());
-		// stop watching it
-		m_socketNotifier->setEnabled(false);
+		if(m_socketNotifier)
+		{
+			// stop listening on the main socket
+			::close(m_socketNotifier->socket());
+			// stop watching it
+			m_socketNotifier->setEnabled(false);
+		}
 	}
 
 	bool FastCgiInterface::isFinished() const
