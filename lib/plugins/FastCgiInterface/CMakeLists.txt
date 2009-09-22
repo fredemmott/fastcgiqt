@@ -1,6 +1,7 @@
 SET(
 	CLASSES
 	BeginRequestRecord
+	DebugHandler
 	EndRequestRecord
 	FastCgiInterface
 	FastCgiInterfaceFactory

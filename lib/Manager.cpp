@@ -15,7 +15,6 @@
 */
 #include "Manager.h"
 
-#include "DebugHandler.h"
 #include "ManagerPrivate.h"
 
 namespace FastCgiQt
@@ -25,7 +24,6 @@ namespace FastCgiQt
 			QObject(parent),
 			d(new ManagerPrivate(responderGenerator, this))
 	{
-		new DebugHandler(this);
 	}
 
 	Manager::~Manager()

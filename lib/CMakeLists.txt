@@ -16,7 +16,6 @@ SET(
 	Caches
 	CommunicationInterface
 	CommunicationInterface_Worker
-	DebugHandler
 	EnumHelpers
 	FileCache
 	FileDependentCache

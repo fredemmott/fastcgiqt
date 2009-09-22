@@ -15,6 +15,7 @@
 */
 #include "FastCgiInterface.h"
 
+#include "DebugHandler.h"
 #include "Settings.h"
 #include "FastCgiSocketManager.h"
 
@@ -78,6 +79,10 @@ namespace FastCgiQt
 
 	bool FastCgiInterface::startBackend(const QString& backend)
 	{
+		if(backend == "FCGI-UNIX")
+		{
+			new DebugHandler(this);
+		}
 		// Check we're running as a FastCGI application
 		sockaddr_un sa;
 		socklen_t len = sizeof(sa);
