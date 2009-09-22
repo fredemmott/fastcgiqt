@@ -34,6 +34,15 @@ namespace FastCgiQt
 			m_caches(new Caches()),
 			m_interface(0)
 	{
+		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
+		{
+			CommunicationInterface::Factory* factory(qobject_cast<CommunicationInterface::Factory*>(object));
+			if(factory)
+			{
+				m_factories.append(factory);
+			}
+		}
+
 		if(QCoreApplication::arguments().contains("--configure"))
 		{
 			configureHttpd();
@@ -53,24 +62,20 @@ namespace FastCgiQt
 
 		const QString interface = Settings().value("FastCGI/socketType", "FCGI-UNIX").toString();
 
-		// FIXME - use configured interface
-		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
+		Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
 		{
-			CommunicationInterface::Factory* factory(qobject_cast<CommunicationInterface::Factory*>(object));
-			if(factory)
+			m_interface = factory->createInterface(responderGenerator, this);
+			if(m_interface && m_interface->backends().contains(interface))
 			{
-				m_interface = factory->createInterface(responderGenerator, this);
-				if(m_interface && m_interface->backends().contains(interface))
-				{
-					break;
-				}
-				else
-				{
-					delete m_interface;
-					m_interface = 0;
-				}
+				break;
+			}
+			else
+			{
+				delete m_interface;
+				m_interface = 0;
 			}
 		}
+
 		if(!(m_interface && m_interface->start(interface)))
 		{
 			// Not a FastCGI application
@@ -115,6 +120,7 @@ namespace FastCgiQt
 		cout << "*****************************************" << endl;
 		cout << "***** FastCgiQt HTTPD Configuration *****" << endl;
 		cout << "*****************************************" << endl;
+		cout << "The following interfaces are available:" << endl;
 		cout << "Interface [FCGI-UNIX]: " << flush;
 		interface = cin.readLine().toUpper();
 		if(interface.isEmpty())
@@ -122,24 +128,21 @@ namespace FastCgiQt
 			interface = "FCGI-UNIX";
 		}
 		settings.setValue("socketType", interface);
-		Q_FOREACH(QObject* object, QPluginLoader::staticInstances())
+		Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
 		{
-			CommunicationInterface::Factory* factory(qobject_cast<CommunicationInterface::Factory*>(object));
-			if(factory)
+			m_interface = factory->createInterface(0, this);
+			if(m_interface && m_interface->backends().contains(interface))
 			{
-				m_interface = factory->createInterface(0, this);
-				if(m_interface && m_interface->backends().contains(interface))
-				{
-					m_interface->configureHttpd(interface);
-					break;
-				}
-				else
-				{
-					delete m_interface;
-					m_interface = 0;
-				}
+				m_interface->configureHttpd(interface);
+				break;
+			}
+			else
+			{
+				delete m_interface;
+				m_interface = 0;
 			}
 		}
+
 		if(m_interface)
 		{
 			delete m_interface;

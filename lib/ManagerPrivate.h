@@ -17,6 +17,7 @@
 #define _FASTCGI_QT_MANAGER_PRIVATE_H
 
 #include "Caches.h"
+#include "CommunicationInterface.h"
 #include "Responder.h"
 
 #include <QObject>
@@ -25,7 +26,6 @@ class QFileSystemWatcher;
 
 namespace FastCgiQt
 {
-	class CommunicationInterface;
 	/** @internal
 	 * @brief Class doing main application setup.
 	 *
@@ -55,6 +55,8 @@ namespace FastCgiQt
 			Caches* m_caches;
 
 			CommunicationInterface* m_interface;
+
+			QList<CommunicationInterface::Factory*> m_factories;
 	};
 };
 
