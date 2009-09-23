@@ -37,6 +37,7 @@ namespace FastCgiQt
 			QString contentType() const;
 			quint64 contentLength() const;
 			QByteArray content() const;
+			bool haveAllContent() const;
 
 			QHash<QString, QString> postData() const;
 			QHash<QString, QString> serverData() const;

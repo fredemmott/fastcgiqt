@@ -40,6 +40,11 @@ namespace FastCgiQt
 		return m_contentLength;
 	}
 
+	bool Request::Backend::haveAllContent() const
+	{
+		return contentLength() == static_cast<quint64>(m_content.length());
+	}
+
 	QByteArray Request::Backend::content() const
 	{
 		m_request->waitForAllContent();

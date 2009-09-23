@@ -82,7 +82,7 @@ namespace FastCgiQt
 
 	bool Request::haveAllContent() const
 	{
-		return contentLength() == static_cast<quint64>(content().length());
+		return m_backend->haveAllContent();
 	}
 
 	bool Request::isValid() const
