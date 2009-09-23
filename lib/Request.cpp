@@ -46,15 +46,15 @@ namespace FastCgiQt
 	Request::Request()
 	: m_backend(0)
 	{
-		if(m_backend)
-		{
-			m_backend->setRequest(this);
-		}
 	}
 
 	Request::Request(Backend* backend)
 	: m_backend(backend)
 	{
+		if(m_backend)
+		{
+			m_backend->setRequest(this);
+		}
 	}
 
 	QString Request::contentType() const
