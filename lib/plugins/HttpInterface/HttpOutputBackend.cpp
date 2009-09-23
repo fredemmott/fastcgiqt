@@ -41,18 +41,15 @@ namespace FastCgiQt
 				const QByteArray name = blob.mid(position, endOfName - position);
 				const QByteArray value = blob.mid(
 					endOfName + 2, // ": ", not ':'
-					endOfValue - endOfName
+					endOfValue - (endOfName + 2)
 				);
-				qDebug() << "Header:" << name << value;
 				if(name == "STATUS")
 				{
 					// We've got the status header
-					qDebug() << "Status Header";
 					const int endOfCode = value.indexOf(' ');
 					Q_ASSERT(endOfCode != -1);
 					statusCode = QString::fromLatin1(value.left(endOfCode)).toInt();
 					statusString = value.mid(endOfCode + 1, -1);
-					qDebug() << "Code:" << statusCode << "Text:" << statusString;
 				}
 				else
 				{
@@ -62,7 +59,6 @@ namespace FastCgiQt
 			}
 			Q_ASSERT(statusCode != -1);
 			Q_ASSERT(!statusString.isEmpty());
-			qDebug() << "Code:" << statusCode << "String:" << statusString;
 			::evhttp_send_reply_start(m_request, statusCode, statusString);
 			m_state = SentHeaders;
 			return maxSize;

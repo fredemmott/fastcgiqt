@@ -35,7 +35,7 @@ namespace FastCgiQt
 			qFatal("Couldn't bind to port %d", m_port);
 			return;
 		}
-		::evhttp_set_cb(m_httpHandle, "/", spawnRequest, this);
+		::evhttp_set_gencb(m_httpHandle, spawnRequest, this);
 
 		QTextStream cout(stdout);
 		cout << "Running HTTP server on TCP port " << m_port << endl;

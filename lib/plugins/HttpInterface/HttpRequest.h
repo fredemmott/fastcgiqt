@@ -17,9 +17,11 @@ namespace FastCgiQt
 			~HttpRequest();
 		private slots:
 			void start();
+			void cleanup(Responder* responder);
 		private:
 			Responder::Generator m_generator;
 			struct evhttp_request* m_httpRequest;
+			InputDevice* m_inputDevice;
 			Request m_request;
 	};
 };
