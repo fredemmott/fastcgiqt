@@ -1,6 +1,7 @@
 #include "HttpOutputBackend.h"
 
 #include <QDebug>
+#include <QPair>
 
 namespace FastCgiQt
 {
@@ -24,7 +25,6 @@ namespace FastCgiQt
 			QByteArray blob(data, maxSize);
 			int statusCode = -1;
 			QByteArray statusString;
-			QByteArray headerData;
 			// We need to find the "STATUS" header.
 			for(int position = 0; position < blob.length(); )
 			{
@@ -32,21 +32,22 @@ namespace FastCgiQt
 				if(blob.at(position) == '\r')
 				{
 					// we've hit the end
-					headerData.append(blob.mid(position, -1));
 					break;
 				}
 				// Nope, find the header name
 				const int endOfName = blob.indexOf(':', position);
 				Q_ASSERT(endOfName != -1);
 				const int endOfValue = blob.indexOf('\r', endOfName);
-				if(blob.mid(position, endOfName - position) == "STATUS")
+				const QByteArray name = blob.mid(position, endOfName - position);
+				const QByteArray value = blob.mid(
+					endOfName + 2, // ": ", not ':'
+					endOfValue - endOfName
+				);
+				qDebug() << "Header:" << name << value;
+				if(name == "STATUS")
 				{
 					// We've got the status header
-					const QByteArray value = blob.mid(
-						endOfName + 2, // ": ", not ':'
-						endOfValue - endOfName
-					);
-					qDebug() << "Status header:" << value;
+					qDebug() << "Status Header";
 					const int endOfCode = value.indexOf(' ');
 					Q_ASSERT(endOfCode != -1);
 					statusCode = QString::fromLatin1(value.left(endOfCode)).toInt();
@@ -55,27 +56,16 @@ namespace FastCgiQt
 				}
 				else
 				{
-					const QByteArray thisHeader = blob.mid(position, (endOfValue - position) + 2); // include the \r\n
-					qDebug() << "Header:" << thisHeader;
-					headerData.append(thisHeader);
+					::evhttp_add_header(m_request->output_headers, name, value);
 				}
 				position = endOfValue + 2;
 			}
 			Q_ASSERT(statusCode != -1);
 			Q_ASSERT(!statusString.isEmpty());
 			qDebug() << "Code:" << statusCode << "String:" << statusString;
-			qDebug() << "Other headers:" << headerData;
 			::evhttp_send_reply_start(m_request, statusCode, statusString);
 			m_state = SentHeaders;
-			const qint64 sent = writeData(headerData, headerData.length());
-			if(sent == headerData.length())
-			{
-				return maxSize;
-			}
-			else
-			{
-				return -1;
-			}
+			return maxSize;
 		}
 		struct evbuffer* buffer = ::evbuffer_new();
 		::evbuffer_add(buffer, data, maxSize);
