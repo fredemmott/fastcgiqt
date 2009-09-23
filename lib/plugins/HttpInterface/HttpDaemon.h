@@ -15,8 +15,6 @@
 */
 #pragma once
 
-#include "Responder.h"
-
 #include <event.h>
 #include <evhttp.h>
 
@@ -28,17 +26,15 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
-			HttpDaemon(Responder::Generator responderGenerator, quint16 port, QObject* parent = NULL);
+			HttpDaemon(quint16 port, QObject* parent = NULL);
 			~HttpDaemon();
 		protected:
 			void run();
+		signals:
+			void spawnRequest(struct evhttp_request* request);
 		private:
-			/// C callback, just call the member function
-			static void handleRequest(struct evhttp_request* request, void* instance);
-			void handleRequest(struct evhttp_request* request);
-
-			/// Pointer to function creating new Responder objects.
-			Responder::Generator m_responderGenerator;
+			/// C callback, just emit the member signal
+			static void spawnRequest(struct evhttp_request* request, void* instance);
 
 			/// Port number to run on
 			const quint16 m_port;

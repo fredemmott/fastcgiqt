@@ -18,6 +18,8 @@
 #include "CommunicationInterface.h"
 #include "Responder.h"
 
+struct evhttp_request;
+
 namespace FastCgiQt
 {
 	class HttpInterface : public CommunicationInterface
@@ -32,6 +34,8 @@ namespace FastCgiQt
 			void configureHttpd(const QString& backend);
 		protected:
 			bool startBackend(const QString& backend);
+		private slots:
+			void spawnRequest(struct evhttp_request* request);
 		private:
 			/// Pointer to function creating new Responder objects.
 			Responder::Generator m_responderGenerator;

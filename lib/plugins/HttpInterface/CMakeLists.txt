@@ -3,6 +3,7 @@ SET(
 	HttpDaemon
 	HttpInterface
 	HttpInterfaceFactory
+	HttpRequest
 )
 
 SET(SOURCES)

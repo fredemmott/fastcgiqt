@@ -15,6 +15,7 @@
 */
 #include "HttpInterface.h"
 #include "HttpDaemon.h"
+#include "HttpRequest.h"
 
 #include "Settings.h"
 
@@ -71,13 +72,24 @@ namespace FastCgiQt
 			return false;
 		}
 
-		(new HttpDaemon(m_responderGenerator, portNumber, this))->start();
+		HttpDaemon* daemon = new HttpDaemon(portNumber, this);
+		connect(
+			daemon,
+			SIGNAL(spawnRequest(struct evhttp_request*)),
+			SLOT(spawnRequest(struct evhttp_request*))
+		);
+		daemon->start();
 
 		return true;
 	}
 
 	HttpInterface::~HttpInterface()
 	{
+	}
+
+	void HttpInterface::spawnRequest(struct evhttp_request* request)
+	{
+		addWorker(new HttpRequest(m_responderGenerator, request, NULL));
 	}
 
 	bool HttpInterface::isFinished() const

@@ -20,9 +20,8 @@
 
 namespace FastCgiQt
 {
-	HttpDaemon::HttpDaemon(Responder::Generator responderGenerator, quint16 port, QObject* parent)
+	HttpDaemon::HttpDaemon(quint16 port, QObject* parent)
 	: QThread(parent)
-	, m_responderGenerator(responderGenerator)
 	, m_port(port)
 	{
 	}
@@ -36,7 +35,7 @@ namespace FastCgiQt
 			qFatal("Couldn't bind to port %d", m_port);
 			return;
 		}
-		::evhttp_set_cb(m_httpHandle, "/", handleRequest, this);
+		::evhttp_set_cb(m_httpHandle, "/", spawnRequest, this);
 
 		QTextStream cout(stdout);
 		cout << "Running HTTP server on TCP port " << m_port << endl;
@@ -48,15 +47,8 @@ namespace FastCgiQt
 	{
 	}
 
-	void HttpDaemon::handleRequest(struct evhttp_request* request, void* instance)
+	void HttpDaemon::spawnRequest(struct evhttp_request* request, void* instance)
 	{
-		qDebug() << Q_FUNC_INFO;
-		reinterpret_cast<HttpDaemon*>(instance)->handleRequest(request);
-	}
-
-	void HttpDaemon::handleRequest(struct evhttp_request* request)
-	{
-		// TODO
-		Q_UNUSED(request);
+		emit reinterpret_cast<HttpDaemon*>(instance)->spawnRequest(request);
 	}
 }
