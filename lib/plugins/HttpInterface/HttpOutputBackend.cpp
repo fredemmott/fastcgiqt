@@ -14,6 +14,7 @@ namespace FastCgiQt
 
 	HttpOutputBackend::~HttpOutputBackend()
 	{
+		qDebug() << "Sending reply end";
 		::evhttp_send_reply_end(m_request);
 	}
 

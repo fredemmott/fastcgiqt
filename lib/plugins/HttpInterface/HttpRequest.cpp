@@ -31,13 +31,29 @@ namespace FastCgiQt
 		// 1. Read the headers
 		QHash<QString, QString> headers;
 		// Read the HTTP headers
+		const size_t contentLength = EVBUFFER_LENGTH(m_httpRequest->input_buffer);
+		headers.insert("CONTENT_LENGTH", QString::number(contentLength));
+
 		struct evkeyval* header;
 		TAILQ_FOREACH(header, m_httpRequest->input_headers, next)
 		{
-			QString name = "HTTP_" + QString::fromLatin1(header->key).toUpper();
+			QString name = QString::fromLatin1(header->key).toUpper();
 			name.replace('-', '_');
-			headers.insert(name, QString::fromLatin1(header->value));
+			const QString value(QString::fromLatin1(header->value));
+			if(name == "CONTENT_LENGTH")
+			{
+				Q_ASSERT(value == QString::number(contentLength));
+			}
+			else if(name == "CONTENT_TYPE")
+			{
+				headers.insert(name, value);
+			}
+			else
+			{
+				headers.insert("HTTP_" + name, value);
+			}
 		}
+
 		// Add special CGI headers
 		headers.insert("SERVER_SOFTWARE", "FastCgiQt/evhttp");
 		headers.insert("GATEWAY_INTERFACE", "CGI/1.1");
@@ -71,12 +87,16 @@ namespace FastCgiQt
 		headers.insert("SERVER_PROTOCOL", QString("HTTP/%1.%2").arg(static_cast<int>(m_httpRequest->major)).arg(static_cast<int>(m_httpRequest->minor)));
 
 		m_request.backend()->addServerData(headers);
-		// 2. Start the responder
+		// 2. Read POST data
 		m_inputDevice = new InputDevice(this);
+		const QByteArray postData(reinterpret_cast<const char*>(EVBUFFER_DATA(m_httpRequest->input_buffer)), contentLength);
+		m_request.backend()->appendContent(postData); // for easy access
+		m_inputDevice->appendData(postData);
 
+		// 3. Start the responder
 		Responder* responder = (*m_generator)(
 			m_request,
-			new OutputDevice(new HttpOutputBackend(m_httpRequest)),
+			new OutputDevice(new HttpOutputBackend(m_httpRequest), this),
 			m_inputDevice,
 			this
 		);
@@ -85,13 +105,14 @@ namespace FastCgiQt
 			SIGNAL(finished(Responder*)),
 			SLOT(cleanup(Responder*))
 		);
+		qDebug() << Q_FUNC_INFO << "Calling start";
 		responder->start();
 	}
 
 	void HttpRequest::cleanup(Responder* responder)
 	{
+		qDebug() << Q_FUNC_INFO;
 		delete responder;
-		::evhttp_send_reply_end(m_httpRequest);
 		m_httpRequest = 0;
 		emit finished(thread());
 		deleteLater();
@@ -99,5 +120,6 @@ namespace FastCgiQt
 
 	HttpRequest::~HttpRequest()
 	{
+		qDebug() << Q_FUNC_INFO;
 	}
 };

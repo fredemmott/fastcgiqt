@@ -29,10 +29,12 @@ namespace FastCgiQt
 
 	void Responder::finished()
 	{
+		qDebug() << Q_FUNC_INFO;
 		emit finished(this);
 	}
 
 	Responder::~Responder()
 	{
+		qDebug() << Q_FUNC_INFO;
 	}
 }
