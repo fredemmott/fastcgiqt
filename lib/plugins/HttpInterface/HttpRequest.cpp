@@ -7,7 +7,7 @@
 #include <QTimer>
 
 // *MUST* be before libevent headers for TAILQ stuff
-#include <sys/queue.h>
+#include "sys_queue.h"
 
 #include <event.h>
 #include <evhttp.h>
