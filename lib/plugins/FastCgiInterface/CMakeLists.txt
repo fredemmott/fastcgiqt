@@ -7,6 +7,7 @@ SET(
 	FastCgiInterfaceFactory
 	FastCgiOutputBackend
 	FastCgiSocketManager
+	FastCgiStream
 	ParametersRecord
 	RecordHeader
 	StandardInputRecord

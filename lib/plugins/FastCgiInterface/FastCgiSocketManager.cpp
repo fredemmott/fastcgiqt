@@ -42,7 +42,6 @@ namespace FastCgiQt
 			CommunicationInterface::Worker(parent),
 			m_responderGenerator(responderGenerator)
 	{
-		// We're connected, setup a QLocalSocket
 		m_socket = new QLocalSocket(this);
 		m_socket->setSocketDescriptor(socketId , QLocalSocket::ConnectedState, QIODevice::ReadWrite);
 
