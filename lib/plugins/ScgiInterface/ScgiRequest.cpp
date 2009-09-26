@@ -15,9 +15,7 @@
 */
 #include "ScgiRequest.h"
 
-#include "InputDevice.h"
-#include "ProxyOutputBackend.h"
-#include "Request_Backend.h"
+#include "ProxyClientIODevice.h"
 
 #include <QDebug>
 #include <QTcpSocket>
@@ -29,16 +27,11 @@ namespace FastCgiQt
 	}
 
 	ScgiRequest::ScgiRequest(
-		Responder::Generator generator,
 		QTcpSocket* socket,
 		QObject* parent
 	)
 	: CommunicationInterface::Worker(parent)
-	, m_responderGenerator(generator)
-	, m_inputDevice(0)
 	, m_socket(socket)
-	, m_request(new Request::Backend())
-	, m_state(NewConnection)
 	{
 		socket->setParent(this);
 		socket->open(QIODevice::ReadWrite);
@@ -49,54 +42,19 @@ namespace FastCgiQt
 		connect(
 			socket,
 			SIGNAL(readyRead()),
-			SLOT(readData())
+			SLOT(startResponse())
 		);
 	}
 
-	void ScgiRequest::readData()
+	void ScgiRequest::cleanup()
 	{
-		switch(m_state)
-		{
-			case NewConnection:
-				readHeaders();
-				spawnResponder();
-				break;
-			case HaveHeaders:
-				Q_ASSERT(m_inputDevice);
-				m_inputDevice->appendData(m_socket->readAll());
-				break;
-		}
-	}
-
-	void ScgiRequest::cleanup(Responder* responder)
-	{
+		m_socket->flush();
 		m_socket->close();
-		delete responder;
 		emit finished(thread());
 		deleteLater();
 	}
 
-	void ScgiRequest::spawnResponder()
-	{
-		m_inputDevice = new InputDevice(this);
-
-		Responder* responder = (*m_responderGenerator)(
-			m_request,
-			new OutputDevice(new ProxyOutputBackend(m_socket)),
-			m_inputDevice,
-			this
-		);
-
-		connect(
-			responder,
-			SIGNAL(finished(Responder*)),
-			SLOT(cleanup(Responder*))
-		);
-
-		responder->start();
-	}
-
-	void ScgiRequest::readHeaders()
+	void ScgiRequest::startResponse()
 	{
 		// Netstring: "length:blob,"
 		QString lengthString;
@@ -124,17 +82,21 @@ namespace FastCgiQt
 		QList<QByteArray> parts = headerBlob.split(0);
 		Q_ASSERT(parts.count() % 2); // null-terminated, last part is empty
 		parts.takeLast();
-		QHash<QString, QString> headers;
+		ClientIODevice::HeaderMap headers;
 		while(!parts.isEmpty())
 		{
 			const QByteArray name = parts.takeFirst();
 			const QByteArray value = parts.takeFirst();
-			headers.insert(QString::fromLatin1(name), QString::fromLatin1(value));
+			headers.insert(name, value);
 		}
 		Q_ASSERT(headers.contains("CONTENT_LENGTH"));
 		Q_ASSERT(headers.contains("SCGI"));
 		Q_ASSERT(headers.value("SCGI") == "1");
-		m_request.backend()->addServerData(headers);
-		m_state = HaveHeaders;
+
+		disconnect(m_socket, 0, this, 0);
+
+		ProxyClientIODevice* device = new ProxyClientIODevice(headers, m_socket, this);
+		connect(device, SIGNAL(destroyed(QObject*)), SLOT(cleanup()));
+		emit newRequest(device);
 	}
 };

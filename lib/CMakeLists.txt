@@ -24,6 +24,7 @@ SET(
 	ManagerPrivate
 	OutputDevice
 	OutputDevice_Backend
+	ProxyClientIODevice
 	ProxyOutputBackend
 	Request_Backend
 	RequestWorker

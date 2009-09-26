@@ -40,9 +40,6 @@ namespace FastCgiQt
 			/// Spawn a new ScgiRequest
 			void spawnRequest();
 		private:
-			/// Pointer to function creating new Responder objects.
-			Responder::Generator m_responderGenerator;
-
 			QTcpServer* m_tcpServer;
 	};
 };

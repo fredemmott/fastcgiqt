@@ -24,8 +24,7 @@
 namespace FastCgiQt
 {
 	ScgiInterface::ScgiInterface(Responder::Generator responderGenerator, QObject* parent)
-	: CommunicationInterface(parent)
-	, m_responderGenerator(responderGenerator)
+	: CommunicationInterface(responderGenerator, parent)
 	, m_tcpServer(0)
 	{
 	}
@@ -37,7 +36,7 @@ namespace FastCgiQt
 
 	void ScgiInterface::spawnRequest()
 	{
-		addWorker(new ScgiRequest(m_responderGenerator, m_tcpServer->nextPendingConnection(), NULL));
+		addWorker(new ScgiRequest(m_tcpServer->nextPendingConnection(), NULL));
 	}
 
 	void ScgiInterface::configureHttpd(const QString& backend)
@@ -95,10 +94,7 @@ namespace FastCgiQt
 
 	ScgiInterface::~ScgiInterface()
 	{
-		if(m_responderGenerator)
-		{
-			shutdown();
-		}
+		shutdown();
 	}
 
 	void ScgiInterface::shutdown()
