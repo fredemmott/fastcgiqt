@@ -14,6 +14,7 @@ SET(
 	CacheEntryPrivate
 	CachePrivate
 	Caches
+	ClientIODevice
 	CommunicationInterface
 	CommunicationInterface_Worker
 	EnumHelpers
@@ -25,6 +26,7 @@ SET(
 	OutputDevice_Backend
 	ProxyOutputBackend
 	Request_Backend
+	RequestWorker
 	Settings
 	UnsignedByteArray
 )

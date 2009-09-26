@@ -13,18 +13,14 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#include "ManagerPrivate.h"
+#include "FastCgiSocketManager.h"
 
 #include "BeginRequestRecord.h"
 #include "EndRequestRecord.h"
 #include "EnumHelpers.h"
-#include "FastCgiOutputBackend.h"
-#include "InputDevice.h"
-#include "OutputDevice.h"
+#include "FastCgiStream.h"
 #include "ParametersRecord.h"
 #include "RecordHeader.h"
-#include "Request_Backend.h"
-#include "FastCgiSocketManager.h"
 #include "StandardInputRecord.h"
 
 #include "fastcgi.h"
@@ -37,10 +33,8 @@
 
 namespace FastCgiQt
 {
-	FastCgiSocketManager::FastCgiSocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent)
-		:
-			CommunicationInterface::Worker(parent),
-			m_responderGenerator(responderGenerator)
+	FastCgiSocketManager::FastCgiSocketManager(int socketId, QObject* parent)
+	: CommunicationInterface::Worker(parent)
 	{
 		m_socket = new QLocalSocket(this);
 		m_socket->setSocketDescriptor(socketId , QLocalSocket::ConnectedState, QIODevice::ReadWrite);
@@ -106,7 +100,6 @@ namespace FastCgiQt
 				readStandardInput(data);
 				break;
 			default:
-				qDebug() << "Got query string data" << m_requests[header.requestId()].getData();
 				qFatal("Don't know how to deal with payload for type %s", ENUM_DEBUG_STRING(RecordHeader,RecordType,header.type()));
 		}
 		m_recordHeader = RecordHeader();
@@ -117,7 +110,6 @@ namespace FastCgiQt
 	{
 		quint16 requestId = m_recordHeader.requestId();
 		Q_ASSERT(m_recordHeader.type() == RecordHeader::ParametersRecord);
-		Q_ASSERT(m_requests.value(requestId).isValid());
 		ParametersRecord record(m_recordHeader, data);
 		if(record.isEmpty())
 		{
@@ -125,7 +117,7 @@ namespace FastCgiQt
 		}
 		else
 		{
-			m_requests[requestId].backend()->addServerData(record.parameters());
+			m_requestHeaders[requestId].unite(record.parameters());
 			return true;
 		}
 	}
@@ -134,36 +126,28 @@ namespace FastCgiQt
 	{
 		quint16 requestId = m_recordHeader.requestId();
 		Q_ASSERT(m_recordHeader.type() == RecordHeader::StandardInputRecord);
-		Q_ASSERT(m_requests.value(requestId).isValid());
 		StandardInputRecord record(m_recordHeader, data);
-		m_requests[requestId].backend()->appendContent(record.streamData());
-		m_inputDevices[requestId]->appendData(record.streamData());
+		m_streams[requestId]->appendData(record.streamData());
 	}
 
 	void FastCgiSocketManager::beginRequest(const QByteArray& data)
 	{
 		quint16 requestId = m_recordHeader.requestId();
 		Q_ASSERT(m_recordHeader.type() == RecordHeader::BeginRequestRecord);
-		Q_ASSERT(!m_requests.value(requestId).isValid());
 
 		BeginRequestRecord record(m_recordHeader, *reinterpret_cast<const FCGI_BeginRequestBody*>(data.constData()));
 		Q_ASSERT(record.role() == BeginRequestRecord::ResponderRole);
 
-		if(m_requests.size() <= requestId)
+		if(m_requestHeaders.size() <= requestId)
 		{
-			m_requests.resize((requestId + 1) * 2);
+			const int newSize = (requestId + 1) * 2;
+			m_requestHeaders.resize(newSize);
+			m_closeSocketOnExit.resize(newSize);
+			m_streams.resize(newSize);
 		}
-		if(m_closeSocketOnExit.size() <= requestId)
-		{
-			m_closeSocketOnExit.resize((requestId + 1) * 2);
-		}
-		if(m_inputDevices.size() <= requestId)
-		{
-			m_inputDevices.resize((requestId + 1) * 2);
-		}
-		m_requests[requestId] = Request(new Request::Backend());
+		m_requestHeaders[requestId].clear();
+		m_streams[requestId] = 0;
 		m_closeSocketOnExit[requestId] = ! (record.flags() & BeginRequestRecord::KeepConnection);
-		m_inputDevices[requestId] = new InputDevice(this);
 	}
 
 	void FastCgiSocketManager::queueSocketCheck()
@@ -171,17 +155,13 @@ namespace FastCgiQt
 		QTimer::singleShot(0, this, SLOT(processSocketData()));
 	}
 
-	void FastCgiSocketManager::cleanupResponder(Responder* responder)
+	void FastCgiSocketManager::cleanupStream(QObject* _stream)
 	{
-		// clean up the responder
-		const quint16 requestId = m_requestMap.value(responder);
-		m_requestMap.remove(responder);
-		delete responder; // clean up IO devices before cleaning up socket.
+		FastCgiStream* stream = static_cast<FastCgiStream*>(_stream);
+		Q_ASSERT(m_requestMap.contains(stream));
+		const quint16 requestId = m_requestMap.value(stream);
+		m_requestMap.remove(stream);
 
-
-		// cleanup the socket
-		m_socket->write(EndRequestRecord::create(requestId));
-		m_socket->flush();
 		// close and delete if the server's lazy
 		if(m_closeSocketOnExit.value(requestId))
 		{
@@ -189,33 +169,30 @@ namespace FastCgiQt
 			emit finished(thread());
 			deleteLater();
 		}
-		m_requests[requestId] = Request();
-		delete m_inputDevices[requestId];
-		m_inputDevices[requestId] = 0;
+		m_requestHeaders[requestId].clear();
+		m_streams[requestId] = 0;
 	}
 
 	void FastCgiSocketManager::respond()
 	{
 		const quint16 requestId = m_recordHeader.requestId();
-		Responder* responder = (*m_responderGenerator)(
-			m_requests.at(requestId),
-			new OutputDevice(new FastCgiOutputBackend(requestId, m_socket)),
-			m_inputDevices.at(requestId),
-			this
+		FastCgiStream* stream = new FastCgiStream(m_requestHeaders[requestId], requestId, m_socket);
+		m_requestMap.insert(stream, requestId);
+		m_streams[requestId] = stream;
+
+		connect(
+			stream,
+			SIGNAL(destroyed(QObject*)),
+			SLOT(cleanupStream(QObject*))
 		);
-		m_requestMap.insert(responder, requestId);
+
 		// in case we have more local data...
 		m_recordHeader = RecordHeader();
 		queueSocketCheck();
 
-		connect(
-			responder,
-			SIGNAL(finished(Responder*)),
-			SLOT(cleanupResponder(Responder*))
-		);
 		
 		// actually start the response
-		responder->start();
+		newRequest(stream);
 	}
 
 	bool FastCgiSocketManager::processNewRecord()

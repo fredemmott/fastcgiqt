@@ -36,10 +36,9 @@
 
 namespace FastCgiQt
 {
-	FastCgiInterface::FastCgiInterface(Responder::Generator responderGenerator, QObject* parent)
-	: CommunicationInterface(parent)
+	FastCgiInterface::FastCgiInterface(Responder::Generator generator, QObject* parent)
+	: CommunicationInterface(generator, parent)
 	, m_socketNotifier(0)
-	, m_responderGenerator(responderGenerator)
 	{
 	}
 
@@ -143,15 +142,11 @@ namespace FastCgiQt
 
 	FastCgiInterface::~FastCgiInterface()
 	{
-		if(m_responderGenerator)
-		{
-			shutdown();
-		}
+		shutdown();
 	}
 
 	void FastCgiInterface::shutdown()
 	{
-		qDebug() << "Starting shutdown process";
 		if(m_socketNotifier)
 		{
 			// stop listening on the main socket
@@ -181,10 +176,9 @@ namespace FastCgiQt
 		/* We're connected, setup a FastCgiSocketManager.
 		 * This will delete itself when appropriate (via deleteLater())
 		 */
-		FastCgiSocketManager* socket = new FastCgiSocketManager(m_responderGenerator, newSocket, NULL);
+		FastCgiSocketManager* socket = new FastCgiSocketManager(newSocket, NULL);
 		addWorker(socket);
 	}
-
 
 	void FastCgiInterface::lockSocket(int socket)
 	{

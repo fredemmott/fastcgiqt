@@ -15,33 +15,37 @@
 */
 #pragma once
 // WIP for new internal API
-#include "RecordHeader.h"
-
-#include <QIODevice>
+#include "ClientIODevice.h"
 
 class QLocalSocket;
 
 namespace FastCgiQt
 {
-	class FastCgiStream : public QIODevice
+	class FastCgiStream : public ClientIODevice
 	{
 		Q_OBJECT;
 		public:
-			FastCgiStream(quint16 requestId, QLocalSocket* socket);
+			FastCgiStream(const HeaderMap& headers, quint16 requestId, QLocalSocket* output);
 			~FastCgiStream();
-			/// Wait on the socket
-			bool waitForBytesWritten(int msecs);
-			bool isSequential() const;
+
+			bool waitForBytesWritten(int msec);
+			qint64 bytesAvailable() const;
+
+			HeaderMap requestHeaders() const;
+
+			/** Data needs to be appended by the socket manager, not directly read from the socket,
+			 * as FastCGI supports multiplexing.
+			 */
+			void appendData(const QByteArray& data);
 		protected:
 			/// Read data from buffer
 			qint64 readData(char* data, qint64 maxSize);
 			/// Write a FastCGI STDOUT record
 			qint64 writeData(const char* data, qint64 maxSize);
-		private slots:
-			void readSocketData();
 		private:
-			RecordHeader m_header;
-			QByteArray m_buffer;
+			HeaderMap m_requestHeaders;
+			QByteArray m_requestBuffer;
+			qint64 m_requestBufferReadPosition;
 			quint16 m_requestId;
 			QLocalSocket* m_socket;
 	};

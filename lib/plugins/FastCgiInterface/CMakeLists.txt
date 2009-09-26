@@ -5,7 +5,6 @@ SET(
 	EndRequestRecord
 	FastCgiInterface
 	FastCgiInterfaceFactory
-	FastCgiOutputBackend
 	FastCgiSocketManager
 	FastCgiStream
 	ParametersRecord

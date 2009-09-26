@@ -27,6 +27,7 @@ class QThread;
 
 namespace FastCgiQt
 {
+	class ClientIODevice;
 	/** Abstract interface for recieving requests from the HTTPD.
 	 *
 	 * This might be modified once multiple interfaces are supported,
@@ -59,16 +60,15 @@ namespace FastCgiQt
 					/// Create a CommunicationInterface*
 					virtual CommunicationInterface* createInterface(Responder::Generator, QObject* parent) const = 0;
 			};
-
-		protected slots:
-			/// Decrease the load counter for the specified thread.
-			void reduceLoadCount(QThread* thread);
+			QList<int> threadLoads() const;
 		protected:
 			virtual bool startBackend(const QString& backend) = 0;
-
-			CommunicationInterface(QObject* parent);
-			QList<int> threadLoads() const;
+			CommunicationInterface(Responder::Generator, QObject* parent);
 			void addWorker(Worker* worker);
+		private slots:
+			/// Decrease the load counter for the specified thread.
+			void reduceLoadCount(QThread* thread);
+			void addRequest(ClientIODevice* device);
 		private:
 			/** Comparison for thread loads.
 			 *
@@ -88,6 +88,8 @@ namespace FastCgiQt
 			 * handling.
 			 */
 			QMap<const QObject*, QAtomicInt> m_threadLoads;
+
+			Responder::Generator m_generator;
 	};
 };
 

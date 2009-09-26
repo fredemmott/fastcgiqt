@@ -24,69 +24,62 @@
 
 #include "fastcgi.h"
 
+inline void* memcpy_s(void* destination, size_t destinationSize, const void* source, size_t count)
+{
+	Q_ASSERT(destinationSize >= count);
+	if(destinationSize < count)
+	{
+		return 0;
+	}
+	return ::memcpy(destination, source, count);
+}
+
 namespace FastCgiQt
 {
-	FastCgiStream::FastCgiStream(quint16 requestId, QLocalSocket* socket)
-	: QIODevice()
+	FastCgiStream::FastCgiStream(const HeaderMap& headers, quint16 requestId, QLocalSocket* socket)
+	: ClientIODevice()
+	, m_requestHeaders(headers)
+	, m_requestBufferReadPosition(0)
 	, m_requestId(requestId)
 	, m_socket(socket)
 	{
 		open(QIODevice::ReadWrite | QIODevice::Unbuffered);
-		connect(m_socket, SIGNAL(readyRead()), SLOT(readSocketData()));
 	}
 
-	bool FastCgiStream::isSequential() const
+	ClientIODevice::HeaderMap FastCgiStream::requestHeaders() const
 	{
-		return true;
+		return m_requestHeaders;
 	}
 
-	void FastCgiStream::readSocketData()
+	qint64 FastCgiStream::bytesAvailable() const
 	{
-		// Only bother if we don't have stuff queued
-		if(m_buffer.isNull())
-		{
-			if(!m_header.isValid())
-			{
-				if(m_socket->bytesAvailable() < FCGI_HEADER_LEN)
-				{
-					return; // Don't have a record
-				}
-				FCGI_Header fcgiHeader;
-				const qint64 bytesRead = m_socket->read(reinterpret_cast<char*>(&fcgiHeader), FCGI_HEADER_LEN);
-				if(bytesRead != FCGI_HEADER_LEN)
-				{
-					qFatal("Couldn't read FCGI header - tried to read %d bytes, got %lld", FCGI_HEADER_LEN, bytesRead);
-				}
-				m_header = RecordHeader(fcgiHeader);
-				Q_ASSERT(m_header.type() == RecordHeader::StandardInputRecord);
-				Q_ASSERT(m_header.requestId() == m_requestId);
-			}
-			if(m_socket->bytesAvailable() >= m_header.payloadLength())
-			{
-				const QByteArray data = m_socket->read(m_header.payloadLength());
-				if(data.length() != m_header.payloadLength())
-				{
-					qFatal("Couldn't read payload - tried to read %d bytes, got %d", m_header.payloadLength(), data.length());
-				}
-				const StandardInputRecord record(m_header, data);
-				m_buffer = record.streamData();
-				m_header = RecordHeader();
-				emit readyRead();
-			}
-		}
+		return m_requestBuffer.length() - m_requestBufferReadPosition;
+	}
+
+	void FastCgiStream::appendData(const QByteArray& data)
+	{
+		m_requestBuffer.append(data);
+		emit readyRead();
 	}
 
 	FastCgiStream::~FastCgiStream()
 	{
 		m_socket->write(EndRequestRecord::create(m_requestId));
 		m_socket->flush();
-		m_socket->close();
 	}
 
 	qint64 FastCgiStream::readData(char* data, qint64 maxSize)
 	{
-		Q_ASSERT(maxSize >= m_buffer.length());
-
+		const qint64 toRead = qMin(m_requestBuffer.length() - m_requestBufferReadPosition, maxSize);
+		if(toRead >= 0 && ::memcpy_s(data, maxSize, m_requestBuffer.constData(), toRead))
+		{
+			m_requestBufferReadPosition += toRead;
+			return toRead;
+		}
+		else
+		{
+			return -1;
+		}
 	}
 
 	qint64 FastCgiStream::writeData(const char* data, qint64 dataSize)

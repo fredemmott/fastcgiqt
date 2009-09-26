@@ -16,9 +16,8 @@
 #pragma once
 
 #include "CommunicationInterface_Worker.h"
+#include "ClientIODevice.h"
 #include "RecordHeader.h"
-#include "Responder.h"
-#include "Request.h"
 
 #include <QHash>
 
@@ -26,7 +25,7 @@ class QLocalSocket;
 
 namespace FastCgiQt
 {
-	class InputDevice;
+	class FastCgiStream;
 	/** @internal
 	 * @brief Class managing all FastCGI requests on a specified socket.
 	 *
@@ -40,12 +39,10 @@ namespace FastCgiQt
 		Q_OBJECT
 		public:
 			/** Create a FastCgiSocketManager.
-			 * @param responderGenerator is a function to use to
-			 * 	create Responder objects.
 			 * @param socketId is the file descriptor for a socket.
 			 * @param parent is a parent object.
 			 */
-			FastCgiSocketManager(Responder::Generator responderGenerator, int socketId, QObject* parent = NULL);
+			FastCgiSocketManager(int socketId, QObject* parent = NULL);
 			/// Destroy this socket manager.
 			~FastCgiSocketManager();
 		private:
@@ -73,7 +70,6 @@ namespace FastCgiQt
 			/// Create a Responder, run it, and cleanup.
 			void respond();
 		private slots:
-			void cleanupResponder(Responder* responder);
 			/** Process new data on the socket.
 			 *
 			 * If there is sufficient data, this will call either
@@ -81,21 +77,22 @@ namespace FastCgiQt
 			 * on the current state.
 			 */
 			void processSocketData();
+			void cleanupStream(QObject* stream);
 		private:
 			/// The header of the current record.
 			RecordHeader m_recordHeader;
-			/// The function to use to create new Responder objects.
-			Responder::Generator m_responderGenerator;
 			/// The socket this FastCgiSocketManager managers.
 			QLocalSocket* m_socket;
 
 			// FastCGI spec says request IDs will be tightly packed near zero.
 
-			/** The requests currently being processed.
+			/** The headers for requests currently being processed.
 			 *
 			 * This is indexed by request id.
 			 */
-			QVector<Request> m_requests;
+			QVector<ClientIODevice::HeaderMap> m_requestHeaders;
+			QVector<FastCgiStream*> m_streams;
+
 			/** If the socket is supposed to be closed.
 			 *
 			 * This is indexed by request id.
@@ -106,13 +103,7 @@ namespace FastCgiQt
 			 */
 			QVector<bool> m_closeSocketOnExit;
 
-			/** InputDevice objects for the various requests.
-			 *
-			 * This is indexed by request id.
-			 */
-			QVector<InputDevice* > m_inputDevices;
-
 			/// Responder -> requestId map
-			QHash<Responder*, quint64> m_requestMap;
+			QHash<FastCgiStream*, quint64> m_requestMap;
 	};
 }

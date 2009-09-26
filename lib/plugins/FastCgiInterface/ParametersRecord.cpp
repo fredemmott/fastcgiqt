@@ -76,9 +76,9 @@ namespace FastCgiQt
 				valueLength = data[i++];
 			}
 
-			QString name = QString::fromUtf8(&data.constData()[i], nameLength);
+			const QByteArray name = QByteArray(&data.constData()[i], nameLength);
 			i += nameLength;
-			QString value = QString::fromUtf8(&data.constData()[i], valueLength);
+			const QByteArray value = QByteArray(&data.constData()[i], valueLength);
 			i += valueLength;
 			m_parameters.insert(name, value);
 		}
@@ -89,7 +89,7 @@ namespace FastCgiQt
 		return m_parameters.isEmpty();
 	}
 
-	QHash<QString, QString> ParametersRecord::parameters() const
+	ClientIODevice::HeaderMap ParametersRecord::parameters() const
 	{
 		return m_parameters;
 	}

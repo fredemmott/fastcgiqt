@@ -15,6 +15,7 @@
 */
 #pragma once
 
+#include "ClientIODevice.h"
 #include "CommunicationInterface.h"
 
 #include <QObject>
@@ -31,6 +32,7 @@ namespace FastCgiQt
 			 * 	is running in.
 			 */
 			void finished(QThread* inThread);
+			void newRequest(ClientIODevice* device);
 		protected:
 			Worker(QObject* parent);
 	};

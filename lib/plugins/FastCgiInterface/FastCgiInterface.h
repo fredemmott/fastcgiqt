@@ -16,9 +16,6 @@
 #pragma once
 
 #include "CommunicationInterface.h"
-
-#include "Responder.h"
-
 #include <QStringList>
 
 class QFileSystemWatcher;
@@ -40,7 +37,7 @@ namespace FastCgiQt
 		Q_OBJECT
 		public:
 			/// Create a FastCgiInterface object.
-			FastCgiInterface(Responder::Generator responderGenerator, QObject* parent = NULL);
+			FastCgiInterface(Responder::Generator, QObject* parent = NULL);
 			~FastCgiInterface();
 			bool isFinished() const;
 			QStringList backends() const;
@@ -65,8 +62,6 @@ namespace FastCgiQt
 			 * FastCGI socket.
 			 */
 			QSocketNotifier* m_socketNotifier;
-			/// Pointer to function creating new Responder objects.
-			Responder::Generator m_responderGenerator;
 
 			/** List of IP addresses that FastCGI-capable web
 			 * servers may connect to this process from.

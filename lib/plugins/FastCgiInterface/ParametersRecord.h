@@ -13,12 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef _FASTCGI_QT_PARAMETERS_RECORD_H
-#define _FASTCGI_QT_PARAMETERS_RECORD_H
 
-#include <QByteArray>
-#include <QHash>
-#include <QString>
+#include "ClientIODevice.h"
 
 namespace FastCgiQt
 {
@@ -44,10 +40,8 @@ namespace FastCgiQt
 			 *
 			 * @see isEmpty()
 			 */
-			QHash<QString, QString> parameters() const;
+			ClientIODevice::HeaderMap parameters() const;
 		private:
-			QHash<QString, QString> m_parameters;
+			ClientIODevice::HeaderMap m_parameters;
 	};
 }
-
-#endif

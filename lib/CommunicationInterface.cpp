@@ -15,6 +15,7 @@
 */
 #include "CommunicationInterface.h"
 #include "CommunicationInterface_Worker.h"
+#include "RequestWorker.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -22,8 +23,9 @@
 
 namespace FastCgiQt
 {
-	CommunicationInterface::CommunicationInterface(QObject* parent)
+	CommunicationInterface::CommunicationInterface(Responder::Generator generator, QObject* parent)
 	: QObject(parent)
+	, m_generator(generator)
 	{
 	}
 
@@ -113,11 +115,20 @@ namespace FastCgiQt
 		connect(
 			worker,
 			SIGNAL(finished(QThread*)),
-			this,
 			SLOT(reduceLoadCount(QThread*))
+		);
+		connect(
+			worker,
+			SIGNAL(newRequest(ClientIODevice*)),
+			SLOT(addRequest(ClientIODevice*))
 		);
 		// Move it to a thread
 		worker->moveToThread(thread);
+	}
+
+	void CommunicationInterface::addRequest(ClientIODevice* device)
+	{
+		addWorker(new RequestWorker(device, m_generator));
 	}
 
 	void CommunicationInterface::reduceLoadCount(QThread* thread)
