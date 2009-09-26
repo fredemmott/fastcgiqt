@@ -15,6 +15,8 @@
 */
 #include "InputDevice.h"
 
+#include "memcpy_s.h"
+
 #include <QCoreApplication>
 #include <QTime>
 
@@ -36,7 +38,7 @@ namespace FastCgiQt
 			return -1;
 		}
 
-		qint64 readableLength = qMin(static_cast<qint64>(m_data.length() - m_position), maxSize);
+		const qint64 readableLength = qMin(static_cast<qint64>(m_data.length() - m_position), maxSize);
 		Q_ASSERT(readableLength >= 0);
 		if(readableLength == 0)
 		{
@@ -53,7 +55,7 @@ namespace FastCgiQt
 		else
 		{
 			// we can read some stuff.
-			::memcpy(data, m_data.constData() + m_position, readableLength);
+			::memcpy_s(data, maxSize, m_data.constData() + m_position, readableLength);
 			m_position += readableLength;
 			return readableLength;
 		}

@@ -58,6 +58,9 @@ namespace FastCgiQt
 			);
 		}
 		m_request.backend()->addServerData(stringHeaders);
+		// Must be done after the server data is added, otherwise confusion happens due to
+		// CONTENT_LENGTH header not being set.
+		copyPostData();
 
 		Responder* responder = (*m_generator)(
 			m_request,
