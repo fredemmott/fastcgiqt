@@ -2,8 +2,8 @@
 
 namespace FastCgiQt
 {
-	ClientIODevice::ClientIODevice()
-	: QIODevice()
+	ClientIODevice::ClientIODevice(QObject* parent)
+	: QIODevice(parent)
 	{
 	}
 

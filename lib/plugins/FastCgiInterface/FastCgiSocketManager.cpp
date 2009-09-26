@@ -176,7 +176,7 @@ namespace FastCgiQt
 	void FastCgiSocketManager::respond()
 	{
 		const quint16 requestId = m_recordHeader.requestId();
-		FastCgiStream* stream = new FastCgiStream(m_requestHeaders[requestId], requestId, m_socket);
+		FastCgiStream* stream = new FastCgiStream(m_requestHeaders[requestId], requestId, m_socket, this);
 		m_requestMap.insert(stream, requestId);
 		m_streams[requestId] = stream;
 

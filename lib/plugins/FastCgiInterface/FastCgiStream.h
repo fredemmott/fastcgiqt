@@ -25,7 +25,7 @@ namespace FastCgiQt
 	{
 		Q_OBJECT;
 		public:
-			FastCgiStream(const HeaderMap& headers, quint16 requestId, QLocalSocket* output);
+			FastCgiStream(const HeaderMap& headers, quint16 requestId, QLocalSocket* output, QObject* parent);
 			~FastCgiStream();
 
 			bool waitForBytesWritten(int msec);

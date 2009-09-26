@@ -49,6 +49,6 @@ namespace FastCgiQt
 			/// Return all (CGI-style) headers included in the request
 			virtual HeaderMap requestHeaders() const = 0;
 		protected:
-			ClientIODevice(); // no parent - may well get reparented around
+			ClientIODevice(QObject* parent);
 	};
 }

@@ -4,6 +4,7 @@
 #include "ProxyOutputBackend.h"
 #include "Request_Backend.h"
 
+#include <QDebug>
 #include <QTimer>
 
 namespace FastCgiQt

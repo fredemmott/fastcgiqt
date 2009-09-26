@@ -107,8 +107,16 @@ namespace FastCgiQt
 	void CommunicationInterface::addWorker(Worker* worker)
 	{
 		// Pick a thread to put it in
-		qSort(m_threads.begin(), m_threads.end(), hasLessLoadThan);
-		QThread* thread = m_threads.first();
+		QThread* thread = 0;
+		if(worker->parent())
+		{
+			thread = worker->parent()->thread();
+		}
+		else
+		{
+			qSort(m_threads.begin(), m_threads.end(), hasLessLoadThan);
+			thread = m_threads.first();
+		}
 		m_threadLoads[thread].ref();
 
 		// Deref when finished
@@ -120,15 +128,21 @@ namespace FastCgiQt
 		connect(
 			worker,
 			SIGNAL(newRequest(ClientIODevice*)),
-			SLOT(addRequest(ClientIODevice*))
+			this,
+			SLOT(addRequest(ClientIODevice*)),
+			Qt::DirectConnection
 		);
+
 		// Move it to a thread
-		worker->moveToThread(thread);
+		if(thread != worker->thread())
+		{
+			worker->moveToThread(thread);
+		}
 	}
 
 	void CommunicationInterface::addRequest(ClientIODevice* device)
 	{
-		addWorker(new RequestWorker(device, m_generator));
+		addWorker(new RequestWorker(device, m_generator, device->parent()));
 	}
 
 	void CommunicationInterface::reduceLoadCount(QThread* thread)

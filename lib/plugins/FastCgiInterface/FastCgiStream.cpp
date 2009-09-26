@@ -36,14 +36,19 @@ inline void* memcpy_s(void* destination, size_t destinationSize, const void* sou
 
 namespace FastCgiQt
 {
-	FastCgiStream::FastCgiStream(const HeaderMap& headers, quint16 requestId, QLocalSocket* socket)
-	: ClientIODevice()
+	FastCgiStream::FastCgiStream(const HeaderMap& headers, quint16 requestId, QLocalSocket* socket, QObject* parent)
+	: ClientIODevice(parent)
 	, m_requestHeaders(headers)
 	, m_requestBufferReadPosition(0)
 	, m_requestId(requestId)
 	, m_socket(socket)
 	{
 		open(QIODevice::ReadWrite | QIODevice::Unbuffered);
+		connect(
+			m_socket,
+			SIGNAL(aboutToClose()),
+			SIGNAL(aboutToClose())
+		);
 	}
 
 	ClientIODevice::HeaderMap FastCgiStream::requestHeaders() const
@@ -66,6 +71,7 @@ namespace FastCgiQt
 	{
 		m_socket->write(EndRequestRecord::create(m_requestId));
 		m_socket->flush();
+		m_socket->close(); // TODO: check the flag; but every httpd sets it anyway...
 	}
 
 	qint64 FastCgiStream::readData(char* data, qint64 maxSize)
@@ -101,7 +107,6 @@ namespace FastCgiQt
 			{
 				if(socket->state() != QLocalSocket::ConnectedState)
 				{
-					qDebug() << "NOT CONNECTED" << socket->state();
 					return -1;
 				}
 				qFatal("Couldn't write to socket: %s %d", qPrintable(m_socket->errorString()), m_socket->isOpen());
