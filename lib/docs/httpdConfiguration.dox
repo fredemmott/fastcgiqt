@@ -1,0 +1,220 @@
+/** @page httpd_configuration HTTPD Configuration
+@section introduction Introduction
+
+FastCgiQt has been tested with the following servers:
+ - @ref apache "Apache 2" (mod_fastcgi or mod_fcgid, via FCGI-UNIX)
+ - @ref lighttpd 1.4.23 (mod_fastcgi or mod_scgi, via FCGI-TCP or SCGI-TCP)
+ - @ref cherokee (FCGI-TCP or SCGI-TCP)
+ - A @ref built_in "built-in" basic HTTPD (HTTP)
+
+For all of these methods, the application is configured by running:
+@verbatim ./yourApplication --configure-httpd @endverbatim
+
+@subsection advantages Advantages
+<table>
+<tr>
+	<th></th>
+	<th>Maturity</th>
+	<th>Ease of Use</th>
+	<th>Ease of Debugging</th>
+	<th>Development Use Only</th>
+	<th>Supported Servers</th>
+</tr>
+<tr>
+	<th>FCGI-UNIX</th>
+	<td>Best</td>
+	<td>Worst</td>
+	<td>Worst</td>
+	<td>No</td>
+	<td>Apache HTTPD</td>
+</tr>
+<tr>
+	<th>FCGI-TCP</th>
+	<td>~</td>
+	<td>~</td>
+	<td>Best</td>
+	<td>No</td>
+	<td>Cherokee, lighttpd</td>
+</tr>
+<tr>
+	<th>SCGI-TCP</th>
+	<td>~</td>
+	<td>~</td>
+	<td>Best</td>
+	<td>No</td>
+	<td>Cherokee, lighttpd</td>
+</tr>
+<tr>
+	<th>HTTP</th>
+	<td>Worst</td>
+	<td>Best</td>
+	<td>Best</td>
+	<td>Yes</td>
+	<td>Built-in</td>
+</tr>
+</table>
+
+<dl>
+
+	<dt>Maturity:</dt>
+	<dd>How old/tested the code is</dd>
+
+	<dt>Ease of use:</dt>
+	<dd>How easy it is to get a program up-and-running via that method</dd>
+
+	<dt>Ease of debugging:</dt>
+	<dd>How easy it is to debug a program using this HTTPD; Apache works best via
+	FCGI-UNIX - in this setup, apache spawns the process, so you need to run the debugger
+	as Apache; additionally, qDebug(), qFatal(), and qWarning() output is redirected to
+	syslog. With all the other interfaces, you start the process, so it's easy to attach
+	a debugger, and Qt debugging output appears on stderr.</dd>
+
+	<dt>Development Use Only:</dt>
+	<dd>This indicates whether or not the backend has been designed with production use in
+	mind; the built-in HTTPD is not suitable for any usage except internal development. It
+	has not been designed with security in mind, or scalability. It would be a very bad idea
+	to deploy a website using the internal HTTPD.</dd>
+
+	<dt>Supported Servers:</dt>
+	<dd>Which web servers this method works well with.</dd>
+</dl>
+
+@section apache Apache HTTPD
+
+@verbatim
+$ ./HelloWorld --configure-httpd
+*****************************************
+***** FastCgiQt HTTPD Configuration *****
+*****************************************
+The following interfaces are available:
+ - FCGI-TCP
+ - FCGI-UNIX
+ - HTTP
+ - SCGI-TCP
+Interface [FCGI-UNIX]: FCGI-UNIX
+$
+@endverbatim
+
+ - You must also configure either mod_fastcgi, or mod_fcgid; mod_fcgid is easier on Debian systems.
+ - You might also want to add .htaccess rules to get "pretty" URLs.
+ - Apache will spawn your process as needed
+
+@subsection apache_mod_fastcgi mod_fastcgi
+
+In your <Directory> block, in httpd.conf, add:
+@verbatim
+AddHandler fastcgi-script fcgi
+Options +ExecCGI
+@endverbatim
+
+In the global config, add:
+@verbatim LoadModule fastcgi_module path/to/modules/mod_fastcgi.so @endverbatim
+
+If you want your application to handle HTTP authorization headers itself, add:
+@verbatim FastCgiConfig -pass-header Authorization @endverbatim
+
+@subsection apache_mod_fcgid mod_fcgid
+
+In the <Directory> block, add:
+@verbatim Options +ExecCGI @endverbatim
+
+In modules-available/fcgid.conf (or related), if you want to handle
+authorization headers yourself, add:
+@verbatim PassHeader Authorization @endverbatim
+
+@subsection apache_rewrite_rules Rewrite Rules
+
+Assuming you don't want to access your application via urls including ".fcgi", I suggest
+a .htaccess similar to the following:
+
+@verbatim
+RewriteEngine on
+RewriteBase /
+
+# If a flat file or directory with the requested name exists, allow it through without rewrite (eg /static/)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+
+# Otherwise, pass it through website.fcgi
+RewriteRule ^(.*)$ website.fcgi/$1 [L,NS]
+# Unfortunately, "/" is a valid directory :p
+RewriteRule ^$ website.fcgi/ [L,NS]
+@endverbatim
+
+This will make it so that if your application is in /foo, http://host/foo/bar will be rewritten transparently to
+http://host/foo/website.fcgi/bar
+
+@section lighttpd lighttpd
+
+@verbatim
+$ ./HelloWorld --configure-httpd
+*****************************************
+***** FastCgiQt HTTPD Configuration *****
+*****************************************
+The following interfaces are available:
+ - FCGI-TCP
+ - FCGI-UNIX
+ - HTTP
+ - SCGI-TCP
+Interface [FCGI-UNIX]: FCGI-TCP
+Port number: 9001
+$ ./HelloWorld
+Following configuration in '.HelloWorld' and listening for FastCGI on TCP port 9001
+
+@endverbatim
+
+Alternatively, if you wish to use mod_scgi instead of mod_fastcgi, enter SCGI-TCP instead of FCGI-TCP. When the program is ran the second time, without arguments,
+it starts listening as a FastCGI or SCGI server on the port you chose.
+
+Edit lighttpd.conf, to contain one of the following two lines (assuming you want '/' as the root of your FastCgiQt application, and that you cchoseport 9001):
+
+@verbatim
+scgi.server = ( "/" => ( "localhost" => ( "host" => "127.0.0.1", "port" => 9001, "check-local" => "disable", "fix-root-scriptname" => "enable" ) ) )
+@endverbatim
+<em>or</em>
+@verbatim
+fastcgi.server = ( "/" => ( "localhost" => ( "host" => "127.0.0.1", "port" => 9001, "check-local" => "disable", "fix-root-scriptname" => "enable" ) ) )
+@endverbatim
+
+@section cherokee Cherokee
+
+<ol>
+<li>Configure your application as above (for @ref lighttpd), with either FCGI-TCP or SCGI-TCP.</li>
+<li>Run cherokee-admin</li>
+<li>In the web interface, add a remote information source, as localhost:9001 (assuming you picked 9001 in the application configuration)</li>
+<li>Set the information source as the handler for an URL prefix.
+</ol>
+
+@section built_in Built-In HTTPD
+
+This is the simplest option; it's handy for development, but not suitable for production deployment.
+
+@verbatim
+$ ./HelloWorld --configure-httpd
+*****************************************
+***** FastCgiQt HTTPD Configuration *****
+*****************************************
+The following interfaces are available:
+ - FCGI-TCP
+ - FCGI-UNIX
+ - HTTP
+ - SCGI-TCP
+Interface [FCGI-UNIX]: HTTP
+Port number: 8080
+Optionally, you can specify a path relative to the current directory, where FastCgiQt will serve static content. This may be horribly insecure.
+Static content directory [none]:
+$ ./HelloWorld
+Using configuration in .HelloWorld, and running an HTTP server on port 8080
+
+@endverbatim
+
+After the above, HelloWorld is running as an HTTP server on port 8080.
+
+The final configuration option (Static content directory) allows you to specify a directory that contains non-dynamic content, such as style
+sheets used by your application.
+
+If, for example, you have your stylesheet in ./static/style.css, you could type in 'static' at the prompt, and the HTTP would serve
+the file when http://localhost:8080/static/style.css is requested. This is probably a very insecure feature, and should not be used, except
+during development.
+ */

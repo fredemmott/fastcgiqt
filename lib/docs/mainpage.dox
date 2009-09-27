@@ -101,6 +101,9 @@ Using configuration in .HelloWorld, and running an HTTP server on port 8080
 
 @endverbatim
  * You can then access the application via http://localhost:8080/ in your web browser.
+ * 
+ * Other interfaces are supported for communicating with another webserver, such as FastCGI and SCGI, and are recommended for production use.
+ * See @ref httpd_configuration for more information.
  *
  * @section examples Other Examples
  * There are <a href='http://gitorious.org/fastcgiqt/fastcgiqt/trees/master/examples'>several examples</a>
