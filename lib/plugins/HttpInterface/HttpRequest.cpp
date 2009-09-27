@@ -59,6 +59,7 @@ namespace FastCgiQt
 			const QByteArray uri = parts.at(1);
 			m_requestHeaders.insert("REQUEST_URI", uri);
 			const int startOfQueryString = uri.indexOf('?') + 1;
+			m_requestHeaders.insert("PATH_INFO", uri.mid(0, startOfQueryString - 1));
 			if(startOfQueryString > 0)
 			{
 				m_requestHeaders.insert("QUERY_STRING", uri.mid(startOfQueryString));

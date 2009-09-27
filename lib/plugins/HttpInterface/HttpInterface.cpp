@@ -94,6 +94,7 @@ namespace FastCgiQt
 			{
 				standardHeaders.insert("SERVER_SOFTWARE", "FastCgiQt/HttpPlugin");
 				standardHeaders.insert("SERVER_PORT", QString::number(m_server->serverPort()).toLatin1());
+				standardHeaders.insert("GATEWAY_INTERFACE", "CGI/1.1");
 			}
 		}
 		connect(
