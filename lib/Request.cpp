@@ -136,20 +136,10 @@ namespace FastCgiQt
 
 	QString Request::baseUri() const
 	{
-		const QString uri(QUrl::toPercentEncoding(QUrl::fromPercentEncoding(serverData("REQUEST_URI").replace(QRegExp("\\?.*"),"").toLatin1()), "/"));
-		const QString redirectUrl(QUrl::toPercentEncoding(serverData("REDIRECT_URL"), "/"));
-		const QString pathInfo(QUrl::toPercentEncoding(fullUri(), "/"));
-		const QString pathPart(QUrl::toPercentEncoding(QUrl::fromPercentEncoding(QString(redirectUrl.isEmpty() ? pathInfo : redirectUrl).toLatin1()), "/"));
-		const QString baseUri(uri.left(uri.length() - pathPart.length()));
-		/*
-		qDebug() << "-----";
-		qDebug() << "URI:" << uri;
-		qDebug() << "REDIRECT:" << redirectUrl << redirectUrl.isEmpty() << redirectUrl.isNull();
-		qDebug() << "PATH:" << pathInfo;
-		qDebug() << "PART:" << pathPart;
-		qDebug() << "BASE: " << baseUri;
-		qDebug() << "-----";
-		*/
+		const int queryStringLength = serverData("QUERY_STRING").length();
+		const int pathInfoLength = serverData("PATH_INFO").length();
+		QString baseUri = serverData("REQUEST_URI");
+		baseUri.chop(queryStringLength + 1 + pathInfoLength);
 		return baseUri;
 	}
 

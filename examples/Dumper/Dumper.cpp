@@ -18,6 +18,10 @@
 void Dumper::respond()
 {
 	out << "<h1>" << tr("Variable Dump") << "</h1>";
+	out << "<dl>" << endl;
+	out << "<dt>Full URI:</dt><dd>" << request.fullUri() << "</dd>" << endl;
+	out << "<dt>Base URI:</dt><dd>" << request.baseUri() << "</dd>" << endl;
+	out << "</dl>" << endl;
 	dumpHash(tr("Get variables"), request.getData());
 	dumpHash(tr("Post variables"), request.postData());
 	dumpHash(tr("Server variables"), request.serverData());
