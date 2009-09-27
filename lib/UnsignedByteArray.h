@@ -19,7 +19,9 @@
 
 namespace FastCgiQt
 {
-	/// Read-only access to a QByteArray as unsigned data.
+	/** @internal Read-only access to a QByteArray as unsigned data.
+	 * @todo Move to FastCgiInterface plugin?
+	 */
 	class UnsignedByteArray : public QByteArray
 	{
 		public:

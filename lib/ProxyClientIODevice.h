@@ -19,7 +19,7 @@
 
 namespace FastCgiQt
 {
-	/// Simple OutputDevice backend that just passes on stuff to another QIODevice
+	/// @internal Simple ClientIODevice that just passes-through to another QIODevice.
 	class ProxyClientIODevice: public ClientIODevice
 	{
 		Q_OBJECT;

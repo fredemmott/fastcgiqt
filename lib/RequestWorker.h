@@ -21,8 +21,8 @@
 namespace FastCgiQt
 {
 	class InputDevice;
-	/** Worker that handles one request.
-	 * FIXME this maps the new plugin API to the current user and internal APIs.
+	/** @internal Worker that handles one request.
+	 * @fixme this maps the new plugin API to the current user and internal APIs.
 	 * These (at least the internal ones) should really be changed to deal with ClientIODevice*
 	 * more directly.
 	 */

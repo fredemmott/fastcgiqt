@@ -24,7 +24,7 @@ class QReadWriteLock;
 
 namespace FastCgiQt
 {
-	/** Abstract interface for cache backends.
+	/** @internal Abstract interface for cache backends.
 	 *
 	 * Implementations are expected to use a QReadWriteLock as neccessary.
 	 * If the implementation doesn't require it, a valid pointer should
@@ -49,7 +49,7 @@ namespace FastCgiQt
 			/// Retrieve the read-write lock.
 			virtual QReadWriteLock* readWriteLock() const = 0;
 
-			/** Factory class constructing a CacheBackend.
+			/** @internal Factory class constructing a CacheBackend.
 			 *
 			 * This is a qt plugin interface.
 			 *

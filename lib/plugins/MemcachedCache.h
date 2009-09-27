@@ -25,12 +25,14 @@ struct memcached_st;
 
 namespace FastCgiQt
 {
-	/** Cache backend implemented using memcached.
+	/** @internal Cache backend implemented using memcached.
 	 *
 	 * Binary key format:
 	 * 	UTF8 string
 	 * Binary data format:
 	 * 	little-endian 64-bit UTC timestamp, data
+	 *
+	 * @ingroup plugins
 	 */
 	class MemcachedCache : public CacheBackend
 	{

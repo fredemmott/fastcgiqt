@@ -20,7 +20,7 @@
 
 namespace FastCgiQt
 {
-	/** Interface for accessing/sending client data.
+	/** @internal Interface for accessing/sending client data.
 	 *
 	 * This provides access to the headers, and direct to POST data and response output as a stream (QIODevice).
 	 *

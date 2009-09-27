@@ -28,7 +28,7 @@ class QThread;
 namespace FastCgiQt
 {
 	class ClientIODevice;
-	/** Abstract interface for recieving requests from the HTTPD.
+	/** @internal Abstract interface for recieving requests from the HTTPD.
 	 *
 	 * This might be modified once multiple interfaces are supported,
 	 * and it becomes more apparent what code can be shared.
@@ -48,7 +48,7 @@ namespace FastCgiQt
 			virtual void configureHttpd(const QString& backend);
 			bool start(const QString& backend);
 
-			/** Factory class constructing a CommunicationInterface.
+			/**@internal Factory class constructing a CommunicationInterface.
 			 *
 			 * This is a qt plugin interface.
 			 *

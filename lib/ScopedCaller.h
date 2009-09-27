@@ -15,7 +15,8 @@
 */
 #pragma once
 
-/// Automatically call a given void(void) member function when this leaves scope.
+/** @internal Automatically call a given void(void) member function when this leaves scope.
+ */
 template<class T> class ScopedCaller
 {
 	public:
