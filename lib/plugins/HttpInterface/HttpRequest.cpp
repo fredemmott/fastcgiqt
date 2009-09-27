@@ -1,16 +1,24 @@
 #include "HttpRequest.h"
 
 #include <QBuffer>
+#include <QHostInfo>
 #include <QTcpSocket>
 
 namespace FastCgiQt
 {
-	HttpRequest::HttpRequest(QTcpSocket* socket, QObject* parent)
+	HttpRequest::HttpRequest(const HeaderMap& standardRequestHeaders, const HeaderMap& standardResponseHeaders, QTcpSocket* socket, QObject* parent)
 	: ClientIODevice(parent)
 	, m_requestState(WaitingForRequest)
 	, m_responseState(WaitingForResponseHeaders)
+	, m_requestHeaders(standardRequestHeaders)
+	, m_responseHeaders(standardResponseHeaders)
 	, m_socket(socket)
 	{
+		const QHostInfo serverInfo = QHostInfo::fromName(socket->localAddress().toString());
+		m_requestHeaders.insert("SERVER_NAME", serverInfo.hostName().toLatin1());
+		m_requestHeaders.insert("SERVER_ADDR", socket->localAddress().toString().toLatin1());
+		m_requestHeaders.insert("REMOTE_PORT", QString::number(socket->peerPort()).toLatin1());
+		m_requestHeaders.insert("REMOTE_ADDR", socket->peerAddress().toString().toLatin1());
 		open(QIODevice::ReadWrite | QIODevice::Unbuffered);
 		socket->setParent(this);
 		Q_ASSERT(socket->isOpen());
@@ -50,7 +58,11 @@ namespace FastCgiQt
 			m_requestHeaders.insert("SERVER_PROTOCOL", parts.at(2));
 			const QByteArray uri = parts.at(1);
 			m_requestHeaders.insert("REQUEST_URI", uri);
-			m_requestHeaders.insert("QUERY_STRING", uri.mid(uri.indexOf('?') + 1));
+			const int startOfQueryString = uri.indexOf('?') + 1;
+			if(startOfQueryString > 0)
+			{
+				m_requestHeaders.insert("QUERY_STRING", uri.mid(startOfQueryString));
+			}
 			m_requestState = WaitingForRequestHeaders;
 			readSocketData();
 			return;

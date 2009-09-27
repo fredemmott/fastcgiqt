@@ -10,7 +10,7 @@ namespace FastCgiQt
 	{
 		Q_OBJECT;
 		public:
-			HttpRequest(QTcpSocket* socket, QObject* parent);
+			HttpRequest(const HeaderMap& standardRequestHeaders, const HeaderMap& standardResponseHeaders, QTcpSocket* socket, QObject* parent);
 			~HttpRequest();
 			HeaderMap requestHeaders() const;
 		signals:
@@ -35,8 +35,8 @@ namespace FastCgiQt
 			RequestState m_requestState;
 			ResponseState m_responseState;
 
-			HeaderMap m_responseHeaders;
 			HeaderMap m_requestHeaders;
+			HeaderMap m_responseHeaders;
 
 			QTcpSocket* m_socket;
 	};

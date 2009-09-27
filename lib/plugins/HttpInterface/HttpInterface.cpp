@@ -19,6 +19,8 @@
 #include "Settings.h"
 
 #include <QDebug>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QStringList>
 #include <QTcpServer>
 
@@ -84,8 +86,18 @@ namespace FastCgiQt
 
 	void HttpInterface::startResponse()
 	{
+		static ClientIODevice::HeaderMap standardHeaders;
+		static QMutex mutex;
+		{
+			QMutexLocker lock(&mutex);
+			if(standardHeaders.isEmpty())
+			{
+				standardHeaders.insert("SERVER_SOFTWARE", "FastCgiQt/HttpPlugin");
+				standardHeaders.insert("SERVER_PORT", QString::number(m_server->serverPort()).toLatin1());
+			}
+		}
 		connect(
-			new HttpRequest(m_server->nextPendingConnection(), this),
+			new HttpRequest(standardHeaders, ClientIODevice::HeaderMap(), m_server->nextPendingConnection(), this),
 			SIGNAL(gotHeaders(HttpRequest*)),
 			SLOT(announceRequest(HttpRequest*))
 		);
