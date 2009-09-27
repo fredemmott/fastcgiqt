@@ -1,0 +1,8 @@
+Doxygen is used for FastCgiQt's documentation.
+
+To generate it:
+	doxygen Doxygen.user
+You then want to look at doc/html/index.html
+
+Alternatively, latex (and a Makefile) will be created in doc/latex; the Makefile
+will generate 'refman.pdf'
