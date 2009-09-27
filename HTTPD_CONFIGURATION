@@ -21,7 +21,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 1.2.	- mod_fcgid
 1.3	- Rewrite rules
 2.	lighttpd
-3.	Built-in HTTPD
+3.	Cherokee
+4.	Built-in HTTPD
 
 ****************************
 ***** 0. INTRODUCTION ******
@@ -30,6 +31,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 FastCgiQt has been tested with the following servers:
 - Apache 2 (mod_fastcgi or mod_fcgid, via FCGI-UNIX)
 - lighttpd 1.4.23 (mod_fastcgi or mod_scgi, via FCGI-TCP or SCGI-TCP)
+- Cherokee
 - Built-in basic HTTPD (HTTP)
 
 -----------------
@@ -38,10 +40,11 @@ FastCgiQt has been tested with the following servers:
 
 If this table doesn't look right to you, please use 8-space tabs.
 
-		Maturity	Ease of Use	Ease of Debugging	Development Use Only*
-Apache:		Best		Worst		Worst			No
-lighttpd:	~		~		Best			No
-Built-in:	Worst		Best		Best			Yes
+		Maturity	Ease of Use	Ease of Debugging	Development Use Only*	Supported Servers
+FCGI-UNIX:	Best		Worst		Worst			No			Apache HTTPD
+FCGI-TCP:	~		~		Best			No			Cherokee, lighttpd
+SCGI-TCP:	~		~		Best			No			Cherokee, lighttpd
+HTTP:		Worst		Best		Best			Yes			Built-in.
 
 Maturity: How old/tested the code is.
 Ease of use: How easy it is to get a program up-and-running via that method.
@@ -126,8 +129,20 @@ http://host/foo/website.fcgi/bar
 	= OR =
 	fastcgi.server = ( "/" => ( "localhost" => ( "host" => "127.0.0.1", "port" => 9001, "check-local" => "disable", "fix-root-scriptname" => "enable" ) ) )
 
+***********************
+***** 3. CHEROKEE *****
+***********************
+
+- Run ./yourFastCgiProgram --configure-httpd
+- Select either "FCGI-TCP" or "SCGI-TCP"
+- Pick a port number
+- Run the program again, without arguments
+- Run cherokee-admin
+- In the administration interface, add a remote information source, as localhost:PortNumberHere
+- Set the information source as the handler for one of your URLs.
+
 *****************************
-***** 3. BUILT-IN HTTPD *****
+***** 4. BUILT-IN HTTPD *****
 *****************************
 
 This is the simplest option; it's handy for development, but probably not suitable for deployment.
