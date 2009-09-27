@@ -32,7 +32,9 @@
  *
  * @subsection example_header Header File
  *
- * @include HelloWorld/HelloWorld.h
+ * @dontinclude HelloWorld/HelloWorld.h
+ * @skip include
+ * @until }
  *
  * This declares a subclass of FastCgiQt::Responder called "HelloWorld", which
  * overrides FastCgiQt::Responder::respond().
@@ -48,14 +50,18 @@
  *
  * @subsection example_implementation Implementation File
  *
- * @include HelloWorld/HelloWorld.cpp
+ * @dontinclude HelloWorld/HelloWorld.cpp
+ * @skip include
+ * @until }
  *
  * This just writes a content-type header, and the traditional greeting (though
  * with translation support).
  *
  * @subsection example_main main.cpp
  *
- * @include HelloWorld/main.cpp
+ * @dontinclude HelloWorld/main.cpp
+ * @skip include
+ * @until }
  *
  * This:
  * -# Sets up the QCoreApplication.
