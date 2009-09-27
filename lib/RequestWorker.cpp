@@ -54,7 +54,7 @@ namespace FastCgiQt
 			SLOT(copyPostData())
 		);
 		m_inputDevice = new InputDevice(this);
-		// FIXME
+		// @todo Completely switchover to QByteArray headers
 		// - Request::Backend expects QString/QString headers
 		// - ClientIODevice expects QByteArray/QByteArray headers
 		//
