@@ -11,6 +11,7 @@ SET(
 	RecordHeader
 	StandardInputRecord
 	StandardOutputRecord
+	UnsignedByteArray
 )
 
 SET(SOURCES)

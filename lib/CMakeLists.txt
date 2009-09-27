@@ -27,7 +27,6 @@ SET(
 	Request_Backend
 	RequestWorker
 	Settings
-	UnsignedByteArray
 )
 
 IF(WITH_SERVICE_SUPPORT)
