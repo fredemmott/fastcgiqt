@@ -62,6 +62,7 @@
  * @dontinclude HelloWorld/main.cpp
  * @skip include
  * @until }
+ * @dontinclude HelloWorld/main.cpp
  *
  * This:
  * -# Sets up the QCoreApplication.
