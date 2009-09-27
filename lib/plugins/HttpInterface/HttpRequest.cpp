@@ -70,7 +70,6 @@ namespace FastCgiQt
 				const int lengthOfName = line.indexOf(':');
 				const QByteArray name = line.left(lengthOfName);
 				const QByteArray value = line.mid(lengthOfName + 2); // ": " after the name == 2 chars
-				qDebug() << "REQUEST HEADER" << name << value;
 				m_requestHeaders.insert(name, value);
 			}
 			return;
@@ -101,7 +100,6 @@ namespace FastCgiQt
 					Q_ASSERT(m_requestHeaders.contains("SERVER_PROTOCOL"));
 					m_responseState = WaitingForResponseBody;
 					const QByteArray status = m_responseHeaders.take("STATUS");
-					qDebug() << "Responding with status" << status;
 					m_socket->write(m_requestHeaders.value("SERVER_PROTOCOL"));
 					m_socket->write(" ", 1);
 					m_socket->write(status);
@@ -125,7 +123,6 @@ namespace FastCgiQt
 				const int lengthOfName = line.indexOf(':');
 				const QByteArray name = line.left(lengthOfName);
 				const QByteArray value = line.mid(lengthOfName + 2); // ": " after the name == 2 chars
-				qDebug() << "RESPONSE HEADER:" << name << value;
 				m_responseHeaders.insert(name, value);
 			}
 			return maxSize;
