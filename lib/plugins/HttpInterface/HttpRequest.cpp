@@ -51,7 +51,7 @@ namespace FastCgiQt
 			{
 				return;
 			}
-			const QByteArray line = m_socket->readLine();
+			const QByteArray line = m_socket->readLine().trimmed();
 			const QList<QByteArray> parts = line.split(' ');
 			Q_ASSERT(parts.count() == 3);
 			m_requestHeaders.insert("REQUEST_METHOD", parts.at(0));
@@ -125,6 +125,8 @@ namespace FastCgiQt
 					m_socket->write(" ", 1);
 					m_socket->write(status);
 					m_socket->write("\r\n", 2);
+
+					//qDebug() << Q_FUNC_INFO << m_requestHeaders << m_responseHeaders;
 
 					for(
 						HeaderMap::ConstIterator it = m_responseHeaders.constBegin();
