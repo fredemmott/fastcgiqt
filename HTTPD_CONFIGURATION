@@ -1,0 +1,139 @@
+Copyright (c) 2009, Frederick Emmott <mail@fredemmott.co.uk>
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+------------------------------------------------------------------
+
+0.	Introduction
+0.1.	- Tradeoffs
+1.	Apache HTTPD
+1.1.	- mod_fastcgi
+1.2.	- mod_fcgid
+1.3	- Rewrite rules
+2.	lighttpd
+3.	Built-in HTTPD
+
+****************************
+***** 0. INTRODUCTION ******
+****************************
+
+FastCgiQt has been tested with the following servers:
+- Apache 2 (mod_fastcgi or mod_fcgid, via FCGI-UNIX)
+- lighttpd 1.4.23 (mod_fastcgi or mod_scgi, via FCGI-TCP or SCGI-TCP)
+- Built-in basic HTTPD (HTTP)
+
+-----------------
+- 0.1 Tradeoffs -
+-----------------
+
+If this table doesn't look right to you, please use 8-space tabs.
+
+		Maturity	Ease of Use	Ease of Debugging	Development Use Only*
+Apache:		Best		Worst		Worst			No
+lighttpd:	~		~		Best			No
+Built-in:	Worst		Best		Best			Yes
+
+Maturity: How old/tested the code is.
+Ease of use: How easy it is to get a program up-and-running via that method.
+Ease of debugging: How easy it is to debug a program using this HTTPD; Apache works best via
+	FCGI-UNIX - in this setup, apache spawns the process, so you need to run the debugger
+	as Apache; additionally, qDebug(), qFatal(), and qWarning() output is redirected to
+	syslog. With all the other interfaces, you start the process, so it's easy to attach
+	a debugger, and Qt debugging output appears on stderr.
+Development Use Only*: Most importantly, this is *NOT* an exception to the disclaimer above.
+	This is merely indicating, that regardless of anything else (including 'Maturity'),
+	the built-in HTTPD is not suitable for any usage except internal development. It has
+	not been designed with security in mind, or scalability. It would be a very bad idea
+	to deploy a website using the internal httpd.
+
+***************************
+***** 1. APACHE HTTPD *****
+***************************
+
+- Run ./yourFastCgiProgram --configure-httpd
+- Select "FCGI-UNIX"
+- Configure /either/ mod_fastcgi, or mod_fcgid (easier on debian systems)
+- Possibly add .htaccess mod_rewrite rules
+- Apache will spawn the process as needed
+
+--------------------
+- 1.1. mod_fastcgi -
+--------------------
+
+- In your <Directory> block, in httpd.conf, add:
+	AddHandler fastcgi-script fcgi
+	Options +ExecCGI
+- In the global config, add:
+	LoadModule fastcgi_module path/to/modules/mod_fastcgi.so
+- If you want your application to handle HTTP authorization headers itself, add:
+	FastCgiConfig -pass-header Authorization
+
+------------------
+- 1.2. mod_fcgid -
+------------------
+
+- In the <Directory> block, add:
+	Options +ExecCGI
+- In modules-available/fcgid.conf (or related), if you want to handle
+  authorization headers yourself, add:
+	PassHeader Authorization
+
+----------------------
+- 1.3. Rewrite Rules -
+----------------------
+
+Assuming you don't want to access your application via urls including ".fcgi", I suggest
+a .htaccess similar to the following:
+
+	RewriteEngine on
+	RewriteBase /
+
+	# If a flat file or directory with the requested name exists, allow it through without rewrite (eg /static/)
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-l
+
+	# Otherwise, pass it through website.fcgi
+	RewriteRule ^(.*)$ website.fcgi/$1 [L,NS]
+	# Unfortunately, "/" is a valid directory :p
+	RewriteRule ^$ website.fcgi/ [L,NS]
+
+This will make it so that if your application is in /foo, http://host/foo/bar will be rewritten transparently to
+http://host/foo/website.fcgi/bar
+
+***********************
+***** 2. LIGHTTPD *****
+***********************
+
+- lighttpd works with FastCgiQt with either mod_fastcgi or mod_scgi; use whichever you prefer.
+- Run ./yourFastCgiProgram --configure-httpd
+- Select either "FCGI-TCP" or "SCGI-TCP"
+- Pick a port number
+- Run the program again, without arguments; FastCgiQt will start listening on the port number you specified
+- Edit lighttpd.conf, to contain one of the following two lines (assuming you want '/' as the root of your
+  FastCgiQt application, and that you configured port 9001):
+	scgi.server = ( "/" => ( "localhost" => ( "host" => "127.0.0.1", "port" => 9001, "check-local" => "disable", "fix-root-scriptname" => "enable" ) ) )
+	= OR =
+	fastcgi.server = ( "/" => ( "localhost" => ( "host" => "127.0.0.1", "port" => 9001, "check-local" => "disable", "fix-root-scriptname" => "enable" ) ) )
+
+*****************************
+***** 3. BUILT-IN HTTPD *****
+*****************************
+
+This is the simplest option; it's handy for development, but probably not suitable for deployment.
+
+- Run ./yourFastCgiProgram --configure-httpd
+- Select "HTTP"
+- Pick a port number
+- Run the program again, without arguments
+- Go to http://localhost:portNumberYouPicked/ in your web browser
