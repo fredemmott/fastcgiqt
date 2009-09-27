@@ -102,7 +102,7 @@ namespace FastCgiQt
 
 	void ScgiInterface::shutdown()
 	{
-		// TODO
+		m_tcpServer->close();
 	}
 
 	bool ScgiInterface::isFinished() const
