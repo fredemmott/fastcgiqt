@@ -46,14 +46,14 @@ namespace FastCgiQt
 			void dispatchRequest();
 			enum RequestState
 			{
-				WaitingForRequest,
-				WaitingForRequestHeaders,
-				WaitingForRequestBody
+				WaitingForRequest, ///< We've not actually received the "$VERB $URL HTTP/$VERSION" line yet.
+				WaitingForRequestHeaders, ///< We might have recieved some headers, but not all of them (i.e. no \r\n\r\n yet).
+				WaitingForRequestBody ///< Not actually expecting anything new; if we get it, it's POST data.
 			};
 			enum ResponseState
 			{
-				WaitingForResponseHeaders,
-				WaitingForResponseBody
+				WaitingForResponseHeaders, ///< We've not received a \r\n from FastCgiQt yet
+				WaitingForResponseBody ///< We're dealing with content now
 			};
 			RequestState m_requestState;
 			ResponseState m_responseState;
