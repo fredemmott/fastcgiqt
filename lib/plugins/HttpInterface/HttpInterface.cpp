@@ -101,7 +101,10 @@ namespace FastCgiQt
 			cout << "Do *NOT* use this inefficient and insecure feature in a production setting, or any other environment" << endl;
 			cout << "where untrusted users have access to this webserver." << endl;
 		}
-		m_server->listen(QHostAddress::Any, portNumber);
+		if(!m_server->listen(QHostAddress::Any, portNumber))
+		{
+			qFatal("Failed to listen on port %d: %s", portNumber, qPrintable(m_server->errorString()));
+		}
 		return true;
 	}
 
