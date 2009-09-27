@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QHostInfo>
 #include <QTcpSocket>
+#include <QTextStream>
 
 namespace FastCgiQt
 {
