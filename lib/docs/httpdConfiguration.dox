@@ -179,12 +179,10 @@ fastcgi.server = ( "/" => ( "localhost" => ( "host" => "127.0.0.1", "port" => 90
 
 @section cherokee Cherokee
 
-<ol>
-<li>Configure your application as above (for @ref lighttpd), with either FCGI-TCP or SCGI-TCP.</li>
-<li>Run cherokee-admin</li>
-<li>In the web interface, add a remote information source, as localhost:9001 (assuming you picked 9001 in the application configuration)</li>
-<li>Set the information source as the handler for an URL prefix.
-</ol>
+ -# Configure your application as above (for @ref lighttpd), with either FCGI-TCP or SCGI-TCP.
+ -# Run cherokee-admin
+ -# In the web interface, add a remote information source, as localhost:9001 (assuming you picked 9001 in the application configuration)
+ -# Set the information source as the handler for an URL prefix.
 
 @section built_in Built-In HTTPD
 
