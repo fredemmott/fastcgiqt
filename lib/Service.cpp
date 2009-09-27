@@ -167,7 +167,7 @@ namespace FastCgiQt
 				return;
 			}
 		}
-		///@todo FIXME
+		///@todo Add some kind of interface for hooking 404s ?
 		setHeader("status", "404");
 
 		out << "<h1>404 Not Found</h1>";
