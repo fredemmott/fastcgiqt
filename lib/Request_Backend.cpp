@@ -15,6 +15,7 @@
 */
 #include "Request_Backend.h"
 
+#include <QDebug>
 #include <QStringList>
 
 namespace FastCgiQt

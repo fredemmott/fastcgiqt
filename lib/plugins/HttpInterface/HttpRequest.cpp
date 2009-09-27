@@ -68,9 +68,17 @@ namespace FastCgiQt
 					return;
 				}
 				const int lengthOfName = line.indexOf(':');
-				const QByteArray name = line.left(lengthOfName);
+				QByteArray name = line.left(lengthOfName).toUpper();
+				name.replace('-', '_');
 				const QByteArray value = line.mid(lengthOfName + 2); // ": " after the name == 2 chars
-				m_requestHeaders.insert(name, value);
+				if(name == "CONTENT_LENGTH" || name == "CONTENT_TYPE")
+				{
+					m_requestHeaders.insert(name, value);
+				}
+				else
+				{
+					m_requestHeaders.insert("HTTP_" + name, value);
+				}
 			}
 			return;
 		}
