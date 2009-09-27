@@ -1,0 +1,15 @@
+FEATURES
+- Try out nginx
+- AJP support?
+
+CHANGES
+(some of these will be API+ABI changes)
+- Headers should remain as QByteArrays
+- ClientIOInterface shouldn't present QTextStreams for in and out; it should
+  present a raw QIODevice (eg a ClientIODevice)
+- A reference to the request shouldn't be available; instead, Service::currentRequest()
+  should be moved to ClientIOInterface
+- ClientIOInterface/ClientIODevice do nearly the same thing. They should probably be
+  merged.
+- All input data shouldn't be copied to the Request backend; it should stream it, if
+  needed.
