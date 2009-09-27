@@ -31,14 +31,13 @@ namespace FastCgiQt
 	{
 		Q_OBJECT
 		public:
-			class Backend;
 			/** Create an OutputDevice.
 			 *
 			 * @param requestId is the FastCGI request ID.
 			 * @param socket is the socket this request is using.
 			 * @param parent is the parent object.
 			 */
-			OutputDevice(Backend* backend, QObject* parent = NULL);
+			OutputDevice(QIODevice* backend, QObject* parent = NULL);
 
 			/** Whether or not to output headers.
 			 *
@@ -148,7 +147,7 @@ namespace FastCgiQt
 			/// Whether or not to send headesr
 			bool m_sendHeaders;
 
-			Backend* m_backend;
+			QIODevice* m_backend;
 	};
 }
 

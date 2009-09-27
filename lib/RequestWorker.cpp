@@ -1,7 +1,7 @@
 #include "RequestWorker.h"
 
 #include "InputDevice.h"
-#include "ProxyOutputBackend.h"
+#include "OutputDevice.h"
 #include "Request_Backend.h"
 
 #include <QDebug>
@@ -64,7 +64,7 @@ namespace FastCgiQt
 
 		Responder* responder = (*m_generator)(
 			m_request,
-			new OutputDevice(new ProxyOutputBackend(m_device)),
+			new OutputDevice(m_device),
 			m_inputDevice,
 			this
 		);

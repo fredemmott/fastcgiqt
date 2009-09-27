@@ -14,13 +14,12 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include "OutputDevice.h"
-#include "OutputDevice_Backend.h"
 
 #include <QDebug>
 
 namespace FastCgiQt
 {
-	OutputDevice::OutputDevice(Backend* backend, QObject* parent)
+	OutputDevice::OutputDevice(QIODevice* backend, QObject* parent)
 		:
 			QIODevice(parent),
 			m_haveSentData(false),
@@ -28,7 +27,6 @@ namespace FastCgiQt
 			m_sendHeaders(true),
 			m_backend(backend)
 	{
-		backend->setParent(this);
 		Q_ASSERT(backend->isOpen());
 		Q_ASSERT(backend->isWritable());
 		open(QIODevice::WriteOnly);
