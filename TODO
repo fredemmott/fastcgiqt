@@ -1,6 +1,8 @@
 FEATURES
 - Try out nginx
 - AJP support?
+- FCGI-TCP under apache?
+- SCGI-TCP under apache?
 
 CHANGES
 (some of these will be API+ABI changes)
