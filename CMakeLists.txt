@@ -29,7 +29,7 @@ OPTION(WITH_HTTP_SUPPORT "Build support for an embbeded HTTPD (only for developm
 
 IF(WITH_SERVICE_SUPPORT)
 	MESSAGE(STATUS "Service support is enabled.")
-	OPTION(WITH_XSLT_SUPPORT "Build helper class for XSLT-based applications - needs Qt 4.5" OFF)
+	OPTION(WITH_XSLT_SUPPORT "Build helper class for XSLT-based applications - needs Qt 4.5" ON)
 ELSE()
 	MESSAGE(STATUS "Service support is *NOT* enabled.")
 ENDIF()
