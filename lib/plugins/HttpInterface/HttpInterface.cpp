@@ -19,6 +19,8 @@
 #include "Settings.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QFileInfo>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QStringList>
@@ -63,6 +65,17 @@ namespace FastCgiQt
 				return;
 			}
 			settings.setValue("portNumber", portNumber);
+			cout << "Optionally, you can specify a path relative to the current directory, where FastCgiQt will serve static content. This may be horribly insecure." << endl;
+			cout << "Static content directory [none]: " << flush;
+			const QString directory = cin.readLine().trimmed();
+			if(directory.isEmpty())
+			{
+				settings.remove("staticDirectory");
+			}
+			else
+			{
+				settings.setValue("staticDirectory", QDir::cleanPath(directory));
+			}
 			return;
 		}
 		qFatal("Unknown HTTP backend: %s", qPrintable(backend));
@@ -79,8 +92,15 @@ namespace FastCgiQt
 		{
 			return false;
 		}
+		m_staticDirectory = Settings().value("FastCGI/staticDirectory", QString()).toString();
 		QTextStream cout(stdout);
 		cout << "Using configuration in " << Settings().fileName() << ", and running an HTTP server on port " << portNumber << endl;
+		if(!m_staticDirectory.isEmpty())
+		{
+			cout << "***WARNING*** Serving static content from ./" << m_staticDirectory << "/" << " (" << QFileInfo(m_staticDirectory).canonicalFilePath() << ")" << endl;
+			cout << "Do *NOT* use this inefficient and insecure feature in a production setting, or any other environment" << endl;
+			cout << "where untrusted users have access to this webserver." << endl;
+		}
 		m_server->listen(QHostAddress::Any, portNumber);
 		return true;
 	}
@@ -88,6 +108,7 @@ namespace FastCgiQt
 	void HttpInterface::startResponse()
 	{
 		static ClientIODevice::HeaderMap standardHeaders;
+		static QStringList staticDirectories;
 		static QMutex mutex;
 		{
 			QMutexLocker lock(&mutex);
@@ -96,10 +117,14 @@ namespace FastCgiQt
 				standardHeaders.insert("SERVER_SOFTWARE", "FastCgiQt/HttpPlugin");
 				standardHeaders.insert("SERVER_PORT", QString::number(m_server->serverPort()).toLatin1());
 				standardHeaders.insert("GATEWAY_INTERFACE", "CGI/1.1");
+				if(!m_staticDirectory.isEmpty())
+				{
+					staticDirectories.append(QFileInfo(m_staticDirectory).canonicalFilePath());
+				}
 			}
 		}
 		connect(
-			new HttpRequest(standardHeaders, ClientIODevice::HeaderMap(), m_server->nextPendingConnection(), this),
+			new HttpRequest(standardHeaders, ClientIODevice::HeaderMap(), staticDirectories, m_server->nextPendingConnection(), this),
 			SIGNAL(gotHeaders(HttpRequest*)),
 			SLOT(announceRequest(HttpRequest*))
 		);

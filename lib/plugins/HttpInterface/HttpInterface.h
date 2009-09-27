@@ -39,5 +39,6 @@ namespace FastCgiQt
 			void announceRequest(HttpRequest* request);
 		private:
 			QTcpServer* m_server;
+			QString m_staticDirectory;
 	};
 };

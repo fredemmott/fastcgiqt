@@ -1,18 +1,20 @@
 #include "HttpRequest.h"
 
 #include <QBuffer>
+#include <QFileInfo>
 #include <QHostInfo>
 #include <QTcpSocket>
 
 namespace FastCgiQt
 {
-	HttpRequest::HttpRequest(const HeaderMap& standardRequestHeaders, const HeaderMap& standardResponseHeaders, QTcpSocket* socket, QObject* parent)
+	HttpRequest::HttpRequest(const HeaderMap& standardRequestHeaders, const HeaderMap& standardResponseHeaders, const QStringList& staticDirectories, QTcpSocket* socket, QObject* parent)
 	: ClientIODevice(parent)
 	, m_requestState(WaitingForRequest)
 	, m_responseState(WaitingForResponseHeaders)
 	, m_requestHeaders(standardRequestHeaders)
 	, m_responseHeaders(standardResponseHeaders)
 	, m_socket(socket)
+	, m_staticDirectories(staticDirectories)
 	{
 		const QHostInfo serverInfo = QHostInfo::fromName(socket->localAddress().toString());
 		m_requestHeaders.insert("SERVER_NAME", serverInfo.hostName().toLatin1());
@@ -76,7 +78,7 @@ namespace FastCgiQt
 				if(line.isEmpty())
 				{
 					m_requestState = WaitingForRequestBody;
-					emit gotHeaders(this);
+					dispatchRequest();
 					readSocketData();
 					return;
 				}
@@ -96,6 +98,36 @@ namespace FastCgiQt
 			return;
 		}
 		emit readyRead();
+	}
+
+	void HttpRequest::dispatchRequest()
+	{
+		if(!m_staticDirectories.isEmpty())
+		{
+			const QString fullFilePath = QFileInfo("./" + m_requestHeaders.value("REQUEST_URI")).canonicalFilePath();
+			Q_FOREACH(const QString& path, m_staticDirectories)
+			{
+				if(fullFilePath.startsWith(path))
+				{
+					QFile file(fullFilePath);
+					file.open(QIODevice::ReadOnly);
+					if(file.isOpen())
+					{
+						QTextStream cout(stdout);
+						cout << "***** Sending file '" << fullFilePath << "' as static content." << endl;
+						m_responseHeaders.insert("STATUS", "200 OK");
+						m_responseHeaders.insert("CONTENT-LENGTH", QString::number(file.size()).toLatin1());
+						write("\r\n");
+						write(file.readAll());
+						deleteLater();
+						return;
+					}
+					break;
+				}
+			}
+		}
+		// Pass off to FastCgiQt
+		emit gotHeaders(this);
 	}
 
 	qint64 HttpRequest::readData(char* data, qint64 maxSize)

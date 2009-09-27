@@ -2,6 +2,8 @@
 
 #include "ClientIODevice.h"
 
+#include <QStringList>
+
 class QTcpSocket;
 
 namespace FastCgiQt
@@ -10,7 +12,7 @@ namespace FastCgiQt
 	{
 		Q_OBJECT;
 		public:
-			HttpRequest(const HeaderMap& standardRequestHeaders, const HeaderMap& standardResponseHeaders, QTcpSocket* socket, QObject* parent);
+			HttpRequest(const HeaderMap& standardRequestHeaders, const HeaderMap& standardResponseHeaders, const QStringList& staticDirectories, QTcpSocket* socket, QObject* parent);
 			~HttpRequest();
 			HeaderMap requestHeaders() const;
 		signals:
@@ -21,6 +23,12 @@ namespace FastCgiQt
 		private slots:
 			void readSocketData();
 		private:
+			/** We've got all the headers, dispatch the request.
+			 *
+			 * This either passes off the request to FastCgiQt, or, if it's in
+			 * m_staticDirectories, serves the file raw.
+			 */
+			void dispatchRequest();
 			enum RequestState
 			{
 				WaitingForRequest,
@@ -39,5 +47,7 @@ namespace FastCgiQt
 			HeaderMap m_responseHeaders;
 
 			QTcpSocket* m_socket;
+
+			QStringList m_staticDirectories;
 	};
 };
