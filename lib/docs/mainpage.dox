@@ -1,12 +1,12 @@
-/** @mainpage FastCGI-Qt
+/** @mainpage FastCgiQt
  *
  * @section Introduction
  *
- * FastCGI-Qt is a library to make writing
+ * FastCgiQt is a library to make writing
  * <a href='http://www.fastcgi.com'>FastCGI</a> applications using
  * <a href='http://www.qtsoftware.com'>Qt</a> easy.
  *
- * Unlike the majority of existing libraries, FastCGI-Qt aims to provide a clean
+ * Unlike the majority of existing libraries, FastCgiQt aims to provide a clean
  * interface to the data provided by the client or web server, instead of merely
  * providing a CGI/1.1-compatible environment.
  *
@@ -18,9 +18,9 @@
  * - FastCgiQt::Manager handles communication with the webserver, creating
  *   	Request and Responder objects as needed.
  *
- * @section example Writing an application with FastCGI-Qt
+ * @section example Writing an application with FastCgiQt
  *
- * Only three things are needed to make a FastCGI application with FastCGI-Qt:
+ * Only three things are needed to make a FastCGI application with FastCgiQt:
  *
  * - A FastCgiQt::Responder subclass that implements
  *  	FastCgiQt::Responder::respond().
@@ -66,35 +66,70 @@
  *	@line FastCgiQt::Manager
  * -# Starts the application running.
  *	@line return
+ *
+ * @section running Running a FastCgiQt application
+ *
+ * FastCgiQt supports several methods of communicating with HTTP servers, and also its' own built-in web server.
+ * While not recommended for production use, the built-in HTTP server is the simplest to get started with.
+ *
+ * To configure which interface the application uses, run it with --configure-httpd:
+ * @verbatim
+$ ./HelloWorld --configure-httpd
+*****************************************
+***** FastCgiQt HTTPD Configuration *****
+*****************************************
+The following interfaces are available:
+ - FCGI-TCP
+ - FCGI-UNIX
+ - HTTP
+ - SCGI-TCP
+Interface [FCGI-UNIX]: HTTP
+Port number: 8080
+Optionally, you can specify a path relative to the current directory, where FastCgiQt will serve static content. This may be horribly insecure.
+Static content directory [none]:
+$ 
+@endverbatim
+ * The above configures HelloWorld to use the HTTP interface on port 8080 - the final option (left blank) lets you to configure the HTTP backend
+ * to serve certain URIs directly from the filesystem - for example, if 'static' was typed in, then a request to http://localhost:8080/static/style.css
+ * would get the contents of ./static/style.css, as opposed to a 404. This is definitely inefficient, and probably insecure, so you definitely shouldn't
+ * use this feature except for local development.
  * 
+ * To start the application, just run it without arguments:
+ * @verbatim
+$ ./HelloWorld
+Using configuration in .HelloWorld, and running an HTTP server on port 8080
+
+@endverbatim
+ * You can then access the application via http://localhost:8080/ in your web browser.
+ *
  * @section examples Other Examples
- * There are <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples'>several examples</a>
- * included in the FastCGI-Qt source:
- * - <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples/HelloWorld'>HelloWorld</a>
+ * There are <a href='http://gitorious.org/fastcgiqt/fastcgiqt/trees/master/examples'>several examples</a>
+ * included in the FastCgiQt source:
+ * - <a href='http://gitorious.org/fastcgiqt/fastcgiqt/trees/master/examples/HelloWorld'>HelloWorld</a>
  *  	is the traditional first program.
- * - <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples/Dumper'>Dumper</a>
+ * - <a href='http://gitorious.org/fastcgiqt/fastcgiqt/trees/master/examples/Dumper'>Dumper</a>
  *  	dumps all GET, POST, and server variables.
- * - <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples/GetGreeter'>GetGreeter</a>
+ * - <a href='http://gitorious.org/fastcgiqt/fastcgiqt/trees/master/examples/GetGreeter'>GetGreeter</a>
  *  	is a simple example for processing a form submitted via GET.
- * - <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=tree;f=examples/PostGreeter'>PostGreeter</a>
+ * - <a href='http://gitorious.org/fastcgiqt/fastcgiqt/trees/master/examples/PostGreeter'>PostGreeter</a>
  *  	is a simple example for processing a form submitted via POST.
  *
  * @section Source
- * The source code for FastCGI-Qt can be
- * <a href='http://git.fredemmott.co.uk/?p=FastCgiQt;a=summary'>browsed via gitweb</a>.
+ * The source code for FastCgiQt can be found
+ * <a href='http://gitorious.org/fastcgiqt'>on Gitorious</a>.
  *
  * You can obtain the code via git:
- * @verbatim git clone http://git.fredemmott.co.uk/repo/FastCgiQt @endverbatim
+ * @verbatim git clone git://gitorious.org/fastcgiqt/fastcgiqt.git @endverbatim
  *
  * @section License
  *
- * With the exception of the file 'fastcgi.h', FastCGI-Qt is licensed under the
+ * With the exception of the file 'fastcgi.h', FastCgiQt is licensed under the
  * ISC license:
  *
  * @verbinclude LICENSE.ISC
  *
  * The file 'fastcgi.h' is not under the same license, as it is taken from the
- * FastCGI development kit. This file is not part of the user API for FastCGI-Qt.
+ * FastCGI development kit. This file is not part of the user API for FastCgiQt.
  *
  * It is under the following license:
  *
