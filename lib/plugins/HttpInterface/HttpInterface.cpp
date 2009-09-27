@@ -23,6 +23,7 @@
 #include <QMutexLocker>
 #include <QStringList>
 #include <QTcpServer>
+#include <QTextStream>
 
 namespace FastCgiQt
 {
@@ -78,9 +79,9 @@ namespace FastCgiQt
 		{
 			return false;
 		}
-
+		QTextStream cout(stdout);
+		cout << "Using configuration in " << Settings().fileName() << ", and running an HTTP server on port " << portNumber << endl;
 		m_server->listen(QHostAddress::Any, portNumber);
-
 		return true;
 	}
 

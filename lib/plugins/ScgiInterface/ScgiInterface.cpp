@@ -83,6 +83,9 @@ namespace FastCgiQt
 			return false;
 		}
 
+		QTextStream cout(stdout);
+		cout << "Following configuration in '" << Settings().fileName() << "' and listening for SCGI on TCP port " << portNumber << endl;
+
 		connect(
 			m_tcpServer,
 			SIGNAL(newConnection()),

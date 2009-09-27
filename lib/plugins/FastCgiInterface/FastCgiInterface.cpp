@@ -117,7 +117,7 @@ namespace FastCgiQt
 					return false;
 				}
 				QTextStream cout(stdout);
-				cout << "Following configuration in '" << settings.fileName() << "' and listening on TCP port " << port << endl;
+				cout << "Following configuration in '" << settings.fileName() << "' and listening for FastCGI on TCP port " << port << endl;
 			}
 			else
 			{
