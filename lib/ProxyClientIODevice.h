@@ -13,42 +13,25 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#include "HttpDaemon.h"
+#pragma once
 
-#include <QDebug>
-#include <QTextStream>
+#include "ClientIODevice.h"
 
 namespace FastCgiQt
 {
-	HttpDaemon::HttpDaemon(quint16 port, QObject* parent)
-	: QThread(parent)
-	, m_port(port)
+	/// Simple OutputDevice backend that just passes on stuff to another QIODevice
+	class ProxyClientIODevice: public ClientIODevice
 	{
-	}
-	
-	void HttpDaemon::run()
-	{
-		m_baseHandle = ::event_init();
-		m_httpHandle = ::evhttp_new(m_baseHandle);
-		if(::evhttp_bind_socket(m_httpHandle, "0.0.0.0", m_port) == -1)
-		{
-			qFatal("Couldn't bind to port %d", m_port);
-			return;
-		}
-		::evhttp_set_gencb(m_httpHandle, spawnRequest, this);
-
-		QTextStream cout(stdout);
-		cout << "Running HTTP server on TCP port " << m_port << endl;
-		// Enter libEvent event loop
-		::event_dispatch();
-	}
-
-	HttpDaemon::~HttpDaemon()
-	{
-	}
-
-	void HttpDaemon::spawnRequest(struct evhttp_request* request, void* instance)
-	{
-		emit reinterpret_cast<HttpDaemon*>(instance)->spawnRequest(request);
-	}
-}
+		Q_OBJECT;
+		public:
+			ProxyClientIODevice(const HeaderMap& headers, QIODevice* source, QObject* parent);
+			bool waitForBytesWritten(int msecs);
+			HeaderMap requestHeaders() const;
+		protected:
+			qint64 readData(char* data, qint64 maxSize);
+			qint64 writeData(const char* data, qint64 maxSize);
+		private:
+			HeaderMap m_headers;
+			QIODevice* m_source;
+	};
+};

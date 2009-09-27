@@ -16,12 +16,12 @@
 #pragma once
 
 #include "CommunicationInterface.h"
-#include "Responder.h"
 
-struct evhttp_request;
+class QTcpServer;
 
 namespace FastCgiQt
 {
+	class HttpRequest;
 	class HttpInterface : public CommunicationInterface
 	{
 		Q_OBJECT
@@ -35,9 +35,9 @@ namespace FastCgiQt
 		protected:
 			bool startBackend(const QString& backend);
 		private slots:
-			void spawnRequest(struct evhttp_request* request);
+			void startResponse();
+			void announceRequest(HttpRequest* request);
 		private:
-			/// Pointer to function creating new Responder objects.
-			Responder::Generator m_responderGenerator;
+			QTcpServer* m_server;
 	};
 };

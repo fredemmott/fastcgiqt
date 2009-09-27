@@ -14,20 +14,25 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include "HttpInterface.h"
-#include "HttpDaemon.h"
 #include "HttpRequest.h"
 
 #include "Settings.h"
 
 #include <QDebug>
 #include <QStringList>
+#include <QTcpServer>
 
 namespace FastCgiQt
 {
 	HttpInterface::HttpInterface(Responder::Generator responderGenerator, QObject* parent)
-	: CommunicationInterface(parent)
-	, m_responderGenerator(responderGenerator)
+	: CommunicationInterface(responderGenerator, parent)
+	, m_server(new QTcpServer(this))
 	{
+		connect(
+			m_server,
+			SIGNAL(newConnection()),
+			SLOT(startResponse())
+		);
 	}
 
 	QStringList HttpInterface::backends() const
@@ -72,24 +77,27 @@ namespace FastCgiQt
 			return false;
 		}
 
-		HttpDaemon* daemon = new HttpDaemon(portNumber, this);
-		connect(
-			daemon,
-			SIGNAL(spawnRequest(struct evhttp_request*)),
-			SLOT(spawnRequest(struct evhttp_request*))
-		);
-		daemon->start();
+		m_server->listen(QHostAddress::Any, portNumber);
 
 		return true;
 	}
 
-	HttpInterface::~HttpInterface()
+	void HttpInterface::startResponse()
 	{
+		connect(
+			new HttpRequest(m_server->nextPendingConnection(), this),
+			SIGNAL(gotHeaders(HttpRequest*)),
+			SLOT(announceRequest(HttpRequest*))
+		);
 	}
 
-	void HttpInterface::spawnRequest(struct evhttp_request* request)
+	void HttpInterface::announceRequest(HttpRequest* request)
 	{
-		addWorker(new HttpRequest(m_responderGenerator, request, NULL));
+		addRequest(request);
+	}
+
+	HttpInterface::~HttpInterface()
+	{
 	}
 
 	bool HttpInterface::isFinished() const

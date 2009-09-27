@@ -21,6 +21,8 @@ namespace FastCgiQt
 	: OutputDevice::Backend()
 	, m_source(source)
 	{
+		Q_ASSERT(source->isOpen());
+		Q_ASSERT(source->isWritable());
 		open(QIODevice::WriteOnly | QIODevice::Unbuffered);
 	}
 

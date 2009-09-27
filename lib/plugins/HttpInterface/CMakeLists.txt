@@ -1,9 +1,7 @@
 SET(
 	CLASSES
-	HttpDaemon
 	HttpInterface
 	HttpInterfaceFactory
-	HttpOutputBackend
 	HttpRequest
 )
 

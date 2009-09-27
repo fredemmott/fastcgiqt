@@ -1,27 +1,43 @@
 #pragma once
 
-#include "CommunicationInterface_Worker.h"
-#include "Request.h"
-#include "Responder.h"
+#include "ClientIODevice.h"
 
-struct evhttp_request;
+class QTcpSocket;
 
 namespace FastCgiQt
 {
-	class InputDevice;
-	class HttpRequest : public CommunicationInterface::Worker
+	class HttpRequest : public ClientIODevice
 	{
 		Q_OBJECT;
 		public:
-			HttpRequest(Responder::Generator generator, struct evhttp_request* request, QObject* parent);
+			HttpRequest(QTcpSocket* socket, QObject* parent);
 			~HttpRequest();
+			HeaderMap requestHeaders() const;
+		signals:
+			void gotHeaders(HttpRequest*);
+		protected:
+			qint64 readData(char* data, qint64 maxSize);
+			qint64 writeData(const char* data, qint64 maxSize);
 		private slots:
-			void start();
-			void cleanup(Responder* responder);
+			void readSocketData();
 		private:
-			Responder::Generator m_generator;
-			struct evhttp_request* m_httpRequest;
-			InputDevice* m_inputDevice;
-			Request m_request;
+			enum RequestState
+			{
+				WaitingForRequest,
+				WaitingForRequestHeaders,
+				WaitingForRequestBody
+			};
+			enum ResponseState
+			{
+				WaitingForResponseHeaders,
+				WaitingForResponseBody
+			};
+			RequestState m_requestState;
+			ResponseState m_responseState;
+
+			HeaderMap m_responseHeaders;
+			HeaderMap m_requestHeaders;
+
+			QTcpSocket* m_socket;
 	};
 };

@@ -61,6 +61,8 @@ namespace FastCgiQt
 					virtual CommunicationInterface* createInterface(Responder::Generator, QObject* parent) const = 0;
 			};
 			QList<int> threadLoads() const;
+		protected slots:
+			void addRequest(ClientIODevice* device);
 		protected:
 			virtual bool startBackend(const QString& backend) = 0;
 			CommunicationInterface(Responder::Generator, QObject* parent);
@@ -68,7 +70,6 @@ namespace FastCgiQt
 		private slots:
 			/// Decrease the load counter for the specified thread.
 			void reduceLoadCount(QThread* thread);
-			void addRequest(ClientIODevice* device);
 		private:
 			/** Comparison for thread loads.
 			 *

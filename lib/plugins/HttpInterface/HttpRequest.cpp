@@ -1,125 +1,136 @@
 #include "HttpRequest.h"
 
-// *MUST* be before libevent headers for TAILQ stuff
-#include "sys_queue.h"
-
-#include "HttpOutputBackend.h"
-#include "InputDevice.h"
-#include "Request_Backend.h"
-
-#include <QDebug>
-#include <QTimer>
-
-#include <event.h>
-#include <evhttp.h>
+#include <QBuffer>
+#include <QTcpSocket>
 
 namespace FastCgiQt
 {
-	HttpRequest::HttpRequest(Responder::Generator generator, struct evhttp_request* request, QObject* parent)
-	: CommunicationInterface::Worker(parent)
-	, m_generator(generator)
-	, m_httpRequest(request)
-	, m_inputDevice(0)
-	, m_request(new Request::Backend())
+	HttpRequest::HttpRequest(QTcpSocket* socket, QObject* parent)
+	: ClientIODevice(parent)
+	, m_requestState(WaitingForRequest)
+	, m_responseState(WaitingForResponseHeaders)
+	, m_socket(socket)
 	{
-		// Start from the event loop
-		QTimer::singleShot(0, this, SLOT(start()));
-	}
-
-	void HttpRequest::start()
-	{
-		// 1. Read the headers
-		QHash<QString, QString> headers;
-		// Read the HTTP headers
-		const size_t contentLength = EVBUFFER_LENGTH(m_httpRequest->input_buffer);
-		headers.insert("CONTENT_LENGTH", QString::number(contentLength));
-
-		struct evkeyval* header;
-		TAILQ_FOREACH(header, m_httpRequest->input_headers, next)
-		{
-			QString name = QString::fromLatin1(header->key).toUpper();
-			name.replace('-', '_');
-			const QString value(QString::fromLatin1(header->value));
-			if(name == "CONTENT_LENGTH")
-			{
-				Q_ASSERT(value == QString::number(contentLength));
-			}
-			else if(name == "CONTENT_TYPE")
-			{
-				headers.insert(name, value);
-			}
-			else
-			{
-				headers.insert("HTTP_" + name, value);
-			}
-		}
-
-		// Add special CGI headers
-		headers.insert("SERVER_SOFTWARE", "FastCgiQt/evhttp");
-		headers.insert("GATEWAY_INTERFACE", "CGI/1.1");
-		switch(m_httpRequest->type)
-		{
-			case EVHTTP_REQ_GET:
-				headers.insert("REQUEST_METHOD", "GET");
-				break;
-			case EVHTTP_REQ_POST:
-				headers.insert("REQUEST_METHOD", "POST");
-				break;
-			case EVHTTP_REQ_HEAD:
-				headers.insert("REQUEST_METHOD", "HEAD");
-				break;
-		}
-		headers.insert("REMOTE_ADDR", QLatin1String(m_httpRequest->remote_host));
-		headers.insert("REMOTE_PORT", QString::number(m_httpRequest->remote_port));
-		{
-			const QByteArray uri(m_httpRequest->uri);
-			headers.insert("REQUEST_URI", uri);
-			const int queryStringPosition = uri.indexOf('?');
-			if(queryStringPosition == -1)
-			{
-				headers.insert("QUERY_STRING", QString());
-			}
-			else
-			{
-				headers.insert("QUERY_STRING", uri.mid(queryStringPosition + 1));
-			}
-		}
-		headers.insert("SERVER_PROTOCOL", QString("HTTP/%1.%2").arg(static_cast<int>(m_httpRequest->major)).arg(static_cast<int>(m_httpRequest->minor)));
-
-		m_request.backend()->addServerData(headers);
-		// 2. Read POST data
-		m_inputDevice = new InputDevice(this);
-		const QByteArray postData(reinterpret_cast<const char*>(EVBUFFER_DATA(m_httpRequest->input_buffer)), contentLength);
-		m_request.backend()->appendContent(postData); // for easy access
-		m_inputDevice->appendData(postData);
-
-		// 3. Start the responder
-		Responder* responder = (*m_generator)(
-			m_request,
-			new OutputDevice(new HttpOutputBackend(m_httpRequest), this),
-			m_inputDevice,
-			this
-		);
+		open(QIODevice::ReadWrite | QIODevice::Unbuffered);
+		socket->setParent(this);
+		Q_ASSERT(socket->isOpen());
+		Q_ASSERT(socket->isWritable());
+		Q_ASSERT(socket->isReadable());
 		connect(
-			responder,
-			SIGNAL(finished(Responder*)),
-			SLOT(cleanup(Responder*))
+			socket,
+			SIGNAL(readyRead()),
+			this,
+			SLOT(readSocketData())
 		);
-		qDebug() << Q_FUNC_INFO << "Calling start";
-		responder->start();
-	}
-
-	void HttpRequest::cleanup(Responder* responder)
-	{
-		qDebug() << Q_FUNC_INFO;
-		delete responder;
-		m_httpRequest = 0;
-		emit finished(thread());
-		deleteLater();
 	}
 
 	HttpRequest::~HttpRequest()
 	{
-		qDebug() << Q_FUNC_INFO;
+		m_socket->flush();
+		m_socket->close();
+	}
+
+	ClientIODevice::HeaderMap HttpRequest::requestHeaders() const
+	{
+		return m_requestHeaders;
+	}
+
+	void HttpRequest::readSocketData()
+	{
+		if(m_requestState == WaitingForRequest)
+		{
+			if(!m_socket->canReadLine())
+			{
+				return;
+			}
+			const QByteArray line = m_socket->readLine();
+			const QList<QByteArray> parts = line.split(' ');
+			Q_ASSERT(parts.count() == 3);
+			m_requestHeaders.insert("REQUEST_METHOD", parts.at(0));
+			m_requestHeaders.insert("SERVER_PROTOCOL", parts.at(2));
+			const QByteArray uri = parts.at(1);
+			m_requestHeaders.insert("REQUEST_URI", uri);
+			m_requestHeaders.insert("QUERY_STRING", uri.mid(uri.indexOf('?') + 1));
+			m_requestState = WaitingForRequestHeaders;
+			readSocketData();
+			return;
+		}
+		if(m_requestState == WaitingForRequestHeaders)
+		{
+			while(m_socket->canReadLine())
+			{
+				const QByteArray line = m_socket->readLine().trimmed();
+				if(line.isEmpty())
+				{
+					m_requestState = WaitingForRequestBody;
+					emit gotHeaders(this);
+					readSocketData();
+					return;
+				}
+				const int lengthOfName = line.indexOf(':');
+				const QByteArray name = line.left(lengthOfName);
+				const QByteArray value = line.mid(lengthOfName + 2); // ": " after the name == 2 chars
+				qDebug() << "REQUEST HEADER" << name << value;
+				m_requestHeaders.insert(name, value);
+			}
+			return;
+		}
+		emit readyRead();
+	}
+
+	qint64 HttpRequest::readData(char* data, qint64 maxSize)
+	{
+		Q_ASSERT(m_requestState == WaitingForRequestBody);
+		return m_socket->read(data, maxSize);
+	}
+
+	qint64 HttpRequest::writeData(const char* data, qint64 maxSize)
+	{
+		if(m_responseState == WaitingForResponseHeaders)
+		{
+			// We need to buffer the headers, so we can use the STATUS header appropriately
+			QBuffer buffer;
+			buffer.setData(data, maxSize);
+			buffer.open(QIODevice::ReadOnly);
+			while(buffer.canReadLine())
+			{
+				const QByteArray line = buffer.readLine().trimmed();
+				if(line.isEmpty())
+				{
+					Q_ASSERT(m_responseHeaders.contains("STATUS"));
+					Q_ASSERT(m_requestHeaders.contains("SERVER_PROTOCOL"));
+					m_responseState = WaitingForResponseBody;
+					const QByteArray status = m_responseHeaders.take("STATUS");
+					qDebug() << "Responding with status" << status;
+					m_socket->write(m_requestHeaders.value("SERVER_PROTOCOL"));
+					m_socket->write(" ", 1);
+					m_socket->write(status);
+					m_socket->write("\r\n", 2);
+
+					for(
+						HeaderMap::ConstIterator it = m_responseHeaders.constBegin();
+						it != m_responseHeaders.constEnd();
+						++it
+					)
+					{
+						m_socket->write(it.key());
+						m_socket->write(": ");
+						m_socket->write(it.value());
+						m_socket->write("\r\n");
+					}
+					m_socket->write("\r\n");
+					m_socket->write(buffer.readAll());
+					return maxSize;
+				}
+				const int lengthOfName = line.indexOf(':');
+				const QByteArray name = line.left(lengthOfName);
+				const QByteArray value = line.mid(lengthOfName + 2); // ": " after the name == 2 chars
+				qDebug() << "RESPONSE HEADER:" << name << value;
+				m_responseHeaders.insert(name, value);
+			}
+			return maxSize;
+		}
+		Q_ASSERT(m_responseState == WaitingForResponseBody);
+		return m_socket->write(data, maxSize);
 	}
 };
