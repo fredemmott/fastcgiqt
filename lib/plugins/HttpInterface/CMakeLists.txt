@@ -23,8 +23,3 @@ ADD_LIBRARY(
 	${SOURCES}
 	${MOC_SOURCES}
 )
-
-TARGET_LINK_LIBRARIES(
-	HttpInterface
-	event # http://www.monkey.org/~provos/libevent/
-)
