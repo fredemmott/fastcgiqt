@@ -13,3 +13,4 @@ CHANGES
   merged.
 - All input data shouldn't be copied to the Request backend; it should stream it, if
   needed.
+- Standardise on Foo::Bar instead of FooBar (eg Request::Backend vs RequestBackend)
