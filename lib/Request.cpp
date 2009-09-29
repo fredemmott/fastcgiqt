@@ -137,7 +137,7 @@ namespace FastCgiQt
 		d->serverData.insertMulti(name, value);
 	}
 
-	QHash<QByteArray, QByteArray> Request::rawValues(ValueSource source) const
+	QHash<QByteArray, QByteArray> Request::rawValues(DataSource source) const
 	{
 		switch(source)
 		{
@@ -154,12 +154,12 @@ namespace FastCgiQt
 		return QHash<QByteArray, QByteArray>();
 	}
 
-	QByteArray Request::rawValue(ValueSource source, const QByteArray& name) const
+	QByteArray Request::rawValue(DataSource source, const QByteArray& name) const
 	{
 		return rawValues(source).value(name);
 	}
 
-	QString Request::value(ValueSource source, const QByteArray& name) const
+	QString Request::value(DataSource source, const QByteArray& name) const
 	{
 		return QUrl::fromPercentEncoding(rawValue(source, name));
 	}

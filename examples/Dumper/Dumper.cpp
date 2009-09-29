@@ -19,20 +19,20 @@
 #include <QHash>
 #include <QTextStream>
 
-using FastCgiQt::Request;
+using namespace FastCgiQt;
 
 void Dumper::respond(Request* request)
 {
 	QTextStream out(request);
 	out << "<h1>" << tr("Variable Dump") << "</h1>";
 	out << "<dl>" << endl;
-	out << "<dt>Root URL:</dt><dd>" << request->url(Request::RootUrl).toEncoded() << "</dd>" << endl;
-	out << "<dt>Location URL:</dt><dd>" << request->url(Request::LocationUrl).toEncoded() << "</dd>" << endl;
-	out << "<dt>Full URL:</dt><dd>" << request->url(Request::RequestUrl).toEncoded() << "</dd>" << endl;
+	out << "<dt>Root URL:</dt><dd>" << request->url(RootUrl).toEncoded() << "</dd>" << endl;
+	out << "<dt>Location URL:</dt><dd>" << request->url(LocationUrl).toEncoded() << "</dd>" << endl;
+	out << "<dt>Full URL:</dt><dd>" << request->url(RequestUrl).toEncoded() << "</dd>" << endl;
 	out << "</dl>" << endl;
-	dumpHash(tr("Get variables"), request->rawValues(Request::GetData), out);
-	dumpHash(tr("Post variables"), request->rawValues(Request::PostData), out);
-	dumpHash(tr("Server variables"), request->rawValues(Request::ServerData), out);
+	dumpHash(tr("Get variables"), request->rawValues(GetData), out);
+	dumpHash(tr("Post variables"), request->rawValues(PostData), out);
+	dumpHash(tr("Server variables"), request->rawValues(ServerData), out);
 }
 
 void Dumper::dumpHash(const QString& label, const QHash<QByteArray, QByteArray>& data, QTextStream& out)

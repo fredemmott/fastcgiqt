@@ -25,6 +25,20 @@ class QNetworkCookie;
 
 namespace FastCgiQt
 {
+	enum UrlPart
+	{
+		RootUrl,     ///< Root URL of the application.
+		LocationUrl, ///< The page requested, without the query string.
+		RequestUrl   ///< The full request URL, including query string.
+	};
+
+	enum DataSource
+	{
+		GetData,
+		PostData,
+		ServerData
+	};
+
 	/** Object representing a request;
 	 * @ingroup core
 	 */
@@ -34,28 +48,14 @@ namespace FastCgiQt
 		public:
 			virtual ~Request();
 
-			enum UrlPart
-			{
-				RootUrl,     ///< Root URL of the application.
-				LocationUrl, ///< The page requested, without the query string.
-				RequestUrl   ///< The full request URL, including query string.
-			};
-
-			enum ValueSource
-			{
-				GetData,
-				PostData,
-				ServerData
-			};
-
 			void setHeader(const QByteArray& name, const QByteArray& value);
 			void addHeader(const QByteArray& name, const QByteArray& value);
 			QList<QNetworkCookie> cookies() const;
 			void sendCookie(const QNetworkCookie&);
 
-			QHash<QByteArray, QByteArray> rawValues(ValueSource) const;
-			QByteArray rawValue(ValueSource, const QByteArray& name) const;
-			QString value(ValueSource, const QByteArray& name) const;
+			QHash<QByteArray, QByteArray> rawValues(DataSource) const;
+			QByteArray rawValue(DataSource, const QByteArray& name) const;
+			QString value(DataSource, const QByteArray& name) const;
 
 			/** Various parts of the URL for this request.
 			 *
