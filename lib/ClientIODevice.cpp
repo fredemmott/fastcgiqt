@@ -30,9 +30,4 @@ namespace FastCgiQt
 	{
 		return true;
 	}
-
-	QByteArray ClientIODevice::requestHeader(const QByteArray& name) const
-	{
-		return requestHeaders().value(name);
-	}
 };

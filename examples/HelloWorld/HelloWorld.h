@@ -13,13 +13,11 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#include <FastCgiQt/Responder.h>
+#include <FastCgiQt/Request.h>
 
-class HelloWorld : public FastCgiQt::Responder
+class HelloWorld : public QObject
 {
 	Q_OBJECT;
-	FASTCGIQT_RESPONDER_API_V1;
-	RESPONDER(HelloWorld);
-	public:
-		void respond();
+	public slots:
+		void respond(FastCgiQt::Request*);
 };

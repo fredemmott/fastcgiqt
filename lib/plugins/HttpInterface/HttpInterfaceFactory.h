@@ -24,6 +24,6 @@ namespace FastCgiQt
 		Q_OBJECT
 		Q_INTERFACES(FastCgiQt::CommunicationInterface::Factory)
 		public:
-			virtual CommunicationInterface* createInterface(Responder::Generator, QObject* parent) const;
+			virtual CommunicationInterface* createInterface(QObject* parent) const;
 	};
 }

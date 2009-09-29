@@ -45,7 +45,6 @@ namespace FastCgiQt
 			 */
 			bool isSequential() const;
 
-			QByteArray requestHeader(const QByteArray& name) const;
 			/// Return all (CGI-style) headers included in the request
 			virtual HeaderMap requestHeaders() const = 0;
 		protected:

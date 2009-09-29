@@ -27,7 +27,7 @@ namespace FastCgiQt
 		Q_OBJECT
 		public:
 			/// Create a HttpInterface object.
-			HttpInterface(Responder::Generator responderGenerator, QObject* parent = NULL);
+			HttpInterface(QObject* parent = NULL);
 			~HttpInterface();
 			bool isFinished() const;
 			QStringList backends() const;

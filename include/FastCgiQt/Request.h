@@ -13,216 +13,71 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef _FASTCGI_QT_REQUEST_H
-#define _FASTCGI_QT_REQUEST_H
 
-#include <QHash>
-#include <QSharedPointer>
-#include <QString>
+#pragma once
+
+#include <QByteArray>
+#include <QIODevice>
+#include <QList>
 #include <QUrl>
 
 class QNetworkCookie;
 
 namespace FastCgiQt
 {
-	/** Class containing information about a request.
+	/** Object representing a request;
 	 * @ingroup core
 	 */
-	class Request
+	class Request : public QIODevice
 	{
+		Q_OBJECT;
 		public:
-			class Backend;
-			~Request();
-			void operator=(const Request& other);
-			Request(const Request& other);
-			/// Construct an invalid Request object.
-			Request();
-			/// @internal @brief Construct a valid Request object, with the specified backend.
-			Request(Backend* backend);
-			/// @internal @brief Retrieve the backend for this Request object.
-			QSharedPointer<Backend> backend() const;
+			virtual ~Request();
 
-			/** If this Request object is actually valid.
-			 *
-			 * An invalid Request object is not actually associated
-			 * with a client request.
-			 */
-			bool isValid() const;
+			enum UrlPart
+			{
+				RootUrl,     ///< Root URL of the application.
+				LocationUrl, ///< The page requested, without the query string.
+				RequestUrl   ///< The full request URL, including query string.
+			};
 
-			/** The type of the POST-data (if any).
-			 *
-			 * @see contentLength()
-			 * @see content()
-			 * @see haveAllContent()
-			 * @see waitForAllContent()
-			 * @see postData(const QString&) const
-			 * @see postData() const
-			 */
-			QString contentType() const;
+			enum ValueSource
+			{
+				GetData,
+				PostData,
+				ServerData
+			};
 
-			/** The length of the POST data.
-			 *
-			 * @see contentType()
-			 * @see content()
-			 * @see haveAllContent()
-			 * @see waitForAllContent()
-			 * @see postData(const QString&) const
-			 * @see postData() const
-			 */
-			quint64 contentLength() const;
-
-			/** The POST data sent in this request.
-			 *
-			 * If it has not all been received, this method will
-			 * block until the upload has been finished
-			 *
-			 *
-			 * @see Responder::in for a stream.
-			 * @see contentType()
-			 * @see contentLength()
-			 * @see haveAllContent()
-			 * @see waitForAllContent()
-			 * @see postData(const QString&) const
-			 * @see postData() const
-			 */
-			QByteArray content() const;
-
-			/** Whether all the POST data has been uploaded by the
-			 * client.
-			 *
-			 * @see contentType()
-			 * @see contentLength()
-			 * @see content()
-			 * @see waitForAllContent()
-			 * @see postData(const QString&) const
-			 * @see postData() const
-			 */
-			bool haveAllContent() const;
-
-			/** Block until all POST data has been uploaded by the
-			 * client.
-			 *
-			 * @see contentType()
-			 * @see contentLength()
-			 * @see content()
-			 * @see haveAllContent()
-			 * @see postData(const QString&) const
-			 * @see postData() const
-			 */
-			void waitForAllContent() const;
-
-			/** Retrieve a POST form value.
-			 *
-			 * If the content-type is not
-			 * application/x-www-urlencoded, or the specified form
-			 * value wasn't sent, this will return a null QString.
-			 *
-			 * If the content-type is application/x-www-urlencoded,
-			 * but there is still POST data which hasn't been
-			 * received yet, this member will block until it has all
-			 * been received.
-			 *
-			 * This is roughly equivalent to $_POST[$name] in PHP.
-			 *
-			 * @param name is the name of the value to try and
-			 * 	retrieve.
-			 *
-			 * @see contentType()
-			 * @see contentLength()
-			 * @see content()
-			 * @see haveAllContent()
-			 * @see waitForAllContent()
-			 * @see postData() const
-			 */
-			QString postData(const QString& name) const;
-
-			/** Retrieve all POST form data.
-			 *
-			 * This will return an empty QHash if the content-type
-			 * is not application/x-www-urlencoded, or if there
-			 * were no properly-encoded name-value pairs.
-			 *
-			 * If the content-type is application/x-www-urlencoded,
-			 * but there is still POST data which hasn't been
-			 * received yet, this member will block until it has all
-			 * been received.
-			 *
-			 * This is roughly equivalent to $_POST in PHP.
-			 *
-			 * @see contentType()
-			 * @see contentLength()
-			 * @see content()
-			 * @see haveAllContent()
-			 * @see waitForAllContent()
-			 * @see postData(const QString&) const
-			 */
-			QHash<QString, QString> postData() const;
-
-			/** Retrieve a specific server variable.
-			 *
-			 * If the specified server variable is not set, this
-			 * will return a null QString.
-			 *
-			 * This is roughly equivalent to $_SERVER[$name] in PHP.
-			 *
-			 * @param name is the name of the server variable to be
-			 * 	retrieved.
-			 *
-			 * @see serverData() const
-			 */
-			QString serverData(const QString& name) const;
-
-			/** Retrieve all server variables.
-			 *
-			 * These variables are equivalent to the environment
-			 * variables used by CGI, such as the HTTP headers,
-			 * QUERY_STRING, and so on.
-			 *
-			 * This is roughly equivalent to $_SERVER in PHP.
-			 *
-			 * @see serverData(const QString&) const
-			 */
-			QHash<QString, QString> serverData() const;
-
-			/** Retrieve a GET form value.
-			 *
-			 * This returns a value which is form-encoded in the
-			 * query string.
-			 *
-			 * This is roughly equivalent to $_GET[$name] in PHP.
-			 *
-			 * @param name is the name of the value to retrieve.
-			 *
-			 * @see getData() const
-			 */
-			QString getData(const QString& name) const;
-
-			/** Retrieve all GET form values.
-			 *
-			 * This returns all name-value form data pairs from the
-			 * query string.
-			 *
-			 * This is roughly equivalent to $_GET in PHP.
-			 */
-			QHash<QString, QString> getData() const;
-
-			/** Return a guess at the base URI for this script.
-			 *
-			 * This is useful for creating relative links.
-			 */
-			QString baseUri() const;
-
-			/// Full path, including query string.
-			QString fullUri() const;
-
-			/// Full URL
-			QUrl url() const;
-
-			/// A list of all the cookies provided by the client
+			void setHeader(const QByteArray& name, const QByteArray& value);
+			void addHeader(const QByteArray& name, const QByteArray& value);
 			QList<QNetworkCookie> cookies() const;
+			void sendCookie(const QNetworkCookie&);
+
+			QHash<QByteArray, QByteArray> rawValues(ValueSource) const;
+			QByteArray rawValue(ValueSource, const QByteArray& name) const;
+			QString value(ValueSource, const QByteArray& name) const;
+
+			/** Various parts of the URL for this request.
+			 *
+			 * If you just want the path relative to the root of the application, that's
+			 * value(ServerData, "PATH_INFO");
+			 */
+			QUrl url(UrlPart) const;
+
+			// QIODevice overrides start here
+
+			/** Amount of POST data.
+			 *
+			 * Convenience wrapper around value(ServerData, "CONTENT_LENGTH"))
+			 */
+			virtual qint64 size() const;
+		protected:
+			virtual qint64 readData(char* data, qint64 maxSize);
+			virtual qint64 writeData(const char* data, qint64 maxSize);
 		private:
-			QSharedPointer<Backend> m_backend;
+			friend class RequestFactory;
+			class Private;
+			Private* d;
+			Request(Private*, QObject* parent);
 	};
 }
-
-#endif

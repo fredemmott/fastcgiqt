@@ -29,8 +29,8 @@
 
 namespace FastCgiQt
 {
-	HttpInterface::HttpInterface(Responder::Generator responderGenerator, QObject* parent)
-	: CommunicationInterface(responderGenerator, parent)
+	HttpInterface::HttpInterface(QObject* parent)
+	: CommunicationInterface(parent)
 	, m_server(new QTcpServer(this))
 	{
 		connect(

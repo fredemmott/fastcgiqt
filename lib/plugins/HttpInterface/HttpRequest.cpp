@@ -20,6 +20,7 @@
 #include <QHostInfo>
 #include <QTcpSocket>
 #include <QTextStream>
+#include <QTimer>
 
 namespace FastCgiQt
 {
@@ -31,6 +32,7 @@ namespace FastCgiQt
 	, m_responseHeaders(standardResponseHeaders)
 	, m_socket(socket)
 	, m_staticDirectories(staticDirectories)
+	, m_headerBufferPosition(0)
 	{
 		const QHostInfo serverInfo = QHostInfo::fromName(socket->localAddress().toString());
 		m_requestHeaders.insert("SERVER_NAME", serverInfo.hostName().toLatin1());
@@ -94,8 +96,9 @@ namespace FastCgiQt
 				if(line.isEmpty())
 				{
 					m_requestState = WaitingForRequestBody;
+					// We're not guaranteed to still exist after calling dispatchRequest
+					QTimer::singleShot(0, this, SLOT(readSocketData()));
 					dispatchRequest();
-					readSocketData();
 					return;
 				}
 				const int lengthOfName = line.indexOf(':');
@@ -156,10 +159,13 @@ namespace FastCgiQt
 	{
 		if(m_responseState == WaitingForResponseHeaders)
 		{
+			m_headerBuffer.append(data, maxSize);
 			// We need to buffer the headers, so we can use the STATUS header appropriately
 			QBuffer buffer;
-			buffer.setData(data, maxSize);
+			buffer.setData(m_headerBuffer);
 			buffer.open(QIODevice::ReadOnly);
+			buffer.seek(m_headerBufferPosition);
+			buffer.seek(m_headerBufferPosition);
 			while(buffer.canReadLine())
 			{
 				const QByteArray line = buffer.readLine().trimmed();
@@ -189,6 +195,8 @@ namespace FastCgiQt
 					}
 					m_socket->write("\r\n");
 					m_socket->write(buffer.readAll());
+					buffer.close();
+					m_headerBuffer.clear();
 					return maxSize;
 				}
 				const int lengthOfName = line.indexOf(':');
@@ -196,6 +204,8 @@ namespace FastCgiQt
 				const QByteArray value = line.mid(lengthOfName + 2); // ": " after the name == 2 chars
 				m_responseHeaders.insert(name, value);
 			}
+			m_headerBufferPosition = buffer.pos();
+			buffer.close();
 			return maxSize;
 		}
 		Q_ASSERT(m_responseState == WaitingForResponseBody);

@@ -14,9 +14,7 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include "Request.h"
-#include "Request_Backend.h"
-
-#include <QCoreApplication>
+#include "Request_Private.h"
 
 #include <QDebug>
 #include <QNetworkCookie>
@@ -25,140 +23,149 @@
 
 namespace FastCgiQt
 {
-	QString Request::fullUri() const
+	Request::Request(Private* _d, QObject* parent)
+	: QIODevice(parent)
+	, d(_d)
 	{
-		QString data = serverData("PATH_INFO");
-		const QString queryString = serverData("QUERY_STRING");
-		if(!queryString.isEmpty())
+		open(QIODevice::ReadWrite);
+		connect(
+			d->device,
+			SIGNAL(readyRead()),
+			this,
+			SIGNAL(readyRead())
+		);
+	}
+
+	qint64 Request::readData(char* data, qint64 maxSize)
+	{
+		Q_ASSERT(d->postDataMode == Private::UnknownPostData || d->postDataMode == Private::RawPostData);
+		d->postDataMode = Private::RawPostData;
+		return d->device->read(data, maxSize);
+	}
+
+	qint64 Request::writeData(const char* data, qint64 maxSize)
+	{
+		QIODevice* device = d->device;
+
+		if(!d->haveSentHeaders)
 		{
-			data.append("?");
-			data.append(queryString);
+			d->haveSentHeaders = true;
+			for(ClientIODevice::HeaderMap::ConstIterator it = d->responseHeaders.constBegin(); it != d->responseHeaders.constEnd(); ++it)
+			{
+				device->write(it.key());
+				device->write(": ");
+				device->write(it.value());
+				device->write("\r\n");
+			}
+			device->write("\r\n");
 		}
-		return data;
+		return device->write(data, maxSize);
 	}
 
-	QUrl Request::url() const
+	qint64 Request::size() const
 	{
-		///@fixme HTTPS, alternative ports
-		return QUrl::fromPercentEncoding(QString("http://%1%2").arg(serverData("HTTP_HOST")).arg(serverData("REQUEST_URI")).toLatin1());
+		return QString::fromLatin1(rawValue(ServerData, "CONTENT_LENGTH")).toLongLong();
 	}
 
-	Request::Request()
-	: m_backend(0)
+	QUrl Request::url(UrlPart part) const
 	{
-	}
+		QUrl url;
+		// Protocol and host are needed, regardless of part
 
-	Request::Request(Backend* backend)
-	: m_backend(backend)
-	{
-		if(m_backend)
+		///@fixme - HTTPS support
+		url.setScheme("http");
+		// authority == user:password@host:port - as HTTP_HOST contains user and port, go with that
+		url.setAuthority(value(ServerData, "HTTP_HOST"));
+
+		switch(part)
 		{
-			m_backend->setRequest(this);
+			case RootUrl:
+			{
+				const int queryStringLength = rawValue(ServerData, "QUERY_STRING").length();
+				const int pathInfoLength = rawValue(ServerData, "PATH_INFO").length();
+				QByteArray basePath = rawValue(ServerData, "REQUEST_URI");
+				basePath.chop(queryStringLength + 1 + pathInfoLength);
+				url.setEncodedPath(basePath);
+				break;
+			}
+			case LocationUrl:
+			case RequestUrl:
+			{
+				const int queryStringLength = rawValue(ServerData, "QUERY_STRING").length();
+				QByteArray basePath = rawValue(ServerData, "REQUEST_URI");
+				basePath.chop(queryStringLength + 1);
+				url.setEncodedPath(basePath);
+				if(part == RequestUrl)
+				{
+					url.setEncodedQuery(rawValue(ServerData, "QUERY_STRING"));
+				}
+				break;
+			}
+			default:
+				qFatal("Unknown URL part: %d", part);
 		}
-	}
-
-	QString Request::contentType() const
-	{
-		return m_backend->contentType();
-	}
-
-	quint64 Request::contentLength() const
-	{
-		return m_backend->contentLength();
-	}
-
-	void Request::waitForAllContent() const
-	{
-		while(!haveAllContent())
-		{
-			QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents);
-		}
-	}
-
-	QByteArray Request::content() const
-	{
-		return m_backend->content();
-	}
-
-	bool Request::haveAllContent() const
-	{
-		return m_backend->haveAllContent();
-	}
-
-	bool Request::isValid() const
-	{
-		return m_backend;
+		return url;
 	}
 
 	QList<QNetworkCookie> Request::cookies() const
 	{
-		const QHash<QString, QString> serverData = m_backend->serverData();
 		QList<QNetworkCookie> cookies;
-		for(QHash<QString, QString>::ConstIterator it = serverData.constBegin(); it != serverData.constEnd(); ++it)
+		for(ClientIODevice::HeaderMap::ConstIterator it = d->serverData.constBegin(); it != d->serverData.constEnd(); ++it)
 		{
 			if(it.key().toUpper() == "HTTP_COOKIE")
 			{
-				cookies.append(QNetworkCookie::parseCookies(it.value().toLatin1()));
+				cookies.append(QNetworkCookie::parseCookies(it.value()));
 			}
 		}
 		return cookies;
 	}
 
-	QString Request::serverData(const QString& name) const
+	void Request::sendCookie(const QNetworkCookie& cookie)
 	{
-		return serverData().value(name);
+		addHeader("set-cookie", cookie.toRawForm());
 	}
 
-	QHash<QString, QString> Request::serverData() const
+	void Request::setHeader(const QByteArray& name, const QByteArray& value)
 	{
-		return m_backend->serverData();
+		Q_ASSERT(!d->haveSentHeaders);
+		d->serverData[name] = value;
 	}
 
-	QString Request::getData(const QString& name) const
+	void Request::addHeader(const QByteArray& name, const QByteArray& value)
 	{
-		return getData().value(name);
+		Q_ASSERT(!d->haveSentHeaders);
+		d->serverData.insertMulti(name, value);
 	}
 
-	QHash<QString, QString> Request::getData() const
+	QHash<QByteArray, QByteArray> Request::rawValues(ValueSource source) const
 	{
-		return m_backend->getData();
+		switch(source)
+		{
+			case GetData:
+				return d->getData;
+			case PostData:
+				d->loadPostVariables();
+				return d->postData;
+			case ServerData:
+				return d->serverData;
+			default:
+				qFatal("Unknown value type: %d", source);
+		}
+		return QHash<QByteArray, QByteArray>();
 	}
 
-	QString Request::postData(const QString& name) const
+	QByteArray Request::rawValue(ValueSource source, const QByteArray& name) const
 	{
-		return postData().value(name);
+		return rawValues(source).value(name);
 	}
 
-	QHash<QString, QString> Request::postData() const
+	QString Request::value(ValueSource source, const QByteArray& name) const
 	{
-		return m_backend->postData();
-	}
-
-	QString Request::baseUri() const
-	{
-		const int queryStringLength = serverData("QUERY_STRING").length();
-		const int pathInfoLength = serverData("PATH_INFO").length();
-		QString baseUri = serverData("REQUEST_URI");
-		baseUri.chop(queryStringLength + 1 + pathInfoLength);
-		return baseUri;
+		return QUrl::fromPercentEncoding(rawValue(source, name));
 	}
 
 	Request::~Request()
 	{
-	}
-
-	void Request::operator=(const Request& other)
-	{
-		m_backend = other.backend();
-	}
-
-	Request::Request(const Request& other)
-	: m_backend(other.backend())
-	{
-	}
-
-	QSharedPointer<Request::Backend> Request::backend() const
-	{
-		return m_backend;
+		delete d;
 	}
 }

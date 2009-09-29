@@ -64,5 +64,8 @@ namespace FastCgiQt
 			QTcpSocket* m_socket;
 
 			QStringList m_staticDirectories;
+
+			QByteArray m_headerBuffer;
+			qint64 m_headerBufferPosition;
 	};
 };

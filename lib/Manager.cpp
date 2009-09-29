@@ -15,15 +15,21 @@
 */
 #include "Manager.h"
 
-#include "ManagerPrivate.h"
+#include "Manager_Private.h"
 
 namespace FastCgiQt
 {
-	Manager::Manager(Responder::Generator responderGenerator, QObject* parent)
+	Manager::Manager(QObject* parent)
 		:
 			QObject(parent),
-			d(new ManagerPrivate(responderGenerator, this))
+			d(new Private(this))
 	{
+		connect(
+			d,
+			SIGNAL(newRequest(FastCgiQt::Request*)),
+			this,
+			SIGNAL(newRequest(FastCgiQt::Request*))
+		);
 	}
 
 	Manager::~Manager()

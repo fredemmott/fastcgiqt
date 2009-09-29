@@ -15,19 +15,27 @@
 */
 #include "Dumper.h"
 
-void Dumper::respond()
+#include <QByteArray>
+#include <QHash>
+#include <QTextStream>
+
+using FastCgiQt::Request;
+
+void Dumper::respond(Request* request)
 {
+	QTextStream out(request);
 	out << "<h1>" << tr("Variable Dump") << "</h1>";
 	out << "<dl>" << endl;
-	out << "<dt>Full URI:</dt><dd>" << request.fullUri() << "</dd>" << endl;
-	out << "<dt>Base URI:</dt><dd>" << request.baseUri() << "</dd>" << endl;
+	out << "<dt>Root URL:</dt><dd>" << request->url(Request::RootUrl).toEncoded() << "</dd>" << endl;
+	out << "<dt>Location URL:</dt><dd>" << request->url(Request::LocationUrl).toEncoded() << "</dd>" << endl;
+	out << "<dt>Full URL:</dt><dd>" << request->url(Request::RequestUrl).toEncoded() << "</dd>" << endl;
 	out << "</dl>" << endl;
-	dumpHash(tr("Get variables"), request.getData());
-	dumpHash(tr("Post variables"), request.postData());
-	dumpHash(tr("Server variables"), request.serverData());
+	dumpHash(tr("Get variables"), request->rawValues(Request::GetData), out);
+	dumpHash(tr("Post variables"), request->rawValues(Request::PostData), out);
+	dumpHash(tr("Server variables"), request->rawValues(Request::ServerData), out);
 }
 
-void Dumper::dumpHash(const QString& label, const QHash<QString, QString>& data)
+void Dumper::dumpHash(const QString& label, const QHash<QByteArray, QByteArray>& data, QTextStream& out)
 {
 	// Print out server variables
 	out << "<h2>" << label << "</h2>" << endl;
@@ -35,7 +43,7 @@ void Dumper::dumpHash(const QString& label, const QHash<QString, QString>& data)
 	out << "<table>" << endl;
 
 	for(
-		QHash<QString, QString>::ConstIterator it = data.constBegin();
+		QHash<QByteArray, QByteArray>::ConstIterator it = data.constBegin();
 		it != data.constEnd();
 		++it
 	)

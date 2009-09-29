@@ -15,7 +15,11 @@
 */
 #include "HelloWorld.h"
 
-void HelloWorld::respond()
+#include <QTextStream>
+
+void HelloWorld::respond(FastCgiQt::Request* request)
 {
+	QTextStream out(request);
+
 	out << "<h1>" << tr("hello, world") << "</h1>";
 }

@@ -13,12 +13,11 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef _FASTCGI_QT_MANAGER_PRIVATE_H
-#define _FASTCGI_QT_MANAGER_PRIVATE_H
+#pragma once
 
 #include "Caches.h"
 #include "CommunicationInterface.h"
-#include "Responder.h"
+#include "Manager.h"
 
 #include <QObject>
 
@@ -26,19 +25,23 @@ class QFileSystemWatcher;
 
 namespace FastCgiQt
 {
+	class Request;
+
 	/** @internal
 	 * @brief Class doing main application setup.
 	 *
 	 * This sets up caches, and sets up a CommunicationInterface, such
 	 * as FastCgiInterface.
 	 */
-	class ManagerPrivate : public QObject
+	class Manager::Private : public QObject
 	{
 		Q_OBJECT
 		public:
 			/// Create a ManagerPrivate object.
-			ManagerPrivate(Responder::Generator responderGenerator, QObject* parent = NULL);
-			~ManagerPrivate();
+			Private(QObject* parent = NULL);
+			~Private();
+		signals:
+			void newRequest(FastCgiQt::Request* request);
 		private slots:
 			/// Request that the application shuts down.
 			void shutdown();
@@ -59,5 +62,3 @@ namespace FastCgiQt
 			QList<CommunicationInterface::Factory*> m_factories;
 	};
 };
-
-#endif

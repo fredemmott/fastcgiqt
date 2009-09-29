@@ -13,7 +13,7 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#include "ManagerPrivate.h"
+#include "Manager_Private.h"
 
 #include "CommunicationInterface.h"
 #include "Settings.h"
@@ -27,7 +27,7 @@
 
 namespace FastCgiQt
 {
-	ManagerPrivate::ManagerPrivate(Responder::Generator responderGenerator, QObject* parent)
+	Manager::Private::Private(QObject* parent)
 		:
 			QObject(parent),
 			m_applicationWatcher(new QFileSystemWatcher(this)),
@@ -64,9 +64,15 @@ namespace FastCgiQt
 
 		Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
 		{
-			m_interface = factory->createInterface(responderGenerator, this);
+			m_interface = factory->createInterface(this);
 			if(m_interface && m_interface->backends().contains(interface))
 			{
+				connect(
+					m_interface,
+					SIGNAL(newRequest(FastCgiQt::Request*)),
+					this,
+					SIGNAL(newRequest(FastCgiQt::Request*))
+				);
 				break;
 			}
 			else
@@ -95,19 +101,19 @@ namespace FastCgiQt
 		m_applicationWatcher->addPath(QCoreApplication::applicationFilePath());
 	}
 
-	ManagerPrivate::~ManagerPrivate()
+	Manager::Private::~Private()
 	{
 		delete m_caches;
 		delete m_interface;
 	}
 
-	void ManagerPrivate::shutdown()
+	void Manager::Private::shutdown()
 	{
 		delete m_interface;
-		m_interface =0;
+		m_interface = 0;
 	}
 
-	void ManagerPrivate::configureHttpd()
+	void Manager::Private::configureHttpd()
 	{
 		QTextStream cin(stdin);
 		QTextStream cout(stdout);
@@ -118,7 +124,7 @@ namespace FastCgiQt
 		QStringList availableInterfaces;
 		Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
 		{
-			CommunicationInterface* interface = factory->createInterface(0, this);
+			CommunicationInterface* interface = factory->createInterface(this);
 			availableInterfaces.append(interface->backends());
 			delete interface;
 		}
@@ -143,7 +149,7 @@ namespace FastCgiQt
 		settings.setValue("socketType", interface);
 		Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
 		{
-			m_interface = factory->createInterface(0, this);
+			m_interface = factory->createInterface(this);
 			if(m_interface && m_interface->backends().contains(interface))
 			{
 				m_interface->configureHttpd(interface);
@@ -168,7 +174,7 @@ namespace FastCgiQt
 		settings.sync();
 	}
 
-	void ManagerPrivate::configureDatabase()
+	void Manager::Private::configureDatabase()
 	{
 		QTextStream cin(stdin);
 		QTextStream cout(stdout);

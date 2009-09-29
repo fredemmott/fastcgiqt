@@ -23,7 +23,13 @@ int main(int argc, char** argv)
 	QCoreApplication application(argc, argv);
 	application.setApplicationName("Dumper");
 
-	FastCgiQt::Manager manager(&Dumper::create);
+	FastCgiQt::Manager manager;
+	Dumper responder;
+	responder.connect(
+		&manager,
+		SIGNAL(newRequest(FastCgiQt::Request*)),
+		SLOT(respond(FastCgiQt::Request*))
+	);
 
 	return application.exec();
 }

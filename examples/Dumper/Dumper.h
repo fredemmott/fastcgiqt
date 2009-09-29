@@ -13,15 +13,17 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#include <FastCgiQt/Responder.h>
+#include <FastCgiQt/Request.h>
 
-class Dumper : public FastCgiQt::Responder
+#include <QObject>
+
+class QTextStream;
+
+class Dumper : public QObject
 {
 	Q_OBJECT;
-	RESPONDER(Dumper);
-	public:
-		FASTCGIQT_RESPONDER_API_V1;
-		void respond();
+	public slots:
+		void respond(FastCgiQt::Request* request);
 	private:
-		void dumpHash(const QString& label, const QHash<QString, QString>& data);
+		void dumpHash(const QString& label, const QHash<QByteArray, QByteArray>& data, QTextStream& out);
 };

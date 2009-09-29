@@ -15,12 +15,8 @@
 */
 #pragma once
 
-#include "Responder.h"
-
 #include <QtPlugin>
 
-#include <QAtomicInt>
-#include <QMap>
 #include <QObject>
 
 class QThread;
@@ -28,6 +24,7 @@ class QThread;
 namespace FastCgiQt
 {
 	class ClientIODevice;
+	class Request;
 	/** @internal Abstract interface for recieving requests from the HTTPD.
 	 *
 	 * This might be modified once multiple interfaces are supported,
@@ -58,40 +55,21 @@ namespace FastCgiQt
 			{
 				public:
 					/// Create a CommunicationInterface*
-					virtual CommunicationInterface* createInterface(Responder::Generator, QObject* parent) const = 0;
+					virtual CommunicationInterface* createInterface(QObject* parent) const = 0;
 			};
-			QList<int> threadLoads() const;
+		signals:
+			void newRequest(FastCgiQt::Request* request);
 		protected slots:
+			/** Create a new request with the given ClientIODevice.
+			 *
+			 * Note that 'device' may be deleted by this call.
+			 */
 			void addRequest(ClientIODevice* device);
 		protected:
 			virtual bool startBackend(const QString& backend) = 0;
-			CommunicationInterface(Responder::Generator, QObject* parent);
+			CommunicationInterface(QObject* parent);
 			void addWorker(Worker* worker);
-		private slots:
-			/// Decrease the load counter for the specified thread.
-			void reduceLoadCount(QThread* thread);
-		private:
-			/** Comparison for thread loads.
-			 *
-			 * @returns true if thread @p t1 is currently handling
-			 * 	less requests than @p t2.
-			 * @returns false otherwise.
-			 */
-			static bool hasLessLoadThan(QThread* t1, QThread* t2);
-
-			/// If we're shutting down, and the loads are zero, exit.
-			void exitIfFinished();
-
-			/// The thread pool.
-			QList<QThread*> m_threads;
-
-			/** The number of requests each thread is currently
-			 * handling.
-			 */
-			QMap<const QObject*, QAtomicInt> m_threadLoads;
-
-			Responder::Generator m_generator;
 	};
 };
 
-Q_DECLARE_INTERFACE(FastCgiQt::CommunicationInterface::Factory, "uk.co.fredemmott.FastCgiQt.CommunicationInterface/1.0");
+Q_DECLARE_INTERFACE(FastCgiQt::CommunicationInterface::Factory, "uk.co.fredemmott.FastCgiQt.CommunicationInterface/2.0");

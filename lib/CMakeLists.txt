@@ -1,11 +1,9 @@
 SET(
 	PUBLIC_CLASSES
-	ClientIOInterface
 	Cache
 	CacheEntry
 	Manager
 	Request
-	Responder
 )
 
 SET(
@@ -20,12 +18,11 @@ SET(
 	EnumHelpers
 	FileCache
 	FileDependentCache
-	InputDevice
-	ManagerPrivate
+	Manager_Private
 	OutputDevice
 	ProxyClientIODevice
-	Request_Backend
-	RequestWorker
+	Request_Private
+	RequestFactory
 	Settings
 )
 

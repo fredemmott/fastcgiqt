@@ -23,7 +23,13 @@ int main(int argc, char** argv)
 	QCoreApplication application(argc, argv);
 	application.setApplicationName("HelloWorld");
 
-	FastCgiQt::Manager manager(&HelloWorld::create);
+	FastCgiQt::Manager manager;
+	HelloWorld responder;
+	responder.connect(
+		&manager,
+		SIGNAL(newRequest(FastCgiQt::Request*)),
+		SLOT(respond(FastCgiQt::Request*))
+	);
 
 	return application.exec();
 }
