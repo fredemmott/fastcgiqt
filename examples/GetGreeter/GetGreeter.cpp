@@ -16,11 +16,14 @@
 #include "GetGreeter.h"
 
 #include <QString>
+#include <QTextStream>
 
-void GetGreeter::respond()
+void GetGreeter::respond(FastCgiQt::Request* request)
 {
+	QTextStream out(request);
+
 	out << "<h1>GetGreeter</h1>" << endl;
-	if(request.getData("greeting").isNull())
+	if(request->value(FastCgiQt::Request::GetData, "greeting").isNull())
 	{
 		out << QString(
 			"<form action='%1' method='get'>\n"
@@ -30,10 +33,10 @@ void GetGreeter::respond()
 			"</table>\n"
 			"<input type='submit' />\n"
 			"</form>\n"
-		).arg(request.serverData("SCRIPT_NAME"));
+		).arg(QLatin1String(request->url(FastCgiQt::Request::LocationUrl).toEncoded()));
 	}
 	else
 	{
-		out << QString("%1, %2").arg(request.getData("greeting")).arg(request.getData("name"));
+		out << QString("%1, %2").arg(request->value(FastCgiQt::Request::GetData, "greeting")).arg(request->value(FastCgiQt::Request::GetData, "name"));
 	}
 }

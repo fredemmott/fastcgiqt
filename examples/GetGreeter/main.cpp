@@ -24,7 +24,13 @@ int main(int argc, char** argv)
 	QCoreApplication application(argc, argv);
 	application.setApplicationName("GetGreeter");
 
-	FastCgiQt::Manager manager(&GetGreeter::create);
+	FastCgiQt::Manager manager;
+	GetGreeter responder;
+	responder.connect(
+		&manager,
+		SIGNAL(newRequest(FastCgiQt::Request*)),
+		SLOT(respond(FastCgiQt::Request*))
+	);
 
 	return application.exec();
 }
