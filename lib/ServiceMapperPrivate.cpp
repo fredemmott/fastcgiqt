@@ -31,7 +31,6 @@ namespace FastCgiQt
 
 	void ServiceMapper::Private::cleanup(Service* service)
 	{
-		service->out << flush;
 		delete service;
 		m_parent->finished();
 	}
