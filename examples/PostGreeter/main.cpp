@@ -24,7 +24,13 @@ int main(int argc, char** argv)
 	QCoreApplication application(argc, argv);
 	application.setApplicationName("PostGreeter");
 
-	FastCgiQt::Manager manager(&PostGreeter::create);
+	FastCgiQt::Manager manager;
+	PostGreeter responder;
+	responder.connect(
+		&manager,
+		SIGNAL(newRequest(FastCgiQt::Request*)),
+		SLOT(respond(FastCgiQt::Request*))
+	);
 
 	return application.exec();
 }

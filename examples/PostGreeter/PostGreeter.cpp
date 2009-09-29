@@ -16,11 +16,13 @@
 #include "PostGreeter.h"
 
 #include <QString>
+#include <QTextStream>
 
-void PostGreeter::respond()
+void PostGreeter::respond(FastCgiQt::Request* request)
 {
+	QTextStream out(request);
 	out << "<h1>PostGreeter</h1>" << endl;
-	if(request.postData("greeting").isNull())
+	if(request->value(FastCgiQt::PostData, "greeting").isNull())
 	{
 		out << QString(
 			"<form action='%1' method='post'>\n"
@@ -30,10 +32,10 @@ void PostGreeter::respond()
 			"</table>\n"
 			"<input type='submit' />\n"
 			"</form>\n"
-		).arg(request.serverData("SCRIPT_NAME"));
+		).arg(QLatin1String(request->url(FastCgiQt::LocationUrl).toEncoded()));
 	}
 	else
 	{
-		out << QString("%1, %2").arg(request.postData("greeting")).arg(request.postData("name"));
+		out << QString("%1, %2").arg(request->value(FastCgiQt::PostData, "greeting")).arg(request->value(FastCgiQt::PostData, "name"));
 	}
 }
