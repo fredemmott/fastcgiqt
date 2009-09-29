@@ -15,7 +15,7 @@
 */
 #include "InputDevice.h"
 
-#include "memcpy_s.h"
+#include "memcpy_safe.h"
 
 #include <QCoreApplication>
 #include <QTime>
@@ -55,7 +55,7 @@ namespace FastCgiQt
 		else
 		{
 			// we can read some stuff.
-			::memcpy_s(data, maxSize, m_data.constData() + m_position, readableLength);
+			::memcpy_safe(data, maxSize, m_data.constData() + m_position, readableLength);
 			m_position += readableLength;
 			return readableLength;
 		}

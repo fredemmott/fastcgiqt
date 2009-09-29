@@ -17,7 +17,7 @@
 
 // TODO: use the windows function on windows
 
-inline void* memcpy_s(void* destination, size_t destinationSize, const void* source, size_t count)
+inline void* memcpy_safe(void* destination, size_t destinationSize, const void* source, size_t count)
 {
 	Q_ASSERT(destinationSize >= count);
 	if(destinationSize < count)

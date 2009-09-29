@@ -19,7 +19,7 @@
 #include "StandardInputRecord.h"
 #include "StandardOutputRecord.h"
 
-#include "memcpy_s.h"
+#include "memcpy_safe.h"
 
 #include <QDebug>
 #include <QLocalSocket>
@@ -70,7 +70,7 @@ namespace FastCgiQt
 	qint64 FastCgiStream::readData(char* data, qint64 maxSize)
 	{
 		const qint64 toRead = qMin(m_requestBuffer.length() - m_requestBufferReadPosition, maxSize);
-		if(toRead >= 0 && ::memcpy_s(data, maxSize, m_requestBuffer.constData(), toRead))
+		if(toRead >= 0 && ::memcpy_safe(data, maxSize, m_requestBuffer.constData(), toRead))
 		{
 			m_requestBufferReadPosition += toRead;
 			return toRead;
