@@ -77,23 +77,23 @@ namespace FastCgiQt
 		// authority == user:password@host:port - as HTTP_HOST contains user and port, go with that
 		url.setAuthority(value(ServerData, "HTTP_HOST"));
 
+		const int queryStringOffset = rawValue(ServerData, "REQUEST_URI").contains('?') ? 1 : 0;
+		const int queryStringLength = rawValue(ServerData, "QUERY_STRING").length() + queryStringOffset;
 		switch(part)
 		{
 			case RootUrl:
 			{
-				const int queryStringLength = rawValue(ServerData, "QUERY_STRING").length();
 				const int pathInfoLength = rawValue(ServerData, "PATH_INFO").length();
 				QByteArray basePath = rawValue(ServerData, "REQUEST_URI");
-				basePath.chop(queryStringLength + 1 + pathInfoLength);
+				basePath.chop(queryStringLength + pathInfoLength);
 				url.setEncodedPath(basePath);
 				break;
 			}
 			case LocationUrl:
 			case RequestUrl:
 			{
-				const int queryStringLength = rawValue(ServerData, "QUERY_STRING").length();
 				QByteArray basePath = rawValue(ServerData, "REQUEST_URI");
-				basePath.chop(queryStringLength + 1);
+				basePath.chop(queryStringLength);
 				url.setEncodedPath(basePath);
 				if(part == RequestUrl)
 				{
