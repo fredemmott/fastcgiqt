@@ -16,7 +16,6 @@
 #pragma once
 
 #include "CommunicationInterface.h"
-#include "Responder.h"
 
 class QTcpServer;
 
@@ -27,7 +26,7 @@ namespace FastCgiQt
 		Q_OBJECT
 		public:
 			/// Create a ScgiInterface object.
-			ScgiInterface(Responder::Generator responderGenerator, QObject* parent = NULL);
+			ScgiInterface(QObject* parent = NULL);
 			~ScgiInterface();
 			bool isFinished() const;
 			QStringList backends() const;

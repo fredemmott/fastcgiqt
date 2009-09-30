@@ -23,8 +23,8 @@
 
 namespace FastCgiQt
 {
-	ScgiInterface::ScgiInterface(Responder::Generator responderGenerator, QObject* parent)
-	: CommunicationInterface(responderGenerator, parent)
+	ScgiInterface::ScgiInterface(QObject* parent)
+	: CommunicationInterface(parent)
 	, m_tcpServer(0)
 	{
 	}
