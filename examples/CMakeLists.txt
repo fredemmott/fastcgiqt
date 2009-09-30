@@ -3,6 +3,7 @@ SET(SUBDIRS
 	GetGreeter
 	HelloWorld
 	PostGreeter
+	ThreadedDumper
 )
 
 IF(WITH_SERVICE_SUPPORT)

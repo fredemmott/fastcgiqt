@@ -28,6 +28,7 @@ namespace FastCgiQt
 	, d(_d)
 	{
 		open(QIODevice::ReadWrite);
+		d->device->setParent(this);
 		connect(
 			d->device,
 			SIGNAL(readyRead()),

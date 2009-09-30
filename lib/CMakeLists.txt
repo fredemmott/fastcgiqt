@@ -1,13 +1,17 @@
 SET(
 	PUBLIC_CLASSES
+	BlockingResponder
 	Cache
 	CacheEntry
 	Manager
 	Request
+	Responder
+	ThreadedResponder
 )
 
 SET(
 	PRIVATE_CLASSES
+	BlockingResponder_Private
 	CacheBackend
 	CacheEntryPrivate
 	CachePrivate
@@ -23,7 +27,12 @@ SET(
 	ProxyClientIODevice
 	Request_Private
 	RequestFactory
+	RequestQueue
+	RequestRunner
 	Settings
+	ThreadedResponder_Private
+	ThreadPool
+	ThreadPool_Worker
 )
 
 IF(WITH_SERVICE_SUPPORT)
