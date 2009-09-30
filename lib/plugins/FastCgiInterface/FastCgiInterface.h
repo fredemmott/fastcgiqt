@@ -37,7 +37,7 @@ namespace FastCgiQt
 		Q_OBJECT
 		public:
 			/// Create a FastCgiInterface object.
-			FastCgiInterface(Responder::Generator, QObject* parent = NULL);
+			FastCgiInterface(QObject* parent = NULL);
 			~FastCgiInterface();
 			bool isFinished() const;
 			QStringList backends() const;

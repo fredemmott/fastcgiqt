@@ -18,9 +18,9 @@
 
 namespace FastCgiQt
 {
-	CommunicationInterface* FastCgiInterfaceFactory::createInterface(Responder::Generator generator, QObject* parent) const
+	CommunicationInterface* FastCgiInterfaceFactory::createInterface(QObject* parent) const
 	{
-		return new FastCgiInterface(generator, parent);
+		return new FastCgiInterface(parent);
 	}
 }
 

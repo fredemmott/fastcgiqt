@@ -36,8 +36,8 @@
 
 namespace FastCgiQt
 {
-	FastCgiInterface::FastCgiInterface(Responder::Generator generator, QObject* parent)
-	: CommunicationInterface(generator, parent)
+	FastCgiInterface::FastCgiInterface(QObject* parent)
+	: CommunicationInterface(parent)
 	, m_socketNotifier(0)
 	{
 	}
