@@ -46,6 +46,9 @@ namespace FastCgiQt
 			 * The receiver *MUST NOT* have a parent, and *MUST* be threadsafe.
 			 */
 			void addMapping(const QString& serviceName, QObject* receiver, const char* slot);
+
+			static QString prefix(FastCgiQt::Request* request);
+			static QString suffix(FastCgiQt::Request* request);
 		public slots:
 			void respond(FastCgiQt::Request*);
 		private:

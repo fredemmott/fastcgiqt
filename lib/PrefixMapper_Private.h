@@ -32,5 +32,10 @@ namespace FastCgiQt
 			typedef QHash<QByteArray, Receiver> ServiceMap;
 			ServiceMap services;
 			Responder* responder;
+
+			static void setPrefix(Request*, const QString&);
+			static void setSuffix(Request*, const QString&);
+			static QString prefix(Request*);
+			static QString suffix(Request*);
 	};
 };
