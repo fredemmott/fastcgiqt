@@ -40,8 +40,11 @@ namespace FastCgiQt
 
 		if(!m_request->parent())
 		{
-			delete responder;
 			delete m_request;
+			if(!m_spawner->persist())
+			{
+				delete responder;
+			}
 		}
 	}
 };

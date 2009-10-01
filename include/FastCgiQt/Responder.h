@@ -14,6 +14,7 @@ namespace FastCgiQt
 		public:
 			SpawnerBase();
 			virtual QObject* spawn(QObject* parent) const = 0;
+			virtual bool persist() const = 0;
 			virtual ~SpawnerBase();
 	};
 
@@ -28,6 +29,10 @@ namespace FastCgiQt
 			QObject* spawn(QObject* parent) const
 			{
 				return new T(parent);
+			}
+			bool persist() const
+			{
+				return false;
 			}
 	};
 

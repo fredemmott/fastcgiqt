@@ -39,8 +39,13 @@ namespace FastCgiQt
 			PrefixMapper(ResponseMode, QObject* parent);
 			virtual ~PrefixMapper();
 
-			/// Add a service to the mapping.
+			/// Add a spawner to the mapping.
 			void addMapping(const QString& serviceName, SpawnerBase* spawner, const char* slot);
+			/** Add a slot to the mapping.
+			 *
+			 * The receiver *MUST NOT* have a parent, and *MUST* be threadsafe.
+			 */
+			void addMapping(const QString& serviceName, QObject* receiver, const char* slot);
 		public slots:
 			void respond(FastCgiQt::Request*);
 		private:
