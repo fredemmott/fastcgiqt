@@ -24,10 +24,15 @@ namespace FastCgiQt
 
 	void RequestQueue::respond(Request* request)
 	{
+		respond(m_spawner, m_responderSlot, request);
+	}
+
+	void RequestQueue::respond(SpawnerBase* spawner, const char* responderSlot, Request* request)
+	{
 		// Stop it being garbage collected
 		request->setParent(this);
 		// Queue it up
-		m_unhandledRequests.enqueue(request);
+		m_unhandledRequests.enqueue(new RequestRunner(spawner, responderSlot, request));
 		m_queueRunner->start();
 	}
 
@@ -35,9 +40,9 @@ namespace FastCgiQt
 	{
 		while(!m_unhandledRequests.isEmpty())
 		{
-			Request* request = m_unhandledRequests.dequeue();
-			request->setParent(0);
-			start(new RequestRunner(m_spawner, m_responderSlot, request));
+			RequestRunner* runner = m_unhandledRequests.dequeue();
+			runner->request()->setParent(0);
+			start(runner);
 		}
 	}
 }

@@ -16,48 +16,28 @@
 #include "Service.h"
 
 #include "Caches.h"
-#include "OutputDevice.h"
-#include "ScopedCaller.h"
 #include "ServicePrivate.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
 #include <QGenericArgument>
-#include <QReadLocker>
 #include <QMetaMethod>
 #include <QMetaObject>
-#include <QStringList>
-#include <QThread>
-#include <QXmlStreamWriter>
 
 #include <memory> //std::auto_ptr TODO replace with QScopedPointer in Qt 4.6
 
 namespace FastCgiQt
 {
-	void Service::finished()
-	{
-		d->dispatchingRequest = false;
-
-		if(d->canCacheThisRequest)
-		{
-			Caches::requestCache().setValue(d->cacheKey, CacheEntry(QDateTime::currentDateTime(), qobject_cast<OutputDevice*>(out.device())->buffer()));
-		}
-
-		emit finished(this);
-	}
-
-	Service::Service(const Request& request, QObject* parent)
-		:
-			ClientIOInterface(request, NULL, NULL, parent)
+	Service::Service(QObject* parent)
+	: QObject(parent)
 	{
 		d = new Service::Private();
-		d->currentRequest = &request;
 	}
 
-	const Request* Service::currentRequest() const 
+	Request* Service::request() const;
 	{
-		return d->currentRequest;
+		return d->request;
 	}
 
 	Service::Private::Private()
@@ -67,6 +47,7 @@ namespace FastCgiQt
 	{
 	}
 
+	/**@todo move this stuff to somewhere else
 	QByteArray Service::readFile(const QString& path, bool useCache)
 	{
 		const QString prefix = path.startsWith('/') ? "" : QCoreApplication::applicationDirPath() + "/";
@@ -104,17 +85,21 @@ namespace FastCgiQt
 			return file.readAll();
 		}
 	}
+	*/
 
 	void Service::cacheThisRequest()
 	{
+		///@fixme Needs implementation
+		/*
 		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
 		Q_ASSERT(outputDevice);
 		Q_ASSERT(!outputDevice->haveSentData());
 		outputDevice->setMode(OutputDevice::Logged);
 		d->canCacheThisRequest = true;
+		*/
 	}
 
-	void Service::dispatchRequest(const QString& urlFragment)
+	void Service::respond(FastCgiQt::Request*)
 	{
 		// Don't stack-overflow if a subclass calls the wrong function
 		if(d->dispatchingRequest)
@@ -127,9 +112,6 @@ namespace FastCgiQt
 			return;
 		}
 		d->canCacheThisRequest = false;
-
-		// If we're not asynchronous, automatically emit finished() when this function is left
-		ScopedCaller<Service> finished(this, isAsynchronous() ? 0 : static_cast<void(Service::*)()>(&Service::finished));
 
 		// Lookup this page in the cache
 		d->cacheKey = QString("%1::%2").arg(metaObject()->className()).arg(urlFragment);
@@ -272,6 +254,13 @@ namespace FastCgiQt
 
 	Service::~Service()
 	{
+		d->dispatchingRequest = false;
+
+		if(d->canCacheThisRequest)
+		{
+			Caches::requestCache().setValue(d->cacheKey, CacheEntry(QDateTime::currentDateTime(), qobject_cast<OutputDevice*>(out.device())->buffer()));
+		}
+
 		delete d;
 	}
 

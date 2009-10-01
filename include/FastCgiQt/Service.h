@@ -13,11 +13,7 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef _FASTCGI_QT_SERVICE_H
-#define _FASTCGI_QT_SERVICE_H
-
-#include "ClientIOInterface.h"
-#include "Request.h"
+#pragma once
 
 #include <QDateTime>
 #include <QMap>
@@ -27,6 +23,7 @@
 
 namespace FastCgiQt
 {
+	class Request;
 	/** Interface exposing public slots to the web.
 	 *
 	 * urlMap() should be overridden to provide a regex->slot mapping;
@@ -63,70 +60,18 @@ namespace FastCgiQt
 	 * @see ServiceMapper
 	 * @ingroup services
 	 */
-	class Service : public ClientIOInterface
+	class Service : public QObject
 	{
-		friend class ServiceMapper;
-		friend class ServicePrivate;
 		Q_OBJECT
 		public:
-			/** A typedef for a pointer to a factory function for Service objects.
-			 *
-			 * This function must have the signature:
-			 * @code
-			 * void myServiceGenerator(QObject*);
-			 * @endcode
-			 */
-			typedef Service* (*Generator)(const Request& request, QObject* parent);
-
-			/** @internal
-			 * @brief Call a slot based on an url fragment.
-			 *
-			 * The result may be cached.
-			 *
-			 * The mapping depends on what urlMap() returns.
-			 *
-			 * If you want to override this function, see
-			 * dispatchUncachedRequest()
-			 *
-			 * @see dispatchUncachedRequest()
-			 * @see urlMap()
-			 */
-			void dispatchRequest(const QString& urlFragment);
+			Service(QObject* parent);
 
 			/// Destructor.
 			virtual ~Service();
-		signals:
-			/** Indicates that the request has been dealt with.
-			 * @see isAsynchronous()
-			 * @see finished()
-			 */
-			void finished(Service*);
 		protected:
-			/** Convenience wrapper around finished(Service*)
-			 *
-			 * @see isAsynchronous()
-			 */
-			virtual void finished();
-			/** Wether or not every single slot explicitly calls finished().
-			 *
-			 * If false, it will be automatically emitted.
-			 *
-			 * @returns false
-			 */
-			virtual bool isAsynchronous() const;
-
-			/** @internal
-			 * @brief Call a slot based on an URL fragment.
-			 *
-			 * This should not maintain an urlFragment -> result map,
-			 * as this is done by Service.
-			 *
-			 * @see dispatchRequest()
-			 */
-			virtual void dispatchUncachedRequest(const QString& urlFragment);
 
 			/// A pointer to the current request.
-			const FastCgiQt::Request* currentRequest() const;
+			Request* request() const;
 
 			/** A map of regular expressions to slots.
 			 *
@@ -160,42 +105,6 @@ namespace FastCgiQt
 			 */
 			virtual UrlMap urlMap() const = 0;
 
-			/** Whether or not file reads are cached.
-			 *
-			 * If this is true, all file reads via readFile will be
-			 * cached, if the file size is less than the maximum
-			 * cache size.
-			 *
-			 * @see setUsingFileCache
-			 * @see readFile
-			 */
-			bool usingFileCache();
-
-			/** Set whether or not file reads via readFile() are cached.
-			 *
-			 * @see usingFileCache
-			 * @see readFile
-			 */
-			void setUsingFileCache(bool use);
-
-			/** Read a file, optionally using a per-process file cache.
-			 *
-			 * If @p useCache is true, the cache is enabled, and the
-			 * file is smaller than the maximum size of the cache,
-			 * the file cache will be used.
-			 *
-			 * If this would put the cache size over the maximum,
-			 * the least-recently-accessed file will be removed from
-			 * the cache.
-			 *
-			 * A cache entry will automatically expire when the file
-			 * is modified.
-			 *
-			 * @see usingFileCache
-			 * @see setUsingFileCache
-			 */
-			QByteArray readFile(const QString& path, bool useCache = true);
-
 			/** Whether or not a cached result for the given urlFragment is still valid.
 			 *
 			 * @param urlFragment is the URL fragment for the request.
@@ -214,26 +123,36 @@ namespace FastCgiQt
 			 * @returns false
 			 */
 			virtual bool isExpired(const QString& urlFragment, const QDateTime& generated);
-			/// Constructor.
-			Service(const Request& request, QObject* parent = NULL);
+		private slots:
+			/** @internal
+			 * @brief Call a slot based on an url fragment.
+			 *
+			 * The result may be cached.
+			 *
+			 * The mapping depends on what urlMap() returns.
+			 *
+			 * If you want to override this function, see
+			 * dispatchUncachedRequest()
+			 *
+			 * @see dispatchUncachedRequest()
+			 * @see urlMap()
+			 */
+			void respond(FastCgiQt::Request* request);
 		private:
 			class Private;
 			Private* d;
+
+			/** @internal
+			 * @brief Call a slot based on an URL fragment.
+			 *
+			 * @todo move to Private class
+			 *
+			 * This should not maintain an urlFragment -> result map,
+			 * as this is done by Service.
+			 *
+			 * @see dispatchRequest()
+			 */
+			void dispatchUncachedRequest(Request* request);
+
 	};
 }
-
-/** Convenience macro for creating factories of Service subclasses.
- *
- * The generated constructor just calls the Responder constructor.
- *
- * The generated factory function is called 'create', and a pointer to it is
- * a FastCgiQt::Service::Generator.
- *
- * @relates FastCgiQt::Service
- */
-#define SERVICE(className) \
-	public: \
-		static Service* create(const FastCgiQt::Request& request, QObject* parent) { return new className(request, parent); } \
-	private:
-
-#endif

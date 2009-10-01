@@ -4,6 +4,7 @@ SET(
 	Cache
 	CacheEntry
 	Manager
+	PrefixMapper
 	Request
 	Responder
 	ThreadedResponder
@@ -40,12 +41,6 @@ IF(WITH_SERVICE_SUPPORT)
 		APPEND
 		PUBLIC_CLASSES
 		Service
-		ServiceMapper
-	)
-	LIST(
-		APPEND
-		PRIVATE_CLASSES
-		ServiceMapperPrivate
 	)
 ENDIF()
 

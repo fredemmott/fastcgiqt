@@ -17,4 +17,9 @@ namespace FastCgiQt
 	{
 		d->respond(request);
 	}
+
+	void ThreadedResponder::respond(SpawnerBase* spawner, const char* responderSlot, Request* request)
+	{
+		d->respond(spawner, responderSlot, request);
+	}
 };

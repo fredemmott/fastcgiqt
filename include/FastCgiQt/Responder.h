@@ -42,6 +42,8 @@ namespace FastCgiQt
 		public:
 			Responder(QObject* parent);
 			virtual ~Responder();
+
+			virtual void respond(SpawnerBase* spawner, const char* responderSlot, FastCgiQt::Request*) = 0;
 		public slots:
 			virtual void respond(FastCgiQt::Request*) = 0;
 	};

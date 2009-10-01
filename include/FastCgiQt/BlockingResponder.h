@@ -21,6 +21,8 @@ namespace FastCgiQt
 		public:
 			BlockingResponder(SpawnerBase* spawner, const char* responderSlot, QObject* parent = 0);
 			~BlockingResponder();
+
+			void respond(SpawnerBase* spawner, const char* responderSlot, FastCgiQt::Request*);
 		public slots:
 			void respond(FastCgiQt::Request*);
 		private:

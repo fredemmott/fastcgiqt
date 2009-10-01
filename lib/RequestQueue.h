@@ -15,6 +15,7 @@ namespace FastCgiQt
 		public:
 			RequestQueue(SpawnerBase* spawner, const char* responderSlot, QObject* parent);
 			void respond(Request*);
+			void respond(SpawnerBase* spawner, const char* responderSlot, Request* request);
 		protected:
 			virtual void start(RequestRunner* runner) = 0;
 		private slots:
@@ -25,6 +26,6 @@ namespace FastCgiQt
 
 			QTimer* m_queueRunner;
 
-			QQueue<Request*> m_unhandledRequests;
+			QQueue<RequestRunner*> m_unhandledRequests;
 	};
 };

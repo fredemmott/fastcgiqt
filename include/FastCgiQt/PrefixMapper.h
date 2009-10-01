@@ -13,25 +13,38 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#include "ServiceMapperPrivate.h"
+#pragma once
 
-#include <QDebug>
+#include "Responder.h"
 
 namespace FastCgiQt
 {
-	ServiceMapper::Private::ServiceMap ServiceMapper::Private::services;
-	QMutex ServiceMapper::Private::serviceLock;
-
-	ServiceMapper::Private::Private(ServiceMapper* parent)
-	: QObject(parent)
-	, m_parent(parent)
+	/** Map requests to services.
+	 *
+	 * This class is for mapping URLs to QObjects and slots.
+	 *
+	 * @see Service
+	 * @ingroup services
+	 */
+	class PrefixMapper: public QObject
 	{
-		Q_ASSERT(parent);
-	}
+		Q_OBJECT;
+		public:
+			enum ResponseMode
+			{
+				BlockingResponses,
+				ThreadedResponses
+			};
 
-	void ServiceMapper::Private::cleanup(Service* service)
-	{
-		delete service;
-		m_parent->finished();
-	}
-};
+			PrefixMapper(ResponseMode, QObject* parent);
+			virtual ~PrefixMapper();
+
+			/// Add a service to the mapping.
+			void addMapping(const QString& serviceName, SpawnerBase* spawner, const char* slot);
+		public slots:
+			void respond(FastCgiQt::Request*);
+		private:
+			class Private;
+			Private* d;
+	};
+}
