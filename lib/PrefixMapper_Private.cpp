@@ -25,6 +25,10 @@ namespace FastCgiQt
 
 	QString PrefixMapper::Private::suffix(Request* request)
 	{
-		return request->property(SuffixTrackingProperty).toString();
+		const QString suffix = request->property(SuffixTrackingProperty).toString();
+		if(!suffix.isNull())
+		{
+			return request->value(ServerData, "PATH_INFO");
+		}
 	}
 };

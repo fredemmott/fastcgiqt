@@ -34,9 +34,9 @@ namespace FastCgiQt
 
 	enum DataSource
 	{
-		GetData,
-		PostData,
-		ServerData
+		GetData,   ///< ?foo=bar&baz=meh on query string
+		PostData,  ///< Only valid if CONTENT_TYPE is application/x-www-formencoded
+		ServerData ///< CGI-compatible environment variable names
 	};
 
 	/** Object representing a request;
