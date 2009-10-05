@@ -36,7 +36,7 @@ namespace FastCgiQt
 				ThreadedResponses
 			};
 
-			PrefixMapper(ResponseMode, QObject* parent);
+			PrefixMapper(ResponseMode mode = BlockingResponses, QObject* parent = 0);
 			virtual ~PrefixMapper();
 
 			/// Add a spawner to the mapping.
@@ -47,8 +47,9 @@ namespace FastCgiQt
 			 */
 			void addMapping(const QString& serviceName, QObject* receiver, const char* slot);
 
-			static QString prefix(FastCgiQt::Request* request);
-			static QString suffix(FastCgiQt::Request* request);
+			static QByteArray prefix(FastCgiQt::Request* request);
+			/// Nearly the same thing as PATH_INFO on the other side of PrefixMapper
+			static QByteArray suffix(FastCgiQt::Request* request);
 		public slots:
 			void respond(FastCgiQt::Request*);
 		private:

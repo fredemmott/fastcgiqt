@@ -3,6 +3,7 @@ SET(SUBDIRS
 	GetGreeter
 	HelloWorld
 	PostGreeter
+	PrefixExample
 	ThreadedDumper
 )
 

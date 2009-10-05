@@ -33,9 +33,9 @@ namespace FastCgiQt
 			ServiceMap services;
 			Responder* responder;
 
-			static void setPrefix(Request*, const QString&);
-			static void setSuffix(Request*, const QString&);
-			static QString prefix(Request*);
-			static QString suffix(Request*);
+			static void setPrefix(Request*, const QByteArray&);
+			static void setSuffix(Request*, const QByteArray&);
+			static QByteArray prefix(Request*);
+			static QByteArray suffix(Request*);
 	};
 };

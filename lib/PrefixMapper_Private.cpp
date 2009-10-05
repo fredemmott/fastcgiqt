@@ -8,27 +8,28 @@ const char* SuffixTrackingProperty = "FASTCGIQT_PREFIXMAPPER_SUFFIX";
 
 namespace FastCgiQt
 {
-	void PrefixMapper::Private::setPrefix(Request* request, const QString& value)
+	void PrefixMapper::Private::setPrefix(Request* request, const QByteArray& value)
 	{
 		request->setProperty(PrefixTrackingProperty, value);
 	}
 
-	void PrefixMapper::Private::setSuffix(Request* request, const QString& value)
+	void PrefixMapper::Private::setSuffix(Request* request, const QByteArray& value)
 	{
 		request->setProperty(SuffixTrackingProperty, value);
 	}
 
-	QString PrefixMapper::Private::prefix(Request* request)
+	QByteArray PrefixMapper::Private::prefix(Request* request)
 	{
-		return request->property(PrefixTrackingProperty).toString();
+		return request->property(PrefixTrackingProperty).toByteArray();
 	}
 
-	QString PrefixMapper::Private::suffix(Request* request)
+	QByteArray PrefixMapper::Private::suffix(Request* request)
 	{
-		const QString suffix = request->property(SuffixTrackingProperty).toString();
-		if(!suffix.isNull())
+		const QByteArray suffix = request->property(SuffixTrackingProperty).toByteArray();
+		if(suffix.isNull())
 		{
-			return request->value(ServerData, "PATH_INFO");
+			return request->rawValue(ServerData, "PATH_INFO");
 		}
+		return suffix;
 	}
 };
