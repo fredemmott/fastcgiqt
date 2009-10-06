@@ -16,8 +16,10 @@ namespace FastCgiQt
 	, serverData(d->requestHeaders())
 	{
 		d->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
-		responseHeaders.insert("STATUS", "200 OK"); // just in case
 		getData = parseQueryString(serverData.value("QUERY_STRING"));
+		// Default header values:
+		responseHeaders.insert("STATUS", "200 OK");
+		responseHeaders.insert("CONTENT-TYPE", "text/html; charset=UTF-8");
 	}
 
 	Request::Private::~Private()
