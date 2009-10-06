@@ -18,6 +18,7 @@
 #include <QDateTime>
 #include <QMap>
 #include <QObject>
+#include <QPair>
 #include <QRegExp>
 #include <QString>
 
@@ -69,7 +70,6 @@ namespace FastCgiQt
 			/// Destructor.
 			virtual ~Service();
 		protected:
-
 			/// A pointer to the current request.
 			Request* request() const;
 
@@ -152,7 +152,7 @@ namespace FastCgiQt
 			 *
 			 * @see dispatchRequest()
 			 */
-			void dispatchUncachedRequest(Request* request);
+			void dispatchUncachedRequest(const QByteArray& suffix);
 
 	};
 }

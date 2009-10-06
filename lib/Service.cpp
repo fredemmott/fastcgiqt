@@ -16,7 +16,8 @@
 #include "Service.h"
 
 #include "Caches.h"
-#include "ServicePrivate.h"
+#include "PrefixMapper.h"
+#include "Service_Private.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -24,6 +25,7 @@
 #include <QGenericArgument>
 #include <QMetaMethod>
 #include <QMetaObject>
+#include <QStringList>
 
 #include <memory> //std::auto_ptr TODO replace with QScopedPointer in Qt 4.6
 
@@ -35,7 +37,7 @@ namespace FastCgiQt
 		d = new Service::Private();
 	}
 
-	Request* Service::request() const;
+	Request* Service::request() const
 	{
 		return d->request;
 	}
@@ -99,8 +101,9 @@ namespace FastCgiQt
 		*/
 	}
 
-	void Service::respond(FastCgiQt::Request*)
+	void Service::respond(FastCgiQt::Request* request)
 	{
+		const QByteArray urlFragment = PrefixMapper::suffix(request);
 		// Don't stack-overflow if a subclass calls the wrong function
 		if(d->dispatchingRequest)
 		{
@@ -111,11 +114,13 @@ namespace FastCgiQt
 			);
 			return;
 		}
+		d->request = request;
 		d->canCacheThisRequest = false;
 
 		// Lookup this page in the cache
-		d->cacheKey = QString("%1::%2").arg(metaObject()->className()).arg(urlFragment);
+		d->cacheKey = QString("%1::%2").arg(metaObject()->className()).arg(QLatin1String(urlFragment));
 
+		/**@fixme (caching)
 		OutputDevice* outputDevice = qobject_cast<OutputDevice*>(out.device());
 		Q_ASSERT(outputDevice);
 
@@ -125,45 +130,54 @@ namespace FastCgiQt
 			outputDevice->setSendingHeadersEnabled(false);
 			outputDevice->write(entry.data());
 			return;
-		}
+		}*/
 
 		d->dispatchingRequest = true;
 		dispatchUncachedRequest(urlFragment);
 	}
 
-	void Service::dispatchUncachedRequest(const QString& urlFragment)
+	void Service::dispatchUncachedRequest(const QByteArray& suffix)
 	{
-		d->fillMap(this);
-		Q_FOREACH(const Service::Private::UrlMapEntry& action, d->forwardMap)
+		const QString urlFragment = QUrl::fromPercentEncoding(suffix);
+		const UrlMap urlMap = this->urlMap();
+		for(
+			QList<QPair<QString, const char*> >::ConstIterator it = urlMap.constBegin();
+			it != urlMap.constEnd();
+			++it
+		)
 		{
-			QRegExp re(action.first);
+			QRegExp re(it->first);
 			if(re.exactMatch(urlFragment))
 			{
 				QStringList parameters(re.capturedTexts());
 				parameters.takeFirst();
 				d->invokeMethod(
 					this,
-					action.second,
+					it->second,
 					parameters
 				);
 				return;
 			}
 		}
 		///@todo Add some kind of interface for hooking 404s ?
-		setHeader("status", "404");
-
+		request()->setHeader("STATUS", "404 Not Found");
+		QTextStream out(request());
 		out << "<h1>404 Not Found</h1>";
 	}
 
 	void Service::Private::invokeMethod(
 		QObject* object,
-		const QMetaMethod& method,
+		const char* slot,
 		const QStringList& parameters
 	)
 	{
-		// Work out the method name
-		QString methodName(method.signature());
-		methodName = methodName.left(methodName.indexOf('('));
+		///@todo check arguments
+		Q_ASSERT(parameters.count() < 10); // QMetaMethod limitation
+		Q_ASSERT(slot[0] == QSLOT_CODE);
+		++slot; // chop off the code
+		const int slotIndex = staticMetaObject.indexOfSlot(slot);
+		Q_ASSERT(slotIndex != -1);
+		const QMetaMethod method = staticMetaObject.method(slotIndex);
 
 		// Sort out the arguments
 		QList<QByteArray> parameterTypes = method.parameterTypes();
@@ -174,9 +188,8 @@ namespace FastCgiQt
 			Q_ASSERT(parameterTypes.at(i) == "QString");
 			arguments[i] = Q_ARG(QString, parameters.at(i));
 		}
-		QMetaObject::invokeMethod(
+		method.invoke(
 			object,
-			methodName.toLatin1().constData(),
 			arguments[0],
 			arguments[1],
 			arguments[2],
@@ -190,6 +203,7 @@ namespace FastCgiQt
 		);
 	}
 
+	/*
 	bool Service::usingFileCache()
 	{
 		return d->usingFileCache;
@@ -199,67 +213,18 @@ namespace FastCgiQt
 	{
 		d->usingFileCache = useFileCache;
 	}
-
-	void Service::Private::fillMap(Service* service)
-	{
-		if(!forwardMap.isEmpty())
-		{
-			return;
-		}
-		// Make a map of SLOT(foo) -> metamethod
-		QMap<QString, QMetaMethod> slotsToMethods;
-		const QMetaObject* mo = service->metaObject();
-		for(
-			int i = Service::staticMetaObject.methodOffset();
-			i < mo->methodCount();
-			++i
-		)
-		{
-			QMetaMethod mm = mo->method(i);
-			if(mm.access() != QMetaMethod::Public || mm.methodType() != QMetaMethod::Slot)
-			{
-				continue;
-			}
-
-			Q_ASSERT(mm.parameterTypes().count() <= 10);
-
-			Q_FOREACH(const QString& type, mm.parameterTypes())
-			{
-				Q_ASSERT(type == "QString");
-			}
-
-			slotsToMethods.insert(
-				QString("%1%2").arg(QSLOT_CODE).arg(mm.signature()),
-				mm
-			);
-		}
-
-		Service::UrlMap urlMap = service->urlMap();
-		for(
-			QList<QPair<QString, const char*> >::ConstIterator it = urlMap.constBegin();
-			it != urlMap.constEnd();
-			++it
-		)
-		{
-			QByteArray normalized = QMetaObject::normalizedSignature(it->second);
-			if(!slotsToMethods.contains(normalized.constData()))
-			{
-				qFatal("Couldn't find a public slot matching '%s'.", normalized.constData());
-			}
-			///@todo check captures vs parameters
-			forwardMap.append(qMakePair(QRegExp(it->first), slotsToMethods.value(normalized)));
-			Q_ASSERT(forwardMap.last().first.isValid());
-		}
-	}
+	*/
 
 	Service::~Service()
 	{
 		d->dispatchingRequest = false;
 
+		/**@fixme (caching)
 		if(d->canCacheThisRequest)
 		{
 			Caches::requestCache().setValue(d->cacheKey, CacheEntry(QDateTime::currentDateTime(), qobject_cast<OutputDevice*>(out.device())->buffer()));
 		}
+		*/
 
 		delete d;
 	}
@@ -268,11 +233,6 @@ namespace FastCgiQt
 	{
 		Q_UNUSED(urlFragment);
 		Q_UNUSED(generated);
-		return false;
-	}
-
-	bool Service::isAsynchronous() const
-	{
 		return false;
 	}
 

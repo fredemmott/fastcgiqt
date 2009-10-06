@@ -13,8 +13,7 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef _FASTCGI_QT_SERVICE_PRIVATE_H
-#define _FASTCGI_QT_SERVICE_PRIVATE_H
+#pragma once
 
 #include "Caches.h"
 #include "FileCache.h"
@@ -34,23 +33,18 @@ namespace FastCgiQt
 	{
 		public:
 			Private();
-			typedef QPair<QRegExp, QMetaMethod> UrlMapEntry;
-			QList<UrlMapEntry> forwardMap;
-			void fillMap(Service* service);
 			void invokeMethod(
 				QObject* object,
-				const QMetaMethod& method,
+				const char* slot,
 				const QStringList& parameters
 			);
 			bool dispatchingRequest;
 			bool canCacheThisRequest;
 			QString cacheKey;
-			const Request* currentRequest;
+			Request* request;
 			bool usingFileCache;
 		private:
 			// scope guard
 			Caches m_caches;
 	};
 }
-
-#endif
