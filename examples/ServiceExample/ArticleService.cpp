@@ -15,36 +15,44 @@
 */
 #include "ArticleService.h"
 
+#include <FastCgiQt/Request.h>
+
 #include <QDate>
 #include <QDebug>
+#include <QTextStream>
 
-ArticleService::ArticleService(const FastCgiQt::Request& request, QObject* parent)
-	: Service(request, parent)
+ArticleService::ArticleService(QObject* parent)
+: Service(parent)
 {
 }
 
 void ArticleService::list()
 {
+	QTextStream out(request());
 	out << "List of all articles";
 }
 
 void ArticleService::list(const QString& year)
 {
+	QTextStream out(request());
 	out << tr("List of all articles written in %1").arg(year);
 }
 
 void ArticleService::list(const QString& year, const QString& month)
 {
+	QTextStream out(request());
 	out << tr("List of all articles written in %2 %1").arg(year).arg(QDate::longMonthName(month.toInt()));
 }
 
 void ArticleService::list(const QString& year, const QString& month, const QString& day)
 {
+	QTextStream out(request());
 	out << tr("List of all articles written on %3 %2 %1").arg(year).arg(QDate::longMonthName(month.toInt())).arg(day);
 }
 
 void ArticleService::show(const QString& year, const QString& month, const QString& day, const QString& title)
 {
+	QTextStream out(request());
 	out << tr("Showing article '%1'").arg(title);
 }
 

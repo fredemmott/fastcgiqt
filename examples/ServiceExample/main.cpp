@@ -13,8 +13,11 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#include "ServiceExample.h"
+#include "ArticleService.h"
+#include "IndexService.h"
+
 #include <FastCgiQt/Manager.h>
+#include <FastCgiQt/PrefixMapper.h>
 
 #include <QCoreApplication>
 
@@ -23,6 +26,15 @@ int main(int argc, char** argv)
 	QCoreApplication application(argc, argv);
 	application.setApplicationName("ServiceExample");
 
-	FastCgiQt::Manager manager(&ServiceExample::create);
+	FastCgiQt::Manager manager;
+	FastCgiQt::PrefixMapper mapper;
+
+	mapper.connect(
+		&manager,
+		SIGNAL(newRequest(FastCgiQt::Request*)),
+		SLOT(respond(FastCgiQt::Request*))
+	);
+	mapper.addMapping(QByteArray(), new FastCgiQt::Spawner<IndexService>(), SLOT(respond(FastCgiQt::Request*)));
+	mapper.addMapping("articles", new FastCgiQt::Spawner<ArticleService>(), SLOT(respond(FastCgiQt::Request*)));
 	return application.exec();
 }

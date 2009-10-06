@@ -138,7 +138,7 @@ namespace FastCgiQt
 
 	void Service::dispatchUncachedRequest(const QByteArray& suffix)
 	{
-		const QString urlFragment = QUrl::fromPercentEncoding(suffix);
+		const QString urlFragment = QUrl::fromPercentEncoding(suffix.mid(1));
 		const UrlMap urlMap = this->urlMap();
 		for(
 			QList<QPair<QString, const char*> >::ConstIterator it = urlMap.constBegin();
@@ -173,11 +173,11 @@ namespace FastCgiQt
 	{
 		///@todo check arguments
 		Q_ASSERT(parameters.count() < 10); // QMetaMethod limitation
-		Q_ASSERT(slot[0] == QSLOT_CODE);
+		Q_ASSERT(slot[0] == SLOT()[0]);
 		++slot; // chop off the code
-		const int slotIndex = staticMetaObject.indexOfSlot(slot);
+		const int slotIndex = object->metaObject()->indexOfSlot(slot);
 		Q_ASSERT(slotIndex != -1);
-		const QMetaMethod method = staticMetaObject.method(slotIndex);
+		const QMetaMethod method = object->metaObject()->method(slotIndex);
 
 		// Sort out the arguments
 		QList<QByteArray> parameterTypes = method.parameterTypes();

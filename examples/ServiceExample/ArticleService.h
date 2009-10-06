@@ -14,12 +14,12 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include <FastCgiQt/Service.h>
+
 class ArticleService : public FastCgiQt::Service
 {
 	Q_OBJECT
-	SERVICE(ArticleService)
 	public:
-		ArticleService(const FastCgiQt::Request&, QObject* parent = NULL);
+		ArticleService(QObject* parent = 0);
 	public slots:
 		void list();
 		void list(const QString& year);

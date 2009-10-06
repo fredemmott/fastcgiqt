@@ -15,13 +15,18 @@
 */
 #include "IndexService.h"
 
-IndexService::IndexService(const FastCgiQt::Request& request, QObject* parent)
-	: Service(request, parent)
+#include <FastCgiQt/Request.h>
+
+#include <QTextStream>
+
+IndexService::IndexService(QObject* parent)
+: Service(parent)
 {
 }
 
 void IndexService::index()
 {
+	QTextStream out(request());
 	out << "Index goes here";
 }
 
