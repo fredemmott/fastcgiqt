@@ -16,6 +16,9 @@
 #pragma once
 
 #include <QObject>
+#include <QMap>
+#include <QString>
+#include <QVariant>
 
 namespace FastCgiQt
 {
@@ -34,10 +37,22 @@ namespace FastCgiQt
 		public:
 			/** Create a Manager.
 			 *
-			 * @param responderGenerator is a pointer to a function creating Responder objects.
+			 * This manager will read its' configuration files.
+			 *
 			 * @param parent is the parent object.
 			 */
-			Manager(QObject* parent = NULL);
+			Manager(QObject* parent = 0);
+
+			/** Create a Manager with the specified configuration.
+			 *
+			 * This should really only be used for embedding, or if you provide your own configuration interface.
+			 * It reduces flexibility.
+			 *
+			 * @param backend is the backend to use (eg 'HTTP', 'FCGI-UNIX', and so on).
+			 * @param configuration is a key->QVariant mapping of configuration values that would be in the 'FastCgiQt' section of the configuration file.
+			 * @param parent is the parent QObject.
+			 */
+			Manager(const char* backend, const QMap<QString, QVariant>& configuration, QObject* parent = 0);
 			/// Destroy the Manager.
 			~Manager();
 		signals:

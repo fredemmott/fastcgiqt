@@ -16,6 +16,7 @@
 #include "Manager.h"
 
 #include "Manager_Private.h"
+#include "Settings.h"
 
 namespace FastCgiQt
 {
@@ -24,6 +25,36 @@ namespace FastCgiQt
 			QObject(parent),
 			d(new Private(this))
 	{
+		connect(
+			d,
+			SIGNAL(newRequest(FastCgiQt::Request*)),
+			this,
+			SIGNAL(newRequest(FastCgiQt::Request*))
+		);
+	}
+
+	Manager::Manager(const char* backend, const QMap<QString, QVariant>& configuration, QObject* parent)
+		:
+			QObject(parent),
+			d(0)
+	{
+		// todo: some nicer way
+		{
+			Settings settings;
+			settings.beginGroup("FastCGI");
+			settings.setValue("socketType", QString::fromLatin1(backend));
+			for(
+				QMap<QString, QVariant>::ConstIterator it = configuration.constBegin();
+				it != configuration.constEnd();
+				++it
+			)
+			{
+				settings.setValue(it.key(), it.value());
+			}
+			settings.sync();
+		}
+
+		d = new Private(this);
 		connect(
 			d,
 			SIGNAL(newRequest(FastCgiQt::Request*)),
