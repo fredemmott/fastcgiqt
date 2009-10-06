@@ -24,7 +24,6 @@ SET(
 	FileCache
 	FileDependentCache
 	Manager_Private
-	OutputDevice
 	PrefixMapper_Private
 	PrespawnedSpawner
 	ProxyClientIODevice
