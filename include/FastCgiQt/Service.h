@@ -69,7 +69,27 @@ namespace FastCgiQt
 
 			/// Destructor.
 			virtual ~Service();
+		public slots:
+			/** Call a slot based on the current URL.
+			 *
+			 * The result may be cached.
+			 *
+			 * The mapping depends on what urlMap() returns.
+			 *
+			 * If you want to override this function, see
+			 * dispatchUncachedRequest()
+			 *
+			 * @see dispatchUncachedRequest()
+			 * @see urlMap()
+			 */
+			void respond(FastCgiQt::Request* request);
 		protected:
+			/** Call a slot based on an URL fragment.
+			 *
+			 * @see respond()
+			 */
+			virtual void dispatchUncachedRequest(const QByteArray& suffix);
+
 			/// A pointer to the current request.
 			Request* request() const;
 
@@ -123,36 +143,8 @@ namespace FastCgiQt
 			 * @returns false
 			 */
 			virtual bool isExpired(const QString& urlFragment, const QDateTime& generated);
-		private slots:
-			/** @internal
-			 * @brief Call a slot based on an url fragment.
-			 *
-			 * The result may be cached.
-			 *
-			 * The mapping depends on what urlMap() returns.
-			 *
-			 * If you want to override this function, see
-			 * dispatchUncachedRequest()
-			 *
-			 * @see dispatchUncachedRequest()
-			 * @see urlMap()
-			 */
-			void respond(FastCgiQt::Request* request);
 		private:
 			class Private;
 			Private* d;
-
-			/** @internal
-			 * @brief Call a slot based on an URL fragment.
-			 *
-			 * @todo move to Private class
-			 *
-			 * This should not maintain an urlFragment -> result map,
-			 * as this is done by Service.
-			 *
-			 * @see dispatchRequest()
-			 */
-			void dispatchUncachedRequest(const QByteArray& suffix);
-
 	};
 }
