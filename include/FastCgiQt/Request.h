@@ -71,6 +71,14 @@ namespace FastCgiQt
 			 * Convenience wrapper around value(ServerData, "CONTENT_LENGTH"))
 			 */
 			virtual qint64 size() const;
+		signals:
+			/** Hook to do any cleanup.
+			 *
+			 * If you're doing any threading yourself and need the object to still be valid,
+			 * make sure you use either Qt::DirectConnection or Qt::BlockingQueuedConnection,
+			 * otherwise the object might not exist when your slot gets called.
+			 */
+			void finished(FastCgiQt::Request* request);
 		protected:
 			virtual qint64 readData(char* data, qint64 maxSize);
 			virtual qint64 writeData(const char* data, qint64 maxSize);

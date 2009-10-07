@@ -167,6 +167,7 @@ namespace FastCgiQt
 
 	Request::~Request()
 	{
+		emit finished(this);
 		delete d;
 	}
 }
