@@ -26,73 +26,18 @@
 namespace FastCgiQt
 {
 	XsltService::Private::Private()
-		:
-			source(NoXslt),
-			prettyPrint(false)
+	: source(NoXslt)
+	, prettyPrint(false)
 	{
 	}
 	
-	XsltService::XsltService(const FastCgiQt::Request& request, QObject* parent)
-		:
-			Service(request, parent),
-			d(new Private()),
-			xmlOut(&d->xml)
+	XsltService::XsltService(QObject* parent)
+	: Service(parent)
+	, d(new Private())
 	{
-		xmlOut.setAutoFormatting(true);
 	}
 	
 	XsltService::~XsltService()
-	{
-		delete d;
-	}
-	
-	void XsltService::setVariable(const QString& name, const QVariant& value)
-	{
-		d->variables[name] = value;
-	}
-	
-	void XsltService::setXsltUrl(const QString& path)
-	{
-		if(path.isEmpty())
-		{
-			setXsltUrl(QUrl());
-		}
-		else
-		{
-			setXsltUrl(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/" + path));
-		}
-	}
-	
-	void XsltService::addXsltFile(const QString& fileName)
-	{
-		d->source = Private::StringXslt;
-		d->xslt += readFile(fileName);
-	}
-	
-	void XsltService::setXsltUrl(const QUrl& url)
-	{
-		d->xsltUrl = url;
-		if(url.isValid())
-		{
-			d->source = Private::FileXslt;
-		}
-		else
-		{
-			d->source = Private::NoXslt;
-		}
-	}
-	
-	void XsltService::setPrettyPrintingEnabled(bool value)
-	{
-		d->prettyPrint = value;
-	}
-	
-	bool XsltService::isPrettyPrintingEnabled() const
-	{
-		return d->prettyPrint;
-	}
-	
-	void XsltService::finished()
 	{
 		if(d->source != Private::NoXslt)
 		{
@@ -161,6 +106,52 @@ namespace FastCgiQt
 	
 			out << d->xml << flush;
 		}
-		Service::finished();
+		delete d;
+	}
+	
+	void XsltService::setVariable(const QString& name, const QVariant& value)
+	{
+		d->variables[name] = value;
+	}
+	
+	void XsltService::setXsltUrl(const QString& path)
+	{
+		if(path.isEmpty())
+		{
+			setXsltUrl(QUrl());
+		}
+		else
+		{
+			setXsltUrl(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/" + path));
+		}
+	}
+	
+	void XsltService::addXsltFile(const QString& fileName)
+	{
+		d->source = Private::StringXslt;
+		d->xslt += readFile(fileName);
+	}
+	
+	void XsltService::setXsltUrl(const QUrl& url)
+	{
+		d->xsltUrl = url;
+		if(url.isValid())
+		{
+			d->source = Private::FileXslt;
+		}
+		else
+		{
+			d->source = Private::NoXslt;
+		}
+	}
+	
+	void XsltService::setPrettyPrintingEnabled(bool value)
+	{
+		d->prettyPrint = value;
+	}
+	
+	bool XsltService::isPrettyPrintingEnabled() const
+	{
+		return d->prettyPrint;
 	}
 }

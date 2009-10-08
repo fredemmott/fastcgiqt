@@ -31,23 +31,23 @@ namespace FastCgiQt
 	 * XML, and actually calling the XSLT processor.
 	 *
 	 * @warning This class is only available if WITH_XSLT_SUPPORT=ON is
-	 * 	passed to CMake when building FastCgiQt. The default is off, as
-	 * 	this requires Qt 4.5, which hasn't been released yet.
+	 * passed to CMake when building FastCgiQt. The default is off, as
+	 * this requires Qt 4.5, which hasn't been released yet.
+	 *
+	 * @warning This class must only be used for one request at a time - for example,
+	 * via a Responder subclass and Spawners.
+	 *
 	 * @ingroup services
 	 */
 	class XsltService : public Service
 	{
 		Q_OBJECT
-		private:
-			class Private;
-			Private* d;
 		public:
+			XsltService(QObject* parent = 0);
 			virtual ~XsltService();
 		protected:
-			/// Main implementation
-			virtual void finished();
+			virtual void dispatchUncachedRequest(const QByteArray& suffix);
 			/// Constructor.
-			XsltService(const FastCgiQt::Request&, QObject* parent = NULL);
 
 			/** Add an XSLT snippet to the XSLT source string.
 			 *
@@ -74,8 +74,11 @@ namespace FastCgiQt
 			/// Set whether or not to format the output XML nicely.
 			void setPrettyPrintingEnabled(bool);
 
-			/// Stream writer for writing the application-generated XML to.
-			QXmlStreamWriter xmlOut;
+			/// Device to write XML to
+			QIODevice* xmlDevice();
+		private:
+			class Private;
+			Private* d;
 	};
 }
 

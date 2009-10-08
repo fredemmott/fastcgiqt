@@ -13,15 +13,16 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef _FASTCGI_QT_XSLT_SERVICE_PRIVATE_H
-#define _FASTCGI_QT_XSLT_SERVICE_PRIVATE_H
+#pragma once
+
+#include <QBuffer>
 
 namespace FastCgiQt
 {
 	/** @internal
 	 * @brief data members for XsltService.
 	 */
-	class XsltService::Private
+	class XsltService::Private;
 	{
 		public:
 			/// Initialise values
@@ -39,13 +40,11 @@ namespace FastCgiQt
 			QUrl xsltUrl;
 			/// A byte array containing some XSLT.
 			QByteArray xslt;
-			/// A string containing application-generated XML.
-			QString xml;
+			/// A QBuffer containing application-generated XML.
+			QBuffer xml;
 			/// Whether or not to pretty-print (indent) the XML output.
 			bool prettyPrint;
 			/// Variables passed to the XSL-T processor.
 			QVariantMap variables;
 	};
 }
-
-#endif
