@@ -38,35 +38,23 @@ SET(
 )
 
 IF(WITH_SERVICE_SUPPORT)
-	LIST(
-		APPEND
-		PUBLIC_CLASSES
-		Service
-	)
+	LIST(APPEND PUBLIC_CLASSES Service)
 ENDIF()
 
 IF(WITH_SQL_SUPPORT)
-	LIST(
-		APPEND
-		PUBLIC_CLASSES
-		Database
-	)
-	LIST(
-		APPEND
-		PRIVATE_CLASSES
-		DatabaseGuard
-	)
+	LIST(APPEND PUBLIC_CLASSES Database)
+	LIST(APPEND PRIVATE_CLASSES DatabaseGuard)
 ENDIF()
 
 IF(WITH_XSLT_SUPPORT)
 	LIST(APPEND PUBLIC_CLASSES XsltService)
+	LIST(APPEND PRIVATE_CLASSES XsltService_Private)
 	MESSAGE(STATUS "XSLT support is enabled.")
 ELSE()
 	MESSAGE(STATUS "XSLT support is *NOT* enabled.")
 ENDIF()
 
 SET(VERSION 0.0.1)
-
 
 ##### Probably don't want to edit below this line ##### 
 INCLUDE_DIRECTORIES(../include/FastCgiQt ${CMAKE_CURRENT_BINARY_DIR})
