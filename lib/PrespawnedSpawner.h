@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Responder.h"
+#include "AbstractResponder.h"
 
 namespace FastCgiQt
 {

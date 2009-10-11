@@ -41,12 +41,12 @@ namespace FastCgiQt
 	 * @see BlockingResponder for a simple implementation, and @see ThreadedResponder
 	 * for a multi-threaded implementation.
 	 */
-	class Responder : public QObject
+	class AbstractResponder : public QObject
 	{
 		Q_OBJECT;
 		public:
-			Responder(QObject* parent);
-			virtual ~Responder();
+			AbstractResponder(QObject* parent);
+			virtual ~AbstractResponder();
 
 			virtual void respond(SpawnerBase* spawner, const char* responderSlot, FastCgiQt::Request*) = 0;
 		public slots:

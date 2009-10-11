@@ -4,7 +4,7 @@
 namespace FastCgiQt
 {
 	ThreadedResponder::ThreadedResponder(SpawnerBase* spawner, const char* responderSlot, QObject* parent)
-	: Responder(parent)
+	: AbstractResponder(parent)
 	, d(new Private(spawner, responderSlot, this))
 	{
 	}

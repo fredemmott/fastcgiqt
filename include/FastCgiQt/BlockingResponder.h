@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Responder.h"
+#include "AbstractResponder.h"
 
 namespace FastCgiQt
 {
@@ -15,7 +15,7 @@ namespace FastCgiQt
 	 *
 	 *  @see ThreadedResponder for comparison.
 	 */
-	class BlockingResponder : public Responder
+	class BlockingResponder : public AbstractResponder
 	{
 		Q_OBJECT;
 		public:

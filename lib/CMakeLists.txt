@@ -1,12 +1,12 @@
 SET(
 	PUBLIC_CLASSES
+	AbstractResponder
 	BlockingResponder
 	Cache
 	CacheEntry
 	Manager
 	PrefixMapper
 	Request
-	Responder
 	ThreadedResponder
 )
 

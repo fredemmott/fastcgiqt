@@ -1,4 +1,4 @@
-#include "Responder.h"
+#include "AbstractResponder.h"
 
 namespace FastCgiQt
 {
@@ -10,12 +10,12 @@ namespace FastCgiQt
 	{
 	}
 
-	Responder::Responder(QObject* parent)
+	AbstractResponder::AbstractResponder(QObject* parent)
 	: QObject(parent)
 	{
 	}
 	
-	Responder::~Responder()
+	AbstractResponder::~AbstractResponder()
 	{
 	}
 };

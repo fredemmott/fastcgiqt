@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Responder.h"
+#include "AbstractResponder.h"
 
 namespace FastCgiQt
 {
@@ -15,7 +15,7 @@ namespace FastCgiQt
 	 *  - In many cases, will be slow due to threading overhead
 	 *  - Your code must be thread-safe
 	 */
-	class ThreadedResponder : public Responder
+	class ThreadedResponder : public AbstractResponder
 	{
 		Q_OBJECT;
 		public:
