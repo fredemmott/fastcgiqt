@@ -14,7 +14,9 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include "XsltService.h"
-#include "XsltServicePrivate.h"
+#include "XsltService_Private.h"
+
+#include "Request.h"
 
 #include <QBuffer>
 #include <QCoreApplication>
@@ -25,50 +27,64 @@
 
 namespace FastCgiQt
 {
-	XsltService::Private::Private()
+	XsltService::Private::Private(FastCgiQt::Request* request)
 	: source(NoXslt)
 	, prettyPrint(false)
+	, m_request(request)
 	{
+		xml.open(QIODevice::ReadWrite);
 	}
 	
 	XsltService::XsltService(QObject* parent)
 	: Service(parent)
-	, d(new Private())
+	, d(0)
 	{
+	}
+
+	void XsltService::dispatchUncachedRequest(const QByteArray& suffix)
+	{
+		d = new Private(request());
+		Service::dispatchUncachedRequest(suffix);
+		if(!request()->parent())
+		{
+			delete d;
+			d = 0;
+		}
 	}
 	
 	XsltService::~XsltService()
 	{
-		if(d->source != Private::NoXslt)
+		delete d;
+	}
+
+	XsltService::Private::~Private()
+	{
+		if(source != NoXslt)
 		{
-			xmlOut.writeEndDocument();
-	
 			QXmlQuery query(QXmlQuery::XSLT20);
+
+			xml.seek(0);
 	
-			QByteArray data(d->xml.toUtf8());
-			QBuffer buffer(&data);
-			buffer.open(QIODevice::ReadOnly);
-	
-			bool haveSetFocus = query.setFocus(&buffer);
+			bool haveSetFocus = query.setFocus(&xml);
 			Q_ASSERT(haveSetFocus);
 			if(!haveSetFocus)
 			{
-				Service::finished();
 				return;
 			}
 	
-			query.bindVariable("root", QVariant(request.baseUri()));
+			query.bindVariable("root", QVariant::fromValue(m_request->url(RootUrl).toEncoded()));
 			for(
-				QVariantMap::ConstIterator it = d->variables.constBegin();
-				it != d->variables.constEnd();
+				QVariantMap::ConstIterator it = variables.constBegin();
+				it != variables.constEnd();
 				++it
 			)
 			{
 				query.bindVariable(it.key(), it.value());
 			}
 	
-			if(header("content-type").startsWith("text/html"))
+			if(m_request->responseHeader("content-type").startsWith("text/html"))
 			{
+				QTextStream out(m_request);
 				out
 					<< "<!DOCTYPE html "
 					<< "PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' "
@@ -76,10 +92,10 @@ namespace FastCgiQt
 					<< endl;
 			}
 	
-			QBuffer xsltBuffer(&d->xslt);
-			if(Private::FileXslt == d->source)
+			QBuffer xsltBuffer(&xslt);
+			if(Private::FileXslt == source)
 			{
-				query.setQuery(d->xsltUrl);
+				query.setQuery(xsltUrl);
 			}
 			else
 			{
@@ -87,26 +103,22 @@ namespace FastCgiQt
 				query.setQuery(&xsltBuffer);
 			}
 	
-			if(isPrettyPrintingEnabled())
+			if(prettyPrint)
 			{
-				QXmlFormatter formatter(query, out.device());
+				QXmlFormatter formatter(query, m_request);
 				query.evaluateTo(&formatter);
 			}
 			else
 			{
-				query.evaluateTo(out.device());
+				query.evaluateTo(m_request);
 			}
-	
-			out << endl;
 		}
-		else if(!d->xml.isEmpty())
+		else if(!xml.atEnd())
 		{
-			setHeader("content-type", "application/xml");
-			xmlOut.writeEndDocument();
+			m_request->setHeader("content-type", "application/xml");
 	
-			out << d->xml << flush;
+			m_request->write(xml.readAll());
 		}
-		delete d;
 	}
 	
 	void XsltService::setVariable(const QString& name, const QVariant& value)
@@ -129,7 +141,10 @@ namespace FastCgiQt
 	void XsltService::addXsltFile(const QString& fileName)
 	{
 		d->source = Private::StringXslt;
-		d->xslt += readFile(fileName);
+		///@fixme cache
+		QFile file(fileName);
+		file.open(QIODevice::ReadOnly);
+		d->xslt += file.readAll();
 	}
 	
 	void XsltService::setXsltUrl(const QUrl& url)

@@ -15,6 +15,8 @@
 */
 #pragma once
 
+#include "XsltService.h"
+
 #include <QBuffer>
 
 namespace FastCgiQt
@@ -22,11 +24,12 @@ namespace FastCgiQt
 	/** @internal
 	 * @brief data members for XsltService.
 	 */
-	class XsltService::Private;
+	class XsltService::Private
 	{
 		public:
 			/// Initialise values
-			Private();
+			Private(FastCgiQt::Request* request);
+			~Private();
 			/// Enum specifying possible sources of XSLT.
 			enum XsltSource
 			{
@@ -46,5 +49,7 @@ namespace FastCgiQt
 			bool prettyPrint;
 			/// Variables passed to the XSL-T processor.
 			QVariantMap variables;
+		private:
+			FastCgiQt::Request* m_request;
 	};
 }

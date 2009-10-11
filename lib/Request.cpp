@@ -129,13 +129,18 @@ namespace FastCgiQt
 	void Request::setHeader(const QByteArray& name, const QByteArray& value)
 	{
 		Q_ASSERT(!d->haveSentHeaders);
-		d->serverData[name] = value;
+		d->responseHeaders[name] = value;
 	}
 
 	void Request::addHeader(const QByteArray& name, const QByteArray& value)
 	{
 		Q_ASSERT(!d->haveSentHeaders);
-		d->serverData.insertMulti(name, value);
+		d->responseHeaders.insertMulti(name, value);
+	}
+
+	QByteArray Request::responseHeader(const QByteArray& name)
+	{
+		return d->responseHeaders.value(name);
 	}
 
 	QHash<QByteArray, QByteArray> Request::rawValues(DataSource source) const

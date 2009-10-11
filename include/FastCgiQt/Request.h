@@ -50,6 +50,7 @@ namespace FastCgiQt
 
 			void setHeader(const QByteArray& name, const QByteArray& value);
 			void addHeader(const QByteArray& name, const QByteArray& value);
+			QByteArray responseHeader(const QByteArray& name);
 			QList<QNetworkCookie> cookies() const;
 			void sendCookie(const QNetworkCookie&);
 
