@@ -75,7 +75,7 @@ namespace FastCgiQt
 			void setPrettyPrintingEnabled(bool);
 
 			/// Device to write XML to
-			QIODevice* xmlDevice();
+			QIODevice* xmlDevice() const;
 		private:
 			class Private;
 			Private* d;

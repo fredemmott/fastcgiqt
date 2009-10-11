@@ -2,6 +2,7 @@
 
 #include "Request.h"
 
+#include <QDebug>
 #include <QTextStream>
 #include <QXmlFormatter>
 #include <QXmlQuery>
@@ -23,6 +24,11 @@ namespace FastCgiQt
 			QXmlQuery query(QXmlQuery::XSLT20);
 
 			xml.seek(0);
+			/*
+			qDebug() << "XML:" << xml.readAll();
+			xml.seek(0);
+			qDebug() << "XSLT:" << xslt;
+			*/
 	
 			bool haveSetFocus = query.setFocus(&xml);
 			Q_ASSERT(haveSetFocus);
@@ -78,5 +84,6 @@ namespace FastCgiQt
 	
 			m_request->write(xml.readAll());
 		}
+		m_request->write("\n");
 	}
 };

@@ -140,6 +140,9 @@ namespace FastCgiQt
 	{
 		const QString urlFragment = QUrl::fromPercentEncoding(suffix.mid(1));
 		const UrlMap urlMap = this->urlMap();
+		const char* slot = 0;
+		QStringList parameters;
+
 		for(
 			QList<QPair<QString, const char*> >::ConstIterator it = urlMap.constBegin();
 			it != urlMap.constEnd();
@@ -151,18 +154,34 @@ namespace FastCgiQt
 			{
 				QStringList parameters(re.capturedTexts());
 				parameters.takeFirst();
-				d->invokeMethod(
-					this,
-					it->second,
-					parameters
-				);
-				return;
+				slot = it->second;
+				break;
+			}
+			else if(it->first.isNull() && !slot)
+			{
+				slot = it->second;
 			}
 		}
-		///@todo Add some kind of interface for hooking 404s ?
-		request()->setHeader("STATUS", "404 Not Found");
-		QTextStream out(request());
-		out << "<h1>404 Not Found</h1>";
+		if(slot)
+		{
+			d->invokeMethod(
+				this,
+				slot,
+				parameters
+			);
+			if(!request()->parent())
+			{
+				d->dispatchingRequest = false;
+			}
+		}
+		else
+		{
+			///@todo Add some kind of interface for hooking 404s ?
+			request()->setHeader("STATUS", "404 Not Found");
+			QTextStream out(request());
+			out << "<h1>404 Not Found</h1>";
+			d->dispatchingRequest = false;
+		}
 	}
 
 	void Service::Private::invokeMethod(

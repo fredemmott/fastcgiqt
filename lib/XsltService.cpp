@@ -69,6 +69,7 @@ namespace FastCgiQt
 		///@fixme cache
 		QFile file(fileName);
 		file.open(QIODevice::ReadOnly);
+		Q_ASSERT(file.isOpen());
 		d->xslt += file.readAll();
 	}
 	
@@ -93,5 +94,10 @@ namespace FastCgiQt
 	bool XsltService::isPrettyPrintingEnabled() const
 	{
 		return d->prettyPrint;
+	}
+
+	QIODevice* XsltService::xmlDevice() const
+	{
+		return &d->xml;
 	}
 }
