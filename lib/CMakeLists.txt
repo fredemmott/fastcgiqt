@@ -24,6 +24,7 @@ SET(
 	FileCache
 	FileDependentCache
 	Manager_Private
+	MimePartDevice
 	PrefixMapper_Private
 	PrespawnedSpawner
 	ProxyClientIODevice
