@@ -24,7 +24,10 @@ SET(
 	FileCache
 	FileDependentCache
 	Manager_Private
-	MimePartDevice
+	MimeMultipartStreamReader
+	MimeMultipartStreamReader_Private
+	MimePartIODevice
+	MimePartIODevice_Private
 	PrefixMapper_Private
 	PrespawnedSpawner
 	ProxyClientIODevice
