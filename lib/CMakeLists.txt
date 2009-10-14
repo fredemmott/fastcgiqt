@@ -12,6 +12,8 @@ SET(
 
 SET(
 	PRIVATE_CLASSES
+	Base64Decoder
+	Base64Decoder_Private
 	BlockingResponder_Private
 	CacheBackend
 	CacheEntryPrivate
