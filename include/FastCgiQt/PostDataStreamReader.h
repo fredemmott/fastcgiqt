@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Request.h"
+
 class QByteArray;
 class QIODevice;
 namespace FastCgiQt

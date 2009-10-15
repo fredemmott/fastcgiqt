@@ -30,6 +30,7 @@ SET(
 	MimeMultipartStreamReader_Private
 	MimePartIODevice
 	MimePartIODevice_Private
+	PostDataStreamReaderBackend
 	PrefixMapper_Private
 	PrespawnedSpawner
 	ProxyClientIODevice
@@ -41,6 +42,7 @@ SET(
 	ThreadedResponder_Private
 	ThreadPool
 	ThreadPool_Worker
+	UrlEncodedPostDataStreamReader
 )
 
 IF(WITH_SERVICE_SUPPORT)
