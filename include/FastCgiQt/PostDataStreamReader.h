@@ -25,7 +25,7 @@ namespace FastCgiQt
 
 			bool atEnd() const;
 			TokenType tokenType() const;
-			TokenType readNext() const;
+			TokenType readNext();
 
 			/** The name of the variable.
 			 *

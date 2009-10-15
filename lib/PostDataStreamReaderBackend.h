@@ -2,6 +2,9 @@
 
 #include "PostDataStreamReader.h"
 
+#include <QIODevice>
+#include <QPointer>
+
 namespace FastCgiQt
 {
 	class PostDataStreamReaderBackend
@@ -12,12 +15,19 @@ namespace FastCgiQt
 			virtual bool atEnd() const;
 			QIODevice* source() const;
 
-			virtual PostDataStreamReader::TokenType tokenType() const = 0;
-			virtual PostDataStreamReader::TokenType readNext() const = 0;
-			virtual QString variableName() const = 0;
-			virtual QIODevice* content() const = 0;
-			virtual QString filename() const = 0;
-			virtual QString mimeType() const = 0;
+			PostDataStreamReader::TokenType tokenType() const;
+			QString variableName() const;
+			QIODevice* content() const;
+			QString filename() const;
+			QString mimeType() const;
+
+			virtual PostDataStreamReader::TokenType readNext() = 0;
+		protected:
+			PostDataStreamReader::TokenType m_tokenType;
+			QString m_variableName;
+			QPointer<QIODevice> m_content;
+			QString m_filename;
+			QString m_mimetype;
 		private:
 			QIODevice* m_source;
 	};

@@ -2,7 +2,7 @@
 
 namespace FastCgiQt
 {
-	UrlEncodedPostDataStreamReader(QIODevice* source)
+	UrlEncodedPostDataStreamReader::UrlEncodedPostDataStreamReader(QIODevice* source)
 	: PostDataStreamReaderBackend(source)
 	{
 	}
@@ -10,5 +10,11 @@ namespace FastCgiQt
 	UrlEncodedPostDataStreamReader::~UrlEncodedPostDataStreamReader()
 	{
 		delete m_content;
+	}
+
+	PostDataStreamReader::TokenType UrlEncodedPostDataStreamReader::readNext()
+	{
+		///@todo unimplemented
+		return m_tokenType;
 	}
 };
