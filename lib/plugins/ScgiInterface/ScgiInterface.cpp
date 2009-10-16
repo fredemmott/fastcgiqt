@@ -19,6 +19,7 @@
 #include "Settings.h"
 
 #include <QStringList>
+#include <QTextStream>
 #include <QTcpServer>
 
 namespace FastCgiQt
