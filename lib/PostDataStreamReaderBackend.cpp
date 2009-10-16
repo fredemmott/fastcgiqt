@@ -3,7 +3,8 @@
 namespace FastCgiQt
 {
 	PostDataStreamReaderBackend::PostDataStreamReaderBackend(QIODevice* source)
-	: m_source(source)
+	: m_tokenType(PostDataStreamReader::NoToken)
+	, m_source(source)
 	{
 	}
 

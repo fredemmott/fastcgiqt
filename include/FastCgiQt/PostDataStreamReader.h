@@ -33,13 +33,19 @@ namespace FastCgiQt
 			 */
 			QString variableName() const;
 
-			/** Contents of the current variable/file.
+			/** The value of a variable.
+			 *
+			 * Valid for VariableValue; for FielValue, see fileContents
+			 */
+			QString variableValue() const;
+
+			/** Contents of the current file.
 			 *
 			 * This is a streaming device.
 			 *
 			 * Valid for VariableValue and FileValue.
 			 */
-			QIODevice* content() const;
+			QIODevice* fileContents() const;
 
 			/** Name of the file being uploaded.
 			 *
