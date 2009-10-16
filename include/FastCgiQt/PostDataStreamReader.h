@@ -53,7 +53,7 @@ namespace FastCgiQt
 			 *
 			 * Valid for FileHeader.
 			 */
-			QString filename() const;
+			QString fileName() const;
 			/** MIME type of the file being uploaded.
 			 *
 			 * This is provided by the user-agent.

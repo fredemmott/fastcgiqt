@@ -27,8 +27,23 @@ namespace FastCgiQt
 		return m_variableName;
 	}
 
+	QString PostDataStreamReaderBackend::variableValue() const
+	{
+		return m_variableValue;
+	}
+
+	QString PostDataStreamReaderBackend::fileName() const
+	{
+		return m_filename;
+	}
+
 	QIODevice* PostDataStreamReaderBackend::source() const
 	{
 		return m_source;
+	}
+
+	QIODevice* PostDataStreamReaderBackend::fileContents() const
+	{
+		return m_content;
 	}
 };

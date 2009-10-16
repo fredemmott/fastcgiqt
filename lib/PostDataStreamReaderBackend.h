@@ -18,8 +18,8 @@ namespace FastCgiQt
 			PostDataStreamReader::TokenType tokenType() const;
 			QString variableName() const;
 			QString variableValue() const;
-			QIODevice* content() const;
-			QString filename() const;
+			QIODevice* fileContents() const;
+			QString fileName() const;
 			QString mimeType() const;
 
 			virtual PostDataStreamReader::TokenType readNext() = 0;
