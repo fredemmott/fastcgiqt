@@ -99,10 +99,18 @@ namespace FastCgiQt
 				{
 					Q_ASSERT(m_buffer.at(0) == '=');
 					const int end = readUntil('&');
-					const int length = end - 1;
-					m_variableValue = QUrl::fromPercentEncoding(m_buffer.mid(1, length));
-					m_buffer = m_buffer.mid(end + 1);
-					// Remaining: foo=bar[&...]
+					if(end == -1)
+					{
+						m_variableValue = QUrl::fromPercentEncoding(m_buffer.mid(1));
+						m_buffer.clear();
+					}
+					else
+					{
+						const int length = end - 1;
+						m_variableValue = QUrl::fromPercentEncoding(m_buffer.mid(1, length));
+						m_buffer = m_buffer.mid(end + 1);
+						// Remaining: foo=bar[&...]
+					}
 				}
 				m_tokenType = PostDataStreamReader::VariableValue;
 				break;

@@ -52,6 +52,11 @@ namespace FastCgiQt
 		);
 	}
 
+	bool HttpRequest::atEnd() const
+	{
+		return QIODevice::atEnd() && m_socket->atEnd();
+	}
+
 	HttpRequest::~HttpRequest()
 	{
 		m_socket->flush();

@@ -37,11 +37,25 @@ namespace FastCgiQt
 		);
 	}
 
+	bool Request::atEnd() const
+	{
+		const bool atEnd = d->device->atEnd() && QIODevice::atEnd();
+		return atEnd;
+	}
+
+	bool Request::isSequential() const
+	{
+		return true;
+	}
+
 	qint64 Request::readData(char* data, qint64 maxSize)
 	{
 		Q_ASSERT(d->postDataMode == Private::UnknownPostData || d->postDataMode == Private::RawPostData);
 		d->postDataMode = Private::RawPostData;
-		return d->device->read(data, maxSize);
+		Q_ASSERT(d->device->isOpen());
+		Q_ASSERT(d->device->isReadable());
+		const qint64 bytesRead = d->device->read(data, maxSize);
+		return bytesRead;
 	}
 
 	qint64 Request::writeData(const char* data, qint64 maxSize)
