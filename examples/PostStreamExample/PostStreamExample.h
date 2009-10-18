@@ -14,12 +14,19 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include <FastCgiQt/Request.h>
+#include <FastCgiQt/PostDataStreamReader.h>
 
 class PostStreamExample : public QObject
 {
 	Q_OBJECT;
 	public:
 		PostStreamExample(QObject* parent = 0);
+		~PostStreamExample();
 	public slots:
 		void respond(FastCgiQt::Request* request);
+	private slots:
+		void readNext();
+	private:
+		FastCgiQt::Request* m_request;
+		FastCgiQt::PostDataStreamReader* m_streamReader;
 };
