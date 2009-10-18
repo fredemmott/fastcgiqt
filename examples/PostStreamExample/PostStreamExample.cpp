@@ -40,7 +40,7 @@ void PostStreamExample::respond(FastCgiQt::Request* request)
 	QTextStream out(request);
 	out << "<h1>PostStreamExample</h1>" << endl;
 	m_request = request;
-	request->setParent(this);
+	request->setParent(this); // Take ownership of the request; this means that it's up to this object to delete itself (and the request)
 
 	out << QString(
 		"<form action='%1' method='post'>\n"
@@ -60,14 +60,14 @@ void PostStreamExample::respond(FastCgiQt::Request* request)
 		this,
 		SLOT(readNext())
 	);
-	out.flush();
+	out.flush(); // Flush the stream, otherwise, we might get some output created by readNext() above some of the output already created
 	readNext();
 }
 
 void PostStreamExample::readNext()
 {
 	QTextStream out(m_request);
-	PostDataStreamReader& reader = *m_streamReader;
+	PostDataStreamReader& reader = *m_streamReader; // convenience
 
 	reader.readNext();
 	switch(reader.tokenType())
@@ -84,10 +84,10 @@ void PostStreamExample::readNext()
 			break;
 		case PostDataStreamReader::EndData:
 			out << "</dl>" << endl;
-			deleteLater();
-			return;
+			deleteLater(); // Delete this object (and the request) from the Qt event loop, finishing the response
+			return; // Don't recurse
 		case PostDataStreamReader::Invalid:
-			return;
+			return; // Don't recurse
 		default:
 			break;
 	}
