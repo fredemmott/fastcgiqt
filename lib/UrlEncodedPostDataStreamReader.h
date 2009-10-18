@@ -13,5 +13,6 @@ namespace FastCgiQt
 		private:
 			int readUntil(char character, char alternative = 0);
 			QByteArray m_buffer;
+			qint64 m_bytesRead;
 	};
 };

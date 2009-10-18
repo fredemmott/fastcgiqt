@@ -4,6 +4,7 @@ namespace FastCgiQt
 {
 	PostDataStreamReaderBackend::PostDataStreamReaderBackend(QIODevice* source)
 	: m_tokenType(PostDataStreamReader::NoToken)
+	, m_lastValidTokenType(PostDataStreamReader::NoToken)
 	, m_source(source)
 	{
 	}
@@ -11,7 +12,7 @@ namespace FastCgiQt
 	PostDataStreamReaderBackend::~PostDataStreamReaderBackend()
 	{
 	}
-	
+
 	bool PostDataStreamReaderBackend::atEnd() const
 	{
 		return source()->atEnd() && (tokenType() == PostDataStreamReader::Invalid || tokenType() == PostDataStreamReader::EndData);

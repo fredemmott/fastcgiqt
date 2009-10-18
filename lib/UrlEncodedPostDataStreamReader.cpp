@@ -1,9 +1,12 @@
 #include "UrlEncodedPostDataStreamReader.h"
 
+#include <QDebug>
+
 namespace FastCgiQt
 {
 	UrlEncodedPostDataStreamReader::UrlEncodedPostDataStreamReader(QIODevice* source)
 	: PostDataStreamReaderBackend(source)
+	, m_bytesRead(0)
 	{
 	}
 
@@ -19,14 +22,17 @@ namespace FastCgiQt
 		{
 			return initialIndex;
 		}
+		Q_ASSERT(source()->isOpen());
+		Q_ASSERT(source()->isReadable());
 		while(!source()->atEnd())
 		{
 			char next;
 			if(!source()->getChar(&next))
 			{
-				return -1;
+				break;
 			}
-			m_buffer.append(character);
+			++m_bytesRead;
+			m_buffer.append(next);
 			if(next == character || (alternative && (next == alternative)))
 			{
 				return m_buffer.length() - 1;
@@ -46,6 +52,11 @@ namespace FastCgiQt
 		switch(tokenType())
 		{
 			case PostDataStreamReader::Invalid:
+				if(m_lastValidTokenType != PostDataStreamReader::Invalid)
+				{
+					m_tokenType = m_lastValidTokenType;
+					return readNext();
+				}
 				break;
 			case PostDataStreamReader::NoToken:
 				m_tokenType = PostDataStreamReader::StartData;
@@ -57,13 +68,23 @@ namespace FastCgiQt
 					const int count = readUntil('=', '&');
 					if(count == -1 && !source()->atEnd())
 					{
+						// Syntax error, can't continue
+						m_lastValidTokenType = PostDataStreamReader::Invalid;
 						m_tokenType = PostDataStreamReader::Invalid;
 						break;
 					}
 					if(m_buffer.isEmpty())
 					{
 						Q_ASSERT(source()->atEnd());
-						m_tokenType = PostDataStreamReader::EndData;
+						if(m_bytesRead == source()->size())
+						{
+							m_tokenType = PostDataStreamReader::EndData;
+						}
+						else
+						{
+							m_lastValidTokenType = m_tokenType;
+							m_tokenType = PostDataStreamReader::Invalid;
+						}
 						break;
 					}
 					m_variableName = QUrl::fromPercentEncoding(m_buffer.left(count));
@@ -116,6 +137,7 @@ namespace FastCgiQt
 				break;
 			default:
 				// EndData: fine; FileHeader/FileValue: uh... what?
+				m_lastValidTokenType = PostDataStreamReader::Invalid;
 				m_tokenType = PostDataStreamReader::Invalid;
 				break;
 

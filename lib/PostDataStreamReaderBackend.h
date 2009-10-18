@@ -25,6 +25,7 @@ namespace FastCgiQt
 			virtual PostDataStreamReader::TokenType readNext() = 0;
 		protected:
 			PostDataStreamReader::TokenType m_tokenType;
+			PostDataStreamReader::TokenType m_lastValidTokenType;
 			QString m_variableName;
 			QString m_variableValue;
 			QPointer<QIODevice> m_content;

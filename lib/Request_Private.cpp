@@ -59,6 +59,7 @@ namespace FastCgiQt
 
 	void Request::Private::loadPostVariables()
 	{
+		qDebug() << Q_FUNC_INFO;
 		switch(postDataMode)
 		{
 			case RawPostData:
