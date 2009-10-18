@@ -37,6 +37,11 @@ namespace FastCgiQt
 		return m_filename;
 	}
 
+	QString PostDataStreamReaderBackend::mimeType() const
+	{
+		return m_mimeType;
+	}
+
 	QIODevice* PostDataStreamReaderBackend::source() const
 	{
 		return m_source;

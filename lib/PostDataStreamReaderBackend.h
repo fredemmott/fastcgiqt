@@ -29,7 +29,7 @@ namespace FastCgiQt
 			QString m_variableValue;
 			QPointer<QIODevice> m_content;
 			QString m_filename;
-			QString m_mimetype;
+			QString m_mimeType;
 		private:
 			QIODevice* m_source;
 	};
