@@ -20,6 +20,16 @@
 #include <QString>
 #include <QTextStream>
 
+/* WARNING
+ * -------
+ * 
+ * This creates the output HTML in an incredibly insecure manner, and is vulnerable to XSS.
+ *
+ * This is demonstrating the stream reader only, not good ways to output HTML.
+ *
+ * See XsltService for a nicer output method.
+ */
+
 using FastCgiQt::PostDataStreamReader;
 
 PostStreamExample::PostStreamExample(QObject* parent)
