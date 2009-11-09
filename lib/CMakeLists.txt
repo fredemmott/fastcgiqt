@@ -95,7 +95,7 @@ SET_TARGET_PROPERTIES(
 	PROPERTIES
 	VERSION "${VERSION}"
 	SOVERSION "0"
-	SUFFIX "0" # make libFastCgiQt0.so, not libFastQt.so
+	SUFFIX "0.so" # make libFastCgiQt0.so, not libFastCgiQt.so
 )
 
 INSTALL(
