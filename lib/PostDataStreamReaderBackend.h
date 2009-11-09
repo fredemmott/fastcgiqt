@@ -17,17 +17,20 @@ namespace FastCgiQt
 
 			PostDataStreamReader::TokenType tokenType() const;
 			QString variableName() const;
-			QIODevice* content() const;
-			QString filename() const;
+			QString variableValue() const;
+			QIODevice* fileContents() const;
+			QString fileName() const;
 			QString mimeType() const;
 
 			virtual PostDataStreamReader::TokenType readNext() = 0;
 		protected:
 			PostDataStreamReader::TokenType m_tokenType;
+			PostDataStreamReader::TokenType m_lastValidTokenType;
 			QString m_variableName;
+			QString m_variableValue;
 			QPointer<QIODevice> m_content;
 			QString m_filename;
-			QString m_mimetype;
+			QString m_mimeType;
 		private:
 			QIODevice* m_source;
 	};

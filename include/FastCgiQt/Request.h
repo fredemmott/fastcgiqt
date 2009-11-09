@@ -66,6 +66,8 @@ namespace FastCgiQt
 			QUrl url(UrlPart) const;
 
 			// QIODevice overrides start here
+			virtual bool isSequential() const;
+			virtual bool atEnd() const;
 
 			/** Amount of POST data.
 			 *

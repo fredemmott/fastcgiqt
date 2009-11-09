@@ -5,6 +5,7 @@ SET(
 	Cache
 	CacheEntry
 	Manager
+	PostDataStreamReader
 	PrefixMapper
 	Request
 	ThreadedResponder

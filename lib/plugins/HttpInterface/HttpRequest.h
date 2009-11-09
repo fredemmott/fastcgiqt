@@ -30,6 +30,7 @@ namespace FastCgiQt
 			HttpRequest(const HeaderMap& standardRequestHeaders, const HeaderMap& standardResponseHeaders, const QStringList& staticDirectories, QTcpSocket* socket, QObject* parent);
 			~HttpRequest();
 			HeaderMap requestHeaders() const;
+			virtual bool atEnd() const;
 		signals:
 			void gotHeaders(HttpRequest*);
 		protected:

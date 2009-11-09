@@ -52,6 +52,11 @@ namespace FastCgiQt
 		);
 	}
 
+	bool HttpRequest::atEnd() const
+	{
+		return QIODevice::atEnd() && m_socket->atEnd();
+	}
+
 	HttpRequest::~HttpRequest()
 	{
 		m_socket->flush();
@@ -152,7 +157,8 @@ namespace FastCgiQt
 	qint64 HttpRequest::readData(char* data, qint64 maxSize)
 	{
 		Q_ASSERT(m_requestState == WaitingForRequestBody);
-		return m_socket->read(data, maxSize);
+		const qint64 bytesRead = m_socket->read(data, maxSize);
+		return bytesRead;
 	}
 
 	qint64 HttpRequest::writeData(const char* data, qint64 maxSize)
