@@ -17,7 +17,7 @@
 // WIP for new internal API
 #include "ClientIODevice.h"
 
-class QLocalSocket;
+class QTcpSocket;
 
 namespace FastCgiQt
 {
@@ -25,7 +25,7 @@ namespace FastCgiQt
 	{
 		Q_OBJECT;
 		public:
-			FastCgiStream(const HeaderMap& headers, quint16 requestId, QLocalSocket* output, QObject* parent);
+			FastCgiStream(const HeaderMap& headers, quint16 requestId, QTcpSocket* output, QObject* parent);
 			~FastCgiStream();
 
 			bool waitForBytesWritten(int msec);
@@ -47,6 +47,6 @@ namespace FastCgiQt
 			QByteArray m_requestBuffer;
 			qint64 m_requestBufferReadPosition;
 			quint16 m_requestId;
-			QLocalSocket* m_socket;
+			QTcpSocket* m_socket;
 	};
 }

@@ -24,6 +24,7 @@ class QSocketNotifier;
 namespace FastCgiQt
 {
 	class FastCgiSocketManager;
+	class SocketServer;
 	/** @internal
 	 * @brief Class managing new FastCGI connections.
 	 *
@@ -45,30 +46,10 @@ namespace FastCgiQt
 		protected:
 			bool startBackend(const QString& backend);
 		private slots:
-			/// Request that the application shuts down.
-			void shutdown();
-			/// Listen for a new FastCGI connection.
-			void listen();
+			/// Accept a new FastCGI connection.
+			void acceptNewConnection();
 		private:
-			/// Lock the socket with the specified socket id.
-			void lockSocket(int socket);
-			/// Unlock the socket with the specified socket id.
-			void releaseSocket(int socket);
-
-			/// Socket handle
-			int m_socket;
-
-			/** Notifier used to watch for new connections to the
-			 * FastCGI socket.
-			 */
-			QSocketNotifier* m_socketNotifier;
-
-			/** List of IP addresses that FastCGI-capable web
-			 * servers may connect to this process from.
-			 *
-			 * @todo use this.
-			 */
-			QStringList m_allowedAddresses;
+			SocketServer* m_socketServer;
 
 	};
 };

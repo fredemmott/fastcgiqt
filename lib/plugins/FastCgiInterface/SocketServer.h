@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QAbstractSocket>
+#include <QTcpSocket>
 #include <QFlags>
 
 namespace FastCgiQt
@@ -21,13 +21,18 @@ namespace FastCgiQt
 			SocketServer(QObject* parent = 0);
 			~SocketServer();
 
-			bool listen(SocketType type, const QString& parameter);
+			SocketType socketType() const;
+			
+			bool isFinished() const;
 
-			bool isListening() const;
+			bool listen(SocketType type, quint16 parameter = 0);
 
-			void close();
-
-			QAbstractSocket* nextPendingConnection();
+			/*
+			 * 1. QAbstractSocket isn't abstract enough
+			 * 2. QLocalSocket has entirely different semantics on Windows
+			 * 3. QTcpSocket 'WorksForMe' on Linux with both socket types
+			 */
+			QTcpSocket* nextPendingConnection();
 		signals:
 			void newConnection();
 		private:
