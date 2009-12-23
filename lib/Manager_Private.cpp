@@ -86,7 +86,14 @@ namespace FastCgiQt
 		{
 			// Not a FastCGI application
 			QTextStream cerr(stderr);
-			cerr << "This application must be ran as a FastCGI application (eg from Apache via mod_fastcgi)." << endl;
+			if(!m_interface)
+			{
+				cerr << "Could not find an implementation for backend " << interface <<endl;
+			}
+			else
+			{
+				cerr << "Failed to initialize backend " << interface << endl;
+			}
 			cerr << "Perhaps you wanted --configure?" << endl;
 			exit(1);
 			return;
