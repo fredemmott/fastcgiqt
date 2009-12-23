@@ -1,3 +1,10 @@
+/** Original implementation supporting both UNIX and TCP sockets.
+ *
+ * The UNIX socket implementation is based on the behaviour defined in the FastCGI specification, and also
+ * includes optional support for logging via syslog, as defined in the specification.
+ *
+ * This implementation is *NOT* portable.
+ */
 #include "SocketServer.h"
 
 #include "fastcgi.h"
