@@ -1,7 +1,6 @@
 SET(
 	CLASSES
 	BeginRequestRecord
-	DebugHandler
 	EndRequestRecord
 	FastCgiInterface
 	FastCgiInterfaceFactory
@@ -15,19 +14,32 @@ SET(
 )
 
 SET(SOURCES)
-SET(HEADERS)
+SET(HEADERS SocketServer.h)
+
+IF(UNIX)
+	OPTION(WITH_UNIX_SOCKET_SUPPORT "Enable support for FastCGI over unix sockets" ON)
+	IF(WITH_UNIX_SOCKET_SUPPORT)
+		OPTION(WITH_SYSLOG_SUPPORT "Use syslog for debug/error messages with FCGI-UNIX" OFF)
+		MESSAGE(STATUS "FCGI-UNIX (FastCGI over unix sockets) is enabled.")
+	ELSE()
+		MESSAGE(STATUS "FCGI-UNIX (FastCGI over unix sockets) is *NOT* enabled.")
+	ENDIF()
+	IF(WITH_SYSLOG_SUPPORT)
+		LIST(APPEND CLASSES DebugHandler)
+		ADD_DEFINITIONS(-DWITH_SYSLOG_SUPPORT)
+		MESSAGE(STATUS "FCGI-UNIX debugging via syslog is enabled.")
+	ELSE()
+		MESSAGE(STATUS "FCGI-UNIX debugging via syslog is *NOT* enabled.")
+	ENDIF()
+ELSE()
+	SET(WITH_UNIX_SOCKET_SUPPORT OFF)
+ENDIF()
 
 FOREACH(CLASS ${CLASSES})
 	LIST(APPEND SOURCES ${CLASS}.cpp)
 	LIST(APPEND HEADERS ${CLASS}.h)
 ENDFOREACH()
 
-LIST(APPEND HEADERS SocketServer.h)
-IF(UNIX)
-	OPTION(WITH_UNIX_SOCKET_SUPPORT "Enable support for FastCGI over unix sockets" ON)
-ELSE()
-	SET(WITH_UNIX_SOCKET_SUPPORT OFF)
-ENDIF()
 IF(WITH_UNIX_SOCKET_SUPPORT)
 	LIST(APPEND SOURCES SocketServer_unix.cpp)
 ELSE()

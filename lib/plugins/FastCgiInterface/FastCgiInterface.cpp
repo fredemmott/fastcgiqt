@@ -15,12 +15,15 @@
 */
 #include "FastCgiInterface.h"
 
-#include "DebugHandler.h"
 #include "Settings.h"
 #include "FastCgiSocketManager.h"
 #include "SocketServer.h"
 
 #include "fastcgi.h"
+
+#ifdef WITH_SYSLOG_SUPPORT
+#include "DebugHandler.h"
+#endif
 
 namespace FastCgiQt
 {
@@ -82,7 +85,9 @@ namespace FastCgiQt
 		if(backend == "FCGI-UNIX")
 		{
 			socketType = SocketServer::UnixSocket;
+#ifdef WITH_SYSLOG_SUPPORT
 			new DebugHandler(this);
+#endif
 		}
 
 		Settings settings;
