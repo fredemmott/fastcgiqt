@@ -21,7 +21,7 @@
 
 #include <QHash>
 
-class QLocalSocket;
+class QTcpSocket;
 
 namespace FastCgiQt
 {
@@ -42,7 +42,7 @@ namespace FastCgiQt
 			 * @param socketId is the file descriptor for a socket.
 			 * @param parent is a parent object.
 			 */
-			FastCgiSocketManager(int socketId, QObject* parent = NULL);
+			FastCgiSocketManager(QTcpSocket* socket, QObject* parent = NULL);
 			/// Destroy this socket manager.
 			~FastCgiSocketManager();
 		private:
@@ -82,7 +82,7 @@ namespace FastCgiQt
 			/// The header of the current record.
 			RecordHeader m_recordHeader;
 			/// The socket this FastCgiSocketManager managers.
-			QLocalSocket* m_socket;
+			QTcpSocket* m_socket;
 
 			// FastCGI spec says request IDs will be tightly packed near zero.
 

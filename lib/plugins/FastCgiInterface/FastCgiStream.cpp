@@ -22,14 +22,14 @@
 #include "memcpy_safe.h"
 
 #include <QDebug>
-#include <QLocalSocket>
+#include <QTcpSocket>
 
 #include "fastcgi.h"
 
 
 namespace FastCgiQt
 {
-	FastCgiStream::FastCgiStream(const HeaderMap& headers, quint16 requestId, QLocalSocket* socket, QObject* parent)
+	FastCgiStream::FastCgiStream(const HeaderMap& headers, quint16 requestId, QTcpSocket* socket, QObject* parent)
 	: ClientIODevice(parent)
 	, m_requestHeaders(headers)
 	, m_requestBufferReadPosition(0)
@@ -94,11 +94,11 @@ namespace FastCgiQt
 				QByteArray(&data[offset], toWrite)
 			);
 			qint64 wrote = m_socket->write(record);
-			QLocalSocket* socket = qobject_cast<QLocalSocket*>(m_socket);
+			QTcpSocket* socket = qobject_cast<QTcpSocket*>(m_socket);
 			Q_ASSERT(socket);
 			if(!waitForBytesWritten(1000))
 			{
-				if(socket->state() != QLocalSocket::ConnectedState)
+				if(socket->state() != QTcpSocket::ConnectedState)
 				{
 					return -1;
 				}
@@ -117,9 +117,9 @@ namespace FastCgiQt
 
 	bool FastCgiStream::waitForBytesWritten(int msecs)
 	{
-		QLocalSocket* socket = qobject_cast<QLocalSocket*>(m_socket);
+		QTcpSocket* socket = qobject_cast<QTcpSocket*>(m_socket);
 		Q_ASSERT(socket);
-		if(socket->state() != QLocalSocket::ConnectedState)
+		if(socket->state() != QTcpSocket::ConnectedState)
 		{
 			return false;
 		}

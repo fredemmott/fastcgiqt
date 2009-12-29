@@ -25,19 +25,19 @@
 
 #include "fastcgi.h"
 
+#include <QTcpSocket>
 #include <QCoreApplication>
 #include <QDebug>
-#include <QLocalSocket>
 #include <QSocketNotifier>
 #include <QTimer>
 
 namespace FastCgiQt
 {
-	FastCgiSocketManager::FastCgiSocketManager(int socketId, QObject* parent)
+	FastCgiSocketManager::FastCgiSocketManager(QTcpSocket* socket, QObject* parent)
 	: CommunicationInterface::Worker(parent)
 	{
-		m_socket = new QLocalSocket(this);
-		m_socket->setSocketDescriptor(socketId , QLocalSocket::ConnectedState, QIODevice::ReadWrite);
+		m_socket = socket;
+		m_socket->setParent(this);
 
 		connect(
 			m_socket,

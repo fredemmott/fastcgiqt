@@ -15,36 +15,37 @@
 */
 #include "FastCgiInterface.h"
 
-#include "DebugHandler.h"
 #include "Settings.h"
 #include "FastCgiSocketManager.h"
+#include "SocketServer.h"
 
 #include "fastcgi.h"
 
-#include <QtEndian>
-#include <QFileSystemWatcher>
-#include <QHostAddress>
-#include <QSocketNotifier>
-#include <QTextStream>
-#include <QTimer>
-
-#include <errno.h>
-#include <sys/file.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/ip.h>
+#ifdef WITH_SYSLOG_SUPPORT
+#include "DebugHandler.h"
+#endif
 
 namespace FastCgiQt
 {
 	FastCgiInterface::FastCgiInterface(QObject* parent)
 	: CommunicationInterface(parent)
-	, m_socketNotifier(0)
+	, m_socketServer(new SocketServer(this))
 	{
+		connect(
+			m_socketServer,
+			SIGNAL(newConnection()),
+			this,
+			SLOT(acceptNewConnection())
+		);
 	}
 
 	QStringList FastCgiInterface::backends() const
 	{
-		return QStringList() << "FCGI-UNIX" << "FCGI-TCP";
+		QStringList stringOutput;
+		SocketServer::SocketTypes supported = SocketServer::supportedSocketTypes();
+		if(supported.testFlag(SocketServer::UnixSocket)) stringOutput << "FCGI-UNIX";
+		if(supported.testFlag(SocketServer::TcpSocket)) stringOutput << "FCGI-TCP";
+		return stringOutput;
 	}
 
 	void FastCgiInterface::configureHttpd(const QString& backend)
@@ -78,115 +79,45 @@ namespace FastCgiQt
 
 	bool FastCgiInterface::startBackend(const QString& backend)
 	{
+		quint16 port = 0;
+		SocketServer::SocketType socketType;
+
 		if(backend == "FCGI-UNIX")
 		{
+			socketType = SocketServer::UnixSocket;
+#ifdef WITH_SYSLOG_SUPPORT
 			new DebugHandler(this);
+#endif
 		}
-		// Check we're running as a FastCGI application
-		sockaddr_un sa;
-		socklen_t len = sizeof(sa);
-		::memset(&sa, 0, len);
-		m_socket = FCGI_LISTENSOCK_FILENO;
 
-		// The recommended way of telling if we're running as fastcgi or not.
-		int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
-		if(error == -1 && errno != ENOTCONN)
+		Settings settings;
+		if(backend == "FCGI-TCP")
 		{
-			Settings settings;
-			if(backend == "FCGI-TCP")
-			{
-				m_socket = ::socket(AF_INET, SOCK_STREAM, 0);
-				in_port_t port = settings.value("FastCGI/portNumber", 0).value<in_port_t>();
-				if(port == 0)
-				{
-					qFatal("Configured to listen on TCP, but there isn't a valid Port Number configured. Try --configure-fastcgi");
-					return false;
-				}
-				sockaddr_in sa;
-				::memset(&sa, 0, sizeof(sa));
-				sa.sin_family = AF_INET;
-				sa.sin_port = qToBigEndian(port);
-				if(::bind(m_socket, reinterpret_cast<sockaddr*>(&sa), sizeof(sa)) == -1)
-				{
-					qFatal("Failed to bind() to TCP port %d, with error %s", port, ::strerror(errno));
-					return false;
-				}
-				if(::listen(m_socket, 1) == -1)
-				{
-					qFatal("Failed to listen() on port %d, with error %s", port, ::strerror(errno));
-					return false;
-				}
-				QTextStream cout(stdout);
-				cout << "Following configuration in '" << settings.fileName() << "' and listening for FastCGI on TCP port " << port << endl;
-			}
-			else
-			{
-				return false;
-			}
+			port = settings.value("FastCGI/portNumber", 0).value<quint16>();
+			QTextStream cout(stdout);
+			socketType = SocketServer::TcpSocket;
+
+			cout << "Following configuration in '" << settings.fileName() << "' and listening for FastCGI on TCP port " << port << endl;
 		}
 
-		m_socketNotifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this),
-
-		connect(
-			m_socketNotifier,
-			SIGNAL(activated(int)),
-			this,
-			SLOT(listen())
-		);
-
-		// Wait for the event loop to start up before running
-		QTimer::singleShot(0, this, SLOT(listen()));
-
-		return true;
+		return m_socketServer->listen(socketType, port);
 	}
 
 	FastCgiInterface::~FastCgiInterface()
 	{
-		shutdown();
-	}
-
-	void FastCgiInterface::shutdown()
-	{
-		if(m_socketNotifier)
-		{
-			// stop listening on the main socket
-			::close(m_socketNotifier->socket());
-			// stop watching it
-			m_socketNotifier->setEnabled(false);
-		}
 	}
 
 	bool FastCgiInterface::isFinished() const
 	{
-		return !m_socketNotifier->isEnabled();
+		return m_socketServer->isFinished();
 	}
 
-	void FastCgiInterface::listen()
+	void FastCgiInterface::acceptNewConnection()
 	{
-		// Initialise socket address structure
-		sockaddr_un sa;
-		socklen_t len = sizeof(sa);
-		::memset(&sa, 0, len);
-
-		// Listen on the socket
-		lockSocket(m_socket);
-		int newSocket = ::accept(m_socket, reinterpret_cast<sockaddr*>(&sa), &len);
-		releaseSocket(m_socket);
-
 		/* We're connected, setup a FastCgiSocketManager.
 		 * This will delete itself when appropriate (via deleteLater())
 		 */
-		FastCgiSocketManager* socket = new FastCgiSocketManager(newSocket, NULL);
+		FastCgiSocketManager* socket = new FastCgiSocketManager(m_socketServer->nextPendingConnection(), 0);
 		addWorker(socket);
-	}
-
-	void FastCgiInterface::lockSocket(int socket)
-	{
-		::flock(socket, LOCK_EX);
-	}
-
-	void FastCgiInterface::releaseSocket(int socket)
-	{
-		::flock(socket, LOCK_UN);
 	}
 }
