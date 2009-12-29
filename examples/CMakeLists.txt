@@ -1,4 +1,5 @@
 SET(SUBDIRS
+	BigWorld
 	Dumper
 	GetGreeter
 	HelloWorld
