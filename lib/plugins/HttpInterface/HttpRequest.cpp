@@ -14,6 +14,7 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include "HttpRequest.h"
+#include "SocketFlusher.h"
 
 #include <QBuffer>
 #include <QFileInfo>
@@ -60,7 +61,7 @@ namespace FastCgiQt
 	HttpRequest::~HttpRequest()
 	{
 		m_socket->flush();
-		m_socket->close();
+		new SocketFlusher(m_socket);
 	}
 
 	ClientIODevice::HeaderMap HttpRequest::requestHeaders() const
