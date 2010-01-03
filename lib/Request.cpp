@@ -27,14 +27,8 @@ namespace FastCgiQt
 {
 	QString Request::fullUri() const
 	{
-		QString data = serverData("PATH_INFO");
-		const QString queryString = serverData("QUERY_STRING");
-		if(!queryString.isEmpty())
-		{
-			data.append("?");
-			data.append(queryString);
-		}
-		return data;
+		// not nice, but better than the old code and backwards-compatible. Nicer approach in BigChanges branch.
+		return QUrl::fromPercentEncoding(serverData("REQUEST_URI").toLatin1());
 	}
 
 	QUrl Request::url() const
