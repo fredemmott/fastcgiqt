@@ -131,7 +131,7 @@ namespace FastCgiQt
 	QString Request::baseUri() const
 	{
 		const int queryStringLength = serverData("QUERY_STRING").length();
-		const int pathInfoLength = serverData("PATH_INFO").length();
+		const int pathInfoLength = QUrl::toPercentEncoding(serverData("PATH_INFO")).length();
 		QString baseUri = serverData("REQUEST_URI");
 		baseUri.chop(queryStringLength + 1 + pathInfoLength);
 		return baseUri;
