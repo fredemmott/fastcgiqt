@@ -165,6 +165,9 @@ namespace FastCgiQt
 		// close and delete if the server's lazy
 		if(m_closeSocketOnExit.value(requestId))
 		{
+			while (m_socket->bytesToWrite()) {
+				m_socket->flush();
+			}
 			m_socket->close();
 			emit finished(thread());
 			deleteLater();

@@ -63,7 +63,9 @@ namespace FastCgiQt
 	FastCgiStream::~FastCgiStream()
 	{
 		m_socket->write(EndRequestRecord::create(m_requestId));
-		m_socket->flush();
+		while (m_socket->bytesToWrite()) {
+			m_socket->flush();
+		}
 		m_socket->close(); // TODO: check the flag; but every httpd sets it anyway...
 	}
 
