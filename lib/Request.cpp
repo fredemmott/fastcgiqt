@@ -129,7 +129,10 @@ namespace FastCgiQt
 		{
 			if(it.key().toUpper() == "HTTP_COOKIE")
 			{
-				cookies.append(QNetworkCookie::parseCookies(it.value()));
+        QList<QByteArray> list = it.value().split(';');
+        for (int i=0; i<list.length(); i++) {
+          cookies.append(QNetworkCookie::parseCookies(list.at(i)));
+        }
 			}
 		}
 		return cookies;
