@@ -26,7 +26,6 @@
 
 #include "fastcgi.h"
 
-
 namespace FastCgiQt
 {
 	FastCgiStream::FastCgiStream(const HeaderMap& headers, quint16 requestId, QTcpSocket* socket, QObject* parent)
@@ -63,7 +62,8 @@ namespace FastCgiQt
 	FastCgiStream::~FastCgiStream()
 	{
 		m_socket->write(EndRequestRecord::create(m_requestId));
-		while (m_socket->bytesToWrite()) {
+		while(m_socket->bytesToWrite())
+		{
 			m_socket->flush();
 		}
 		m_socket->close(); // TODO: check the flag; but every httpd sets it anyway...
