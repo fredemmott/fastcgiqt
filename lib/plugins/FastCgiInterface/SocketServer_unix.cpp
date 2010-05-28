@@ -61,7 +61,7 @@ namespace FastCgiQt
 
 	bool SocketServer::listen(SocketType type, quint16 parameter)
 	{
-		d->m_socketType == type;
+		d->m_socketType = type;
 		if(type == UnixSocket)
 		{
 			// Check we're running as a FastCGI application
