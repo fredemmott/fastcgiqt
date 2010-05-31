@@ -45,6 +45,13 @@ namespace FastCgiQt
 		return QStringList() << "HTTP";
 	}
 
+	bool HttpInterface::requiresConfiguration(const QString& backend) const
+	{
+		Q_ASSERT(backend == "HTTP");
+		Q_UNUSED(backend);
+		return false;
+	}
+
 	void HttpInterface::configureHttpd(const QString& backend)
 	{
 		QTextStream cin(stdin);
@@ -88,13 +95,8 @@ namespace FastCgiQt
 			return false;
 		}
 		const quint16 portNumber = Settings().value("FastCGI/portNumber", 0).value<quint16>();
-		if(portNumber == 0)
-		{
-			return false;
-		}
 		m_staticDirectory = Settings().value("FastCGI/staticDirectory", QString()).toString();
 		QTextStream cout(stdout);
-		cout << "Using configuration in " << Settings().fileName() << ", and running an HTTP server on port " << portNumber << endl;
 		if(!m_staticDirectory.isEmpty())
 		{
 			cout << "***WARNING*** Serving static content from ./" << m_staticDirectory << "/" << " (" << QFileInfo(m_staticDirectory).canonicalFilePath() << ")" << endl;
@@ -104,6 +106,14 @@ namespace FastCgiQt
 		if(!m_server->listen(QHostAddress::Any, portNumber))
 		{
 			qFatal("Failed to listen on port %d: %s", portNumber, qPrintable(m_server->errorString()));
+		}
+		if(portNumber != 0)
+		{
+			cout << "Using configuration in " << Settings().fileName() << ", and running an HTTP server on port " << portNumber << endl;
+		}
+		else
+		{
+			cout << "Auto-configured HTTP server running on port " << m_server->serverPort() << " - if this isn't what you want, re-run with --configure-httpd" << endl;
 		}
 		return true;
 	}

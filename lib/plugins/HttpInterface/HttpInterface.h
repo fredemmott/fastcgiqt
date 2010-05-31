@@ -31,6 +31,7 @@ namespace FastCgiQt
 			~HttpInterface();
 			bool isFinished() const;
 			QStringList backends() const;
+			virtual bool requiresConfiguration(const QString& backend) const;
 			void configureHttpd(const QString& backend);
 		protected:
 			bool startBackend(const QString& backend);

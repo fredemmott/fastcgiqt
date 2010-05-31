@@ -19,6 +19,11 @@ namespace FastCgiQt
 		return TcpSocket;
 	}
 
+	SocketServer::SocketTypes SocketServer::activeSocketTypes()
+	{
+		return SocketTypes();
+	}
+
 	SocketServer::SocketServer(QObject* parent)
 	: QObject(parent)
 	, d(new Private())

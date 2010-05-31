@@ -42,6 +42,7 @@ namespace FastCgiQt
 			~FastCgiInterface();
 			bool isFinished() const;
 			QStringList backends() const;
+			QStringList detectedBackends() const;
 			void configureHttpd(const QString& backend);
 		protected:
 			bool startBackend(const QString& backend);

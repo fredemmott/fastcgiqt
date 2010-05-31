@@ -48,6 +48,16 @@ namespace FastCgiQt
 		return stringOutput;
 	}
 
+	QStringList FastCgiInterface::detectedBackends() const
+	{
+		QStringList out;
+		if(SocketServer::activeSocketTypes() & SocketServer::UnixSocket)
+		{
+			out << "FCGI-UNIX";
+		}
+		return out;
+	}
+
 	void FastCgiInterface::configureHttpd(const QString& backend)
 	{
 		QTextStream cin(stdin);

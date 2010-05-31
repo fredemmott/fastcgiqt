@@ -44,6 +44,23 @@ namespace FastCgiQt
 			QSocketNotifier* m_socketNotifier;
 	};
 
+	SocketServer::SocketTypes SocketServer::activeSocketTypes()
+	{
+		// Check we're running as a FastCGI application
+		sockaddr_un sa;
+		socklen_t len = sizeof(sa);
+		::memset(&sa, 0, len);
+
+		// The recommended way of telling if we're running as fastcgi or not.
+		const int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
+		if(error == -1 && errno != ENOTCONN)
+		{
+			// Nope, not FastCGI over unix socket
+			return SocketTypes();
+		}
+		return UnixSocket;
+	}
+
 	bool SocketServer::isFinished() const
 	{
 		return !(d->m_socketNotifier && d->m_socketNotifier->isEnabled());
@@ -64,19 +81,12 @@ namespace FastCgiQt
 		d->m_socketType = type;
 		if(type == UnixSocket)
 		{
-			// Check we're running as a FastCGI application
-			sockaddr_un sa;
-			socklen_t len = sizeof(sa);
-			::memset(&sa, 0, len);
-			d->m_socket = FCGI_LISTENSOCK_FILENO;
-
-			// The recommended way of telling if we're running as fastcgi or not.
-			const int error = ::getpeername(FCGI_LISTENSOCK_FILENO, reinterpret_cast<sockaddr*>(&sa), &len);
-			if(error == -1 && errno != ENOTCONN)
+			if(! (activeSocketTypes() & UnixSocket))
 			{
 				qWarning("Asked to run FastCGI on a UNIX socket, but not being run correctly");
 				return false;
 			}
+			d->m_socket = FCGI_LISTENSOCK_FILENO;
 
 			// Wait for the event loop to start up before running
 			QTimer::singleShot(0, this, SIGNAL(newConnection()));

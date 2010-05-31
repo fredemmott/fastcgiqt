@@ -60,41 +60,121 @@ namespace FastCgiQt
 			exit(0);
 		}
 
-		const QString interface = Settings().value("FastCGI/socketType", "FCGI-UNIX").toString();
+		const QString interface = Settings().value("FastCGI/socketType", QString()).toString();
+		QTextStream cerr(stderr);
 
-		Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
+		if(interface.isEmpty())
 		{
-			m_interface = factory->createInterface(this);
-			if(m_interface && m_interface->backends().contains(interface))
+			CommunicationInterface* autoInterface = 0;
+			QString autoBackend;
+			// Auto-detect
+			Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
 			{
+				m_interface = factory->createInterface(this);
+				const QStringList detectedBackends = m_interface->detectedBackends();
+				// Preferred - indicated by the environment
+				if(!detectedBackends.isEmpty())
+				{
+					Q_ASSERT(detectedBackends.count() == 1);
+					const QString detectedBackend = detectedBackends.first();
+					connect(
+						m_interface,
+						SIGNAL(newRequest(FastCgiQt::Request*)),
+						this,
+						SIGNAL(newRequest(FastCgiQt::Request*))
+					);
+					if(m_interface->start(detectedBackend))
+					{
+						delete autoInterface;
+						autoBackend.clear();
+						break;
+					}
+					else
+					{
+						cerr << "Failed to initialize auto-detected backend '" << detectedBackend << "' - try --configure-httpd." << endl;
+						exit(1);
+						return;
+					}
+				}
+				// Available, but not preferred
+				const QStringList backends = m_interface->backends();
+				Q_FOREACH(const QString& backend, backends)
+				{
+					if(!m_interface->requiresConfiguration(backend))
+					{
+						delete autoInterface;
+						autoInterface = m_interface;
+						autoBackend = backend;
+						m_interface = 0;
+						break;
+					}
+				}
+
+				delete m_interface;
+				m_interface = 0;
+			}
+			if(autoInterface && ! m_interface)
+			{
+				m_interface = autoInterface;
 				connect(
 					m_interface,
 					SIGNAL(newRequest(FastCgiQt::Request*)),
 					this,
 					SIGNAL(newRequest(FastCgiQt::Request*))
 				);
-				break;
+				if(!m_interface->start(autoBackend))
+				{
+					cerr << "Failed to initialize zero-conf backend '" << autoBackend << "' - try --configure-httpd." << endl;
+					exit(1);
+					return;
+				}
 			}
 			else
 			{
-				delete m_interface;
-				m_interface = 0;
+				delete autoInterface;
 			}
 		}
-
-		if(!(m_interface && m_interface->start(interface)))
+		else
 		{
-			// Not a FastCGI application
-			QTextStream cerr(stderr);
-			if(!m_interface)
+			Q_FOREACH(CommunicationInterface::Factory* factory, m_factories)
 			{
-				cerr << "Could not find an implementation for backend " << interface <<endl;
+				m_interface = factory->createInterface(this);
+				if(m_interface && m_interface->backends().contains(interface))
+				{
+					connect(
+						m_interface,
+						SIGNAL(newRequest(FastCgiQt::Request*)),
+						this,
+						SIGNAL(newRequest(FastCgiQt::Request*))
+					);
+					break;
+				}
+				else
+				{
+					delete m_interface;
+					m_interface = 0;
+				}
 			}
-			else
+	
+			if(!(m_interface && m_interface->start(interface)))
 			{
-				cerr << "Failed to initialize backend " << interface << endl;
+				// Not a FastCGI application
+				if(!m_interface)
+				{
+					cerr << "Could not find an implementation for backend " << interface <<endl;
+				}
+				else
+				{
+					cerr << "Failed to initialize backend " << interface << endl;
+				}
+				cerr << "Perhaps you wanted --configure-httpd?" << endl;
+				exit(1);
+				return;
 			}
-			cerr << "Perhaps you wanted --configure-httpd?" << endl;
+		}
+		if(! m_interface)
+		{
+			cerr << "Failed to find a backend." << endl;
 			exit(1);
 			return;
 		}

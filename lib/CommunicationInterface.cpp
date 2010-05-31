@@ -51,6 +51,17 @@ namespace FastCgiQt
 		);
 	}
 
+	QStringList CommunicationInterface::detectedBackends() const
+	{
+		return QStringList();
+	}
+
+	bool CommunicationInterface::requiresConfiguration(const QString& backend) const
+	{
+		Q_UNUSED(backend);
+		return true;
+	}
+
 	void CommunicationInterface::addRequest(ClientIODevice* device)
 	{
 		Request* request = RequestFactory::createRequest(device, 0);

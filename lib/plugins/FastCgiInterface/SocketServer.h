@@ -17,6 +17,7 @@ namespace FastCgiQt
 			Q_DECLARE_FLAGS(SocketTypes, SocketType);
 
 			static SocketTypes supportedSocketTypes();
+			static SocketTypes activeSocketTypes();
 
 			SocketServer(QObject* parent = 0);
 			~SocketServer();
