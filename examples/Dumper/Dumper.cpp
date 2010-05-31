@@ -42,13 +42,26 @@ void Dumper::dumpHash(const QString& label, const QHash<QByteArray, QByteArray>&
 
 	out << "<table>" << endl;
 
-	for(
-		QHash<QByteArray, QByteArray>::ConstIterator it = data.constBegin();
-		it != data.constEnd();
-		++it
-	)
+	QList<QByteArray> keys = data.keys();
+	qSort(keys);
+
+	Q_FOREACH(const QByteArray& key, keys)
 	{
-		out << "<tr><th>" << it.key() << "</th><td>" << it.value() << "</td></tr>" << endl;
+		QList<QByteArray> values = data.values(key);
+		out << "<tr><th rowspan='" << values.count() << "'>" << key << "</th>";
+		Q_FOREVER
+		{
+			const QByteArray value = values.takeFirst();
+			out << "<td>" << value << "</td></tr>" << endl;
+			if(!values.isEmpty())
+			{
+				out << "<tr>";
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
 
 	out << "</table>" << endl;
