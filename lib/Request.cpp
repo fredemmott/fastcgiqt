@@ -86,9 +86,14 @@ namespace FastCgiQt
 	{
 		QUrl url;
 		// Protocol and host are needed, regardless of part
-
-		///@fixme - HTTPS support
-		url.setScheme("http");
+		if(rawValue(ServerData,"HTTPS") == "on")
+		{
+			url.setScheme("https");
+		}
+		else
+		{
+			url.setScheme("http");
+		}
 		// authority == user:password@host:port - as HTTP_HOST contains user and port, go with that
 		url.setAuthority(value(ServerData, "HTTP_HOST"));
 
