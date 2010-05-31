@@ -27,8 +27,6 @@ namespace FastCgiQt
 	 * Response headers will be written as normal data, CGI-style. If the interface implemented by a subclass
 	 * doesn't support this, conversion must be done transparently (eg, translate Status: 200 OK to HTTP/1.1 200 OK)
 	 *
-	 * @todo cleanup - this almost does the same thing as ClientIOInterface
-	 * ClientIOInterface should probably be removed
 	 * @ingroup core
 	 */
 	class ClientIODevice: public QIODevice
