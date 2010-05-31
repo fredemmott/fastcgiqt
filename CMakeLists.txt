@@ -25,7 +25,8 @@ OPTION(WITH_SQL_SUPPORT "Build helper classes for interacting with databases" ON
 OPTION(WITH_MEMCACHED_SUPPORT "Build plugin for using memcached - needs libmemcached" OFF)
 OPTION(WITH_FASTCGI_SUPPORT "Build support for the FastCGI interface" ON)
 OPTION(WITH_SCGI_SUPPORT "Build support for the SCGI interface" ON)
-OPTION(WITH_HTTP_SUPPORT "Build support for an embbeded HTTPD (only for development)" ON)
+OPTION(WITH_HTTP_SUPPORT "Build support for an embedded HTTPD (only for development)" ON)
+OPTION(WITH_CGI_SUPPORT "Build support for plain old CGI" ON)
 
 IF(WITH_SERVICE_SUPPORT)
 	MESSAGE(STATUS "Service support is enabled.")

@@ -64,11 +64,20 @@ namespace FastCgiQt
 
 	void CommunicationInterface::addRequest(ClientIODevice* device)
 	{
+		connect(device, SIGNAL(destroyed()), this, SLOT(closeIfFinished()));
 		Request* request = RequestFactory::createRequest(device, 0);
 		emit newRequest(request);
 		if(!request->parent())
 		{
 			delete request;
+		}
+	}
+
+	void CommunicationInterface::closeIfFinished()
+	{
+		if(isFinished())
+		{
+			QCoreApplication::exit(0);
 		}
 	}
 };

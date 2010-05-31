@@ -85,6 +85,7 @@ namespace FastCgiQt
 			 * Note that 'device' may be deleted by this call.
 			 */
 			void addRequest(ClientIODevice* device);
+			void closeIfFinished();
 		protected:
 			virtual bool startBackend(const QString& backend) = 0;
 			CommunicationInterface(QObject* parent);
