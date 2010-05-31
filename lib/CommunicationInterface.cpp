@@ -34,6 +34,9 @@ namespace FastCgiQt
 
 	bool CommunicationInterface::start(const QString& backend)
 	{
+		m_extraHeaders.clear();
+		m_extraHeaders.insert("X_FASTCGIQT_BACKEND", backend.toLatin1());
+		m_extraHeaders.insert("X_FASTCGIQT_BACKEND_CLASS", metaObject()->className());
 		return startBackend(backend);
 	}
 
@@ -65,7 +68,7 @@ namespace FastCgiQt
 	void CommunicationInterface::addRequest(ClientIODevice* device)
 	{
 		connect(device, SIGNAL(destroyed()), this, SLOT(closeIfFinished()));
-		Request* request = RequestFactory::createRequest(device, 0);
+		Request* request = RequestFactory::createRequest(device, m_extraHeaders, 0);
 		emit newRequest(request);
 		if(!request->parent())
 		{

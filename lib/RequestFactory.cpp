@@ -19,8 +19,10 @@
 
 namespace FastCgiQt
 {
-	Request* RequestFactory::createRequest(ClientIODevice* device, QObject* parent)
+	Request* RequestFactory::createRequest(ClientIODevice* device, ClientIODevice::HeaderMap extraHeaders, QObject* parent)
 	{
-		return new Request(new Request::Private(device), parent);
+		Request::Private* d = new Request::Private(device);
+		d->serverData.unite(extraHeaders);
+		return new Request(d, parent);
 	}
 };

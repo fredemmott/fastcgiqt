@@ -15,14 +15,14 @@
 */
 #pragma once
 
+#include "ClientIODevice.h"
 #include "Request.h"
 
 namespace FastCgiQt
 {
-	class ClientIODevice;
 	class RequestFactory : public Request
 	{
 		public:
-			static Request* createRequest(ClientIODevice*, QObject* parent);
+			static Request* createRequest(ClientIODevice*, ClientIODevice::HeaderMap extraHeaders, QObject* parent);
 	};
 };

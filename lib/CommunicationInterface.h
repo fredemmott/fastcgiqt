@@ -15,6 +15,8 @@
 */
 #pragma once
 
+#include "ClientIODevice.h"
+
 #include <QtPlugin>
 
 #include <QObject>
@@ -24,7 +26,6 @@ class QThread;
 
 namespace FastCgiQt
 {
-	class ClientIODevice;
 	class Request;
 	/** @internal Abstract interface for recieving requests from the HTTPD.
 	 *
@@ -90,6 +91,8 @@ namespace FastCgiQt
 			virtual bool startBackend(const QString& backend) = 0;
 			CommunicationInterface(QObject* parent);
 			void addWorker(Worker* worker);
+		private:
+			ClientIODevice::HeaderMap m_extraHeaders;
 	};
 };
 
