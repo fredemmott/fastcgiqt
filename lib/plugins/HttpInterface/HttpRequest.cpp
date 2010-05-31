@@ -172,7 +172,6 @@ namespace FastCgiQt
 			buffer.setData(m_headerBuffer);
 			buffer.open(QIODevice::ReadOnly);
 			buffer.seek(m_headerBufferPosition);
-			buffer.seek(m_headerBufferPosition);
 			while(buffer.canReadLine())
 			{
 				const QByteArray line = buffer.readLine().trimmed();
