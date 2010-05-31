@@ -14,6 +14,8 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 #include "ThreadPool.h"
+
+#include "Settings.h"
 #include "ThreadPool_Worker.h"
 
 #include <QDebug>
@@ -23,10 +25,27 @@ namespace FastCgiQt
 	ThreadPool::ThreadPool(QObject* parent)
 	: QObject(parent)
 	, m_nextWorker(0)
-	, m_threadCount(QThread::idealThreadCount())
-	, m_threads(new QThread*[m_threadCount])
-	, m_workers(new Worker*[m_threadCount])
+	, m_threadCount(-1)
+	, m_threads(0)
+	, m_workers(0)
 	{
+		Settings settings;
+		const int threadSetting = settings.value("FastCGI/numberOfThreads", -1).toInt();
+		if(threadSetting == -1)
+		{
+			m_threadCount = QThread::idealThreadCount();
+		}
+		else
+		{
+			Q_ASSERT(threadSetting > 0);
+			m_threadCount = threadSetting;
+		}
+
+		Q_ASSERT(m_threadCount > 0);
+
+		m_threads = new QThread*[m_threadCount];
+		m_workers = new Worker*[m_threadCount];
+
 		for(int i = 0; i < m_threadCount; ++i)
 		{
 			QThread* thread = new QThread(this);

@@ -38,7 +38,7 @@ namespace FastCgiQt
 			class Worker;
 
 			int m_nextWorker;
-			const int m_threadCount;
+			int m_threadCount;
 			QThread** m_threads;
 			Worker** m_workers;
 	};
