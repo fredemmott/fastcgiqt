@@ -86,6 +86,7 @@ namespace FastCgiQt
 					if(m_interface->start(detectedBackend))
 					{
 						delete autoInterface;
+						autoInterface = 0;
 						autoBackend.clear();
 						break;
 					}
