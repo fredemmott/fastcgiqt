@@ -37,7 +37,7 @@ namespace FastCgiQt
 				d->responder = new BlockingResponder(0, 0, this);
 				break;
 			case ThreadedResponses:
-				d->responder = new BlockingResponder(0, 0, this);
+				d->responder = new ThreadedResponder(0, 0, this);
 				break;
 		}
 		Q_ASSERT(d->responder);
