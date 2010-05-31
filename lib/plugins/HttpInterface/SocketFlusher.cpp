@@ -14,6 +14,7 @@ namespace FastCgiQt
 			SLOT(deleteIfFlushed())
 		);
 		socket->flush();
+		deleteIfFlushed();
 	}
 
 	void SocketFlusher::deleteIfFlushed()
