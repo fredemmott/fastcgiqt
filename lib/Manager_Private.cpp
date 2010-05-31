@@ -94,7 +94,7 @@ namespace FastCgiQt
 			{
 				cerr << "Failed to initialize backend " << interface << endl;
 			}
-			cerr << "Perhaps you wanted --configure?" << endl;
+			cerr << "Perhaps you wanted --configure-httpd?" << endl;
 			exit(1);
 			return;
 		}
