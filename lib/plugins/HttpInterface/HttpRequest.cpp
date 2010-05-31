@@ -208,7 +208,7 @@ namespace FastCgiQt
 				const int lengthOfName = line.indexOf(':');
 				const QByteArray name = line.left(lengthOfName);
 				const QByteArray value = line.mid(lengthOfName + 2); // ": " after the name == 2 chars
-				m_responseHeaders.insert(name, value);
+				m_responseHeaders.insertMulti(name, value);
 			}
 			m_headerBufferPosition = buffer.pos();
 			buffer.close();
