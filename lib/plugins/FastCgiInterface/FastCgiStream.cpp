@@ -16,6 +16,7 @@
 #include "FastCgiStream.h"
 
 #include "EndRequestRecord.h"
+#include "SocketFlusher.h"
 #include "StandardInputRecord.h"
 #include "StandardOutputRecord.h"
 
@@ -64,11 +65,7 @@ namespace FastCgiQt
 	FastCgiStream::~FastCgiStream()
 	{
 		m_socket->write(EndRequestRecord::create(m_requestId));
-		while(m_socket->bytesToWrite())
-		{
-			m_socket->flush();
-		}
-		m_socket->close(); // TODO: check the flag; but every httpd sets it anyway...
+		new SocketFlusher(m_socket);
 	}
 
 	qint64 FastCgiStream::readData(char* data, qint64 maxSize)

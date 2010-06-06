@@ -13,7 +13,6 @@ namespace FastCgiQt
 			this,
 			SLOT(deleteIfFlushed())
 		);
-		socket->flush();
 		deleteIfFlushed();
 	}
 
@@ -22,6 +21,10 @@ namespace FastCgiQt
 		if(!m_socket->bytesToWrite())
 		{
 			deleteLater();
+		}
+		else
+		{
+			m_socket->flush();
 		}
 	}
 };

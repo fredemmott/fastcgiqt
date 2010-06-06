@@ -40,6 +40,7 @@ SET(
 	RequestQueue
 	RequestRunner
 	Settings
+	SocketFlusher
 	ThreadedResponder_Private
 	ThreadPool
 	ThreadPool_Worker

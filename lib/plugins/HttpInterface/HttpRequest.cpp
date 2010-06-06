@@ -60,7 +60,6 @@ namespace FastCgiQt
 
 	HttpRequest::~HttpRequest()
 	{
-		m_socket->flush();
 		new SocketFlusher(m_socket);
 	}
 

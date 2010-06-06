@@ -3,7 +3,6 @@ SET(
 	HttpInterface
 	HttpInterfaceFactory
 	HttpRequest
-	SocketFlusher
 )
 
 SET(SOURCES)
