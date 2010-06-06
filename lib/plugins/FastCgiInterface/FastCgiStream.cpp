@@ -23,6 +23,7 @@
 
 #include <QDebug>
 #include <QTcpSocket>
+#include <QThread>
 
 #include "fastcgi.h"
 
@@ -35,6 +36,7 @@ namespace FastCgiQt
 	, m_requestId(requestId)
 	, m_socket(socket)
 	{
+		m_socket->setParent(this);
 		open(QIODevice::ReadWrite | QIODevice::Unbuffered);
 		connect(
 			m_socket,
@@ -85,6 +87,8 @@ namespace FastCgiQt
 
 	qint64 FastCgiStream::writeData(const char* data, qint64 dataSize)
 	{
+		Q_ASSERT(thread() == m_socket->thread());
+		Q_ASSERT(thread() == QThread::currentThread());
 		qint64 remaining = dataSize;
 		while(remaining > 0)
 		{
