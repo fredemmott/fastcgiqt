@@ -25,10 +25,11 @@
 
 #include "fastcgi.h"
 
-#include <QTcpSocket>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QMutexLocker>
 #include <QSocketNotifier>
+#include <QTcpSocket>
 #include <QTimer>
 
 namespace FastCgiQt
@@ -124,10 +125,16 @@ namespace FastCgiQt
 
 	void FastCgiSocketManager::readStandardInput(const QByteArray& data)
 	{
-		quint16 requestId = m_recordHeader.requestId();
+		const quint16 requestId = m_recordHeader.requestId();
 		Q_ASSERT(m_recordHeader.type() == RecordHeader::StandardInputRecord);
-		StandardInputRecord record(m_recordHeader, data);
-		m_streams[requestId]->appendData(record.streamData());
+		QMutexLocker lock(&m_streamMutex);
+		if(m_streams[requestId])
+		{
+			StandardInputRecord record(m_recordHeader, data);
+			m_streams[requestId]->appendData(record.streamData());
+		}
+		// Otherwise, the request is dealt with, and the remaining standard input
+		// was ignored.
 	}
 
 	void FastCgiSocketManager::beginRequest(const QByteArray& data)
@@ -157,6 +164,7 @@ namespace FastCgiQt
 
 	void FastCgiSocketManager::cleanupStream(QObject* _stream)
 	{
+		QMutexLocker lock(&m_streamMutex);
 		FastCgiStream* stream = static_cast<FastCgiStream*>(_stream);
 		Q_ASSERT(m_requestMap.contains(stream));
 		const quint16 requestId = m_requestMap.value(stream);

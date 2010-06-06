@@ -20,6 +20,7 @@
 #include "RecordHeader.h"
 
 #include <QHash>
+#include <QMutex>
 
 class QTcpSocket;
 
@@ -105,5 +106,8 @@ namespace FastCgiQt
 
 			/// Responder -> requestId map
 			QHash<FastCgiStream*, quint64> m_requestMap;
+
+			/// Lock changing of m_streams;
+			QMutex m_streamMutex;
 	};
 }
