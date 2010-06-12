@@ -109,6 +109,11 @@ namespace FastCgiQt
 			sa.sin_family = AF_INET;
 			sa.sin_port = qToBigEndian(port);
 
+			int one = 1;
+			if(setsockopt(d->m_socket, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) == -1)
+			{
+				qWarning("Failed to set SO_REUSEADDR option - error: %s", ::strerror(errno));
+			}
 			// Try and bind to the port
 			if(::bind(d->m_socket, reinterpret_cast<sockaddr*>(&sa), sizeof(sa)) == -1)
 			{
