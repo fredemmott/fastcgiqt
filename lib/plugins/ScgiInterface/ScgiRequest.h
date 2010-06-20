@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_SCGIREQUEST
+#define _FASTCGIQT_SCGIREQUEST
 
 #include "CommunicationInterface_Worker.h"
 
@@ -35,3 +36,4 @@ namespace FastCgiQt
 			QTcpSocket* m_socket;
 	};
 };
+#endif // _FASTCGIQT_SCGIREQUEST

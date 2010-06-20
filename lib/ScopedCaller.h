@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_SCOPEDCALLER
+#define _FASTCGIQT_SCOPEDCALLER
 
 /** @internal Automatically call a given void(void) member function when this leaves scope.
  */
@@ -39,3 +40,4 @@ template<class T> class ScopedCaller
 		T* m_instance;
 		Method m_method;
 };
+#endif // _FASTCGIQT_SCOPEDCALLER

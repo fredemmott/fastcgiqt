@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_MEMCPY_SAFE
+#define _FASTCGIQT_MEMCPY_SAFE
 
 // TODO: use the windows function on windows
 
@@ -26,3 +27,4 @@ inline void* memcpy_safe(void* destination, size_t destinationSize, const void* 
 	}
 	return ::memcpy(destination, source, count);
 }
+#endif // _FASTCGIQT_MEMCPY_SAFE

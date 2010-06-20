@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _FASTCGIQT_POSTDATASTREAMREADERBACKEND
+#define _FASTCGIQT_POSTDATASTREAMREADERBACKEND
 
 #include "PostDataStreamReader.h"
 
@@ -35,3 +36,4 @@ namespace FastCgiQt
 			QIODevice* m_source;
 	};
 };
+#endif // _FASTCGIQT_POSTDATASTREAMREADERBACKEND

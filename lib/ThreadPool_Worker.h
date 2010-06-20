@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_THREADPOOL_WORKER
+#define _FASTCGIQT_THREADPOOL_WORKER
 #include "ThreadPool.h"
 
 #include <QMutex>
@@ -38,3 +39,4 @@ namespace FastCgiQt
 			QQueue<QRunnable*> m_queue;
 	};
 };
+#endif // _FASTCGIQT_THREADPOOL_WORKER

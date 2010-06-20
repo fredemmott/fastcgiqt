@@ -14,7 +14,8 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#pragma once
+#ifndef _FASTCGIQT_CGIREQUEST
+#define _FASTCGIQT_CGIREQUEST
 
 #include "ClientIODevice.h"
 
@@ -34,3 +35,4 @@ namespace FastCgiQt
 			HeaderMap m_requestHeaders;
 	};
 }
+#endif // _FASTCGIQT_CGIREQUEST

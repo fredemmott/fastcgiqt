@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_CGIINTERFACE
+#define _FASTCGIQT_CGIINTERFACE
 
 #include "CommunicationInterface.h"
 
@@ -35,3 +36,4 @@ namespace FastCgiQt
 			void init();
 	};
 }
+#endif // _FASTCGIQT_CGIINTERFACE

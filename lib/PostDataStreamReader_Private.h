@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _FASTCGIQT_POSTDATASTREAMREADER_PRIVATE
+#define _FASTCGIQT_POSTDATASTREAMREADER_PRIVATE
 
 #include "PostDataStreamReader.h"
 #include "PostDataStreamReaderBackend.h"
@@ -11,3 +12,4 @@ namespace FastCgiQt
 			PostDataStreamReaderBackend* m_backend;
 	};
 };
+#endif // _FASTCGIQT_POSTDATASTREAMREADER_PRIVATE

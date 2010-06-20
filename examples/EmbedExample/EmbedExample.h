@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_EMBEDEXAMPLE
+#define _FASTCGIQT_EMBEDEXAMPLE
 
 namespace FastCgiQt
 {
@@ -49,3 +50,4 @@ class EmbedExample : public QWidget
 		QPushButton* m_stopButton;
 		QPushButton* m_refreshButton;
 };
+#endif // _FASTCGIQT_EMBEDEXAMPLE

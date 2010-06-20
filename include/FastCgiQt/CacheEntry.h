@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_CACHEENTRY
+#define _FASTCGIQT_CACHEENTRY
 
 #include <QByteArray>
 #include <QDateTime>
@@ -55,3 +56,4 @@ namespace FastCgiQt
 			QSharedDataPointer<Private> d;
 	};
 };
+#endif // _FASTCGIQT_CACHEENTRY

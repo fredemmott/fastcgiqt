@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_HTTPINTERFACE
+#define _FASTCGIQT_HTTPINTERFACE
 
 #include "CommunicationInterface.h"
 
@@ -43,3 +44,4 @@ namespace FastCgiQt
 			QString m_staticDirectory;
 	};
 };
+#endif // _FASTCGIQT_HTTPINTERFACE

@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_REQUESTQUEUE
+#define _FASTCGIQT_REQUESTQUEUE
 
 #include "AbstractResponder.h"
 
@@ -44,3 +45,4 @@ namespace FastCgiQt
 			QQueue<RequestRunner*> m_unhandledRequests;
 	};
 };
+#endif // _FASTCGIQT_REQUESTQUEUE

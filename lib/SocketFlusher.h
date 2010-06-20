@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _FASTCGIQT_SOCKETFLUSHER
+#define _FASTCGIQT_SOCKETFLUSHER
 
 #include <QAbstractSocket>
 
@@ -20,3 +21,4 @@ namespace FastCgiQt
 			QAbstractSocket* m_socket;
 	};
 }
+#endif // _FASTCGIQT_SOCKETFLUSHER

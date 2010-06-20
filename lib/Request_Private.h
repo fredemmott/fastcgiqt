@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_REQUEST_PRIVATE
+#define _FASTCGIQT_REQUEST_PRIVATE
 
 #include "ClientIODevice.h"
 #include "Request.h"
@@ -89,3 +90,4 @@ namespace FastCgiQt
 			ClientIODevice::HeaderMap parseQueryString(const QByteArray& queryString);
 	};
 };
+#endif // _FASTCGIQT_REQUEST_PRIVATE

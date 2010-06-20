@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _FASTCGIQT_POSTDATASTREAMREADER
+#define _FASTCGIQT_POSTDATASTREAMREADER
 
 #include "Request.h"
 
@@ -66,3 +67,4 @@ namespace FastCgiQt
 			Private* d;
 	};
 };
+#endif // _FASTCGIQT_POSTDATASTREAMREADER

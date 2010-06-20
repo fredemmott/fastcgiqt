@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_CACHEPRIVATE
+#define _FASTCGIQT_CACHEPRIVATE
 
 #include "Cache.h"
 #include "CacheBackend.h"
@@ -33,3 +34,4 @@ namespace FastCgiQt
 			static CacheBackend::Factory* m_backendFactory;
 	};
 };
+#endif // _FASTCGIQT_CACHEPRIVATE

@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_SERVICE
+#define _FASTCGIQT_SERVICE
 
 #include <QDateTime>
 #include <QMap>
@@ -148,3 +149,4 @@ namespace FastCgiQt
 			Private* d;
 	};
 }
+#endif // _FASTCGIQT_SERVICE

@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_SERVICE_PRIVATE
+#define _FASTCGIQT_SERVICE_PRIVATE
 
 #include "Caches.h"
 #include "FileCache.h"
@@ -48,3 +49,4 @@ namespace FastCgiQt
 			Caches m_caches;
 	};
 }
+#endif // _FASTCGIQT_SERVICE_PRIVATE

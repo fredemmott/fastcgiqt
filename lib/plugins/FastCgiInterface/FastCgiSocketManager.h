@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_FASTCGISOCKETMANAGER
+#define _FASTCGIQT_FASTCGISOCKETMANAGER
 
 #include "CommunicationInterface_Worker.h"
 #include "ClientIODevice.h"
@@ -111,3 +112,4 @@ namespace FastCgiQt
 			QMutex m_streamMutex;
 	};
 }
+#endif // _FASTCGIQT_FASTCGISOCKETMANAGER

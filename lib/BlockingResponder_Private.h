@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_BLOCKINGRESPONDER_PRIVATE
+#define _FASTCGIQT_BLOCKINGRESPONDER_PRIVATE
 
 #include "BlockingResponder.h"
 #include "RequestQueue.h"
@@ -31,3 +32,4 @@ namespace FastCgiQt
 			void start(RequestRunner* runner);
 	};
 };
+#endif // _FASTCGIQT_BLOCKINGRESPONDER_PRIVATE

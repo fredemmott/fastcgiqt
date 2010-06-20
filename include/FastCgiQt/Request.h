@@ -14,7 +14,8 @@
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#pragma once
+#ifndef _FASTCGIQT_REQUEST
+#define _FASTCGIQT_REQUEST
 
 #include <QByteArray>
 #include <QIODevice>
@@ -92,3 +93,4 @@ namespace FastCgiQt
 			Request(Private*, QObject* parent);
 	};
 }
+#endif // _FASTCGIQT_REQUEST

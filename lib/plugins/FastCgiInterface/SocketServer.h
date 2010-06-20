@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _FASTCGIQT_SOCKETSERVER
+#define _FASTCGIQT_SOCKETSERVER
 
 #include <QTcpSocket>
 #include <QFlags>
@@ -44,3 +45,4 @@ namespace FastCgiQt
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(FastCgiQt::SocketServer::SocketTypes);
 
+#endif // _FASTCGIQT_SOCKETSERVER

@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_HTTPREQUEST
+#define _FASTCGIQT_HTTPREQUEST
 
 #include "ClientIODevice.h"
 
@@ -70,3 +71,4 @@ namespace FastCgiQt
 			qint64 m_headerBufferPosition;
 	};
 };
+#endif // _FASTCGIQT_HTTPREQUEST

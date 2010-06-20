@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_MANAGER_PRIVATE
+#define _FASTCGIQT_MANAGER_PRIVATE
 
 #include "Caches.h"
 #include "CommunicationInterface.h"
@@ -62,3 +63,4 @@ namespace FastCgiQt
 			QList<CommunicationInterface::Factory*> m_factories;
 	};
 };
+#endif // _FASTCGIQT_MANAGER_PRIVATE

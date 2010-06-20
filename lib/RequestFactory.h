@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_REQUESTFACTORY
+#define _FASTCGIQT_REQUESTFACTORY
 
 #include "ClientIODevice.h"
 #include "Request.h"
@@ -26,3 +27,4 @@ namespace FastCgiQt
 			static Request* createRequest(ClientIODevice*, ClientIODevice::HeaderMap extraHeaders, QObject* parent);
 	};
 };
+#endif // _FASTCGIQT_REQUESTFACTORY

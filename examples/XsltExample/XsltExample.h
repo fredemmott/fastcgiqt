@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_XSLTEXAMPLE
+#define _FASTCGIQT_XSLTEXAMPLE
 
 #include <FastCgiQt/XsltService.h>
 
@@ -30,3 +31,4 @@ class XsltExample : public FastCgiQt::XsltService
 	private:
 		void dumpHash(const QHash<QByteArray, QByteArray>&, const QString& source, QXmlStreamWriter* xml);
 };
+#endif // _FASTCGIQT_XSLTEXAMPLE

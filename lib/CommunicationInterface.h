@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_COMMUNICATIONINTERFACE
+#define _FASTCGIQT_COMMUNICATIONINTERFACE
 
 #include "ClientIODevice.h"
 
@@ -97,3 +98,4 @@ namespace FastCgiQt
 };
 
 Q_DECLARE_INTERFACE(FastCgiQt::CommunicationInterface::Factory, "uk.co.fredemmott.FastCgiQt.CommunicationInterface/2.0");
+#endif // _FASTCGIQT_COMMUNICATIONINTERFACE

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _FASTCGIQT_URLENCODEDPOSTDATASTREAMREADER
+#define _FASTCGIQT_URLENCODEDPOSTDATASTREAMREADER
 
 #include "PostDataStreamReaderBackend.h"
 
@@ -16,3 +17,4 @@ namespace FastCgiQt
 			qint64 m_bytesRead;
 	};
 };
+#endif // _FASTCGIQT_URLENCODEDPOSTDATASTREAMREADER

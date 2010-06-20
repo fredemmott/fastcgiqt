@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_CACHE
+#define _FASTCGIQT_CACHE
 
 #include "CacheEntry.h"
 
@@ -119,3 +120,4 @@ size=numberOfServers
 			Private* d;
 	};
 }
+#endif // _FASTCGIQT_CACHE

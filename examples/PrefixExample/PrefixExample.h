@@ -13,7 +13,8 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 	OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+#ifndef _FASTCGIQT_PREFIXEXAMPLE
+#define _FASTCGIQT_PREFIXEXAMPLE
 
 #include <FastCgiQt/Request.h>
 
@@ -27,3 +28,4 @@ class PrefixExample : public QObject
 		void bar(FastCgiQt::Request*);
 		void baz(FastCgiQt::Request*);
 };
+#endif // _FASTCGIQT_PREFIXEXAMPLE
