@@ -15,7 +15,7 @@ namespace FastCgiQt
 				TcpSocket  = 1 << 0,
 				UnixSocket = 1 << 1
 			};
-			Q_DECLARE_FLAGS(SocketTypes, SocketType);
+			Q_DECLARE_FLAGS(SocketTypes, SocketType)
 
 			static SocketTypes supportedSocketTypes();
 			static SocketTypes activeSocketTypes();

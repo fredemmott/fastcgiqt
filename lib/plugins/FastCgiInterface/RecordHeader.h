@@ -52,7 +52,7 @@ namespace FastCgiQt
 
 				FirstRecordType       = BeginRequestRecord      ///< Marker for the lowest value of RecordType
 			};
-			Q_ENUMS(RecordType);
+			Q_ENUMS(RecordType)
 
 			/// Construct an invalid RecordHeader.
 			RecordHeader();
