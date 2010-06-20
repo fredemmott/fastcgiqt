@@ -18,6 +18,16 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+OPTION(WARNINGS_AS_ERRORS "Treat all compiler warnings as errors" OFF)
+IF(WARNINGS_AS_ERRORS)
+	IF(${CMAKE_COMPILER_IS_GNUCXX})
+		ADD_DEFINITIONS("-Werror")
+	ENDIF()
+	IF(CMAKE_COMPILER_ID STREQUAL "SunPro")
+		ADD_DEFINITIONS("-errwarn=%all")
+	ENDIF()
+ENDIF()
+
 # Options
 OPTION(BUILD_EXAMPLES "Build several example applications" OFF)
 OPTION(WITH_SERVICE_SUPPORT "Build helper classes for service-based applications" ON)
