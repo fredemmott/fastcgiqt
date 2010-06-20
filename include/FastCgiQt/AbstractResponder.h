@@ -59,7 +59,7 @@ namespace FastCgiQt
 	 */
 	class AbstractResponder : public QObject
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			AbstractResponder(QObject* parent);
 			virtual ~AbstractResponder();

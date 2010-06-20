@@ -29,7 +29,7 @@ namespace FastCgiQt
 	 */
 	class AbstractMapper: public QObject
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			enum ResponseMode
 			{

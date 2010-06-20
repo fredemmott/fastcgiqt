@@ -21,7 +21,7 @@ class QTextStream;
 
 class Dumper : public QObject
 {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		Dumper(QObject* parent);
 	public slots:

@@ -23,7 +23,7 @@ namespace FastCgiQt
 	/// @internal Simple ClientIODevice that just passes-through to another QIODevice.
 	class ProxyClientIODevice: public ClientIODevice
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			ProxyClientIODevice(const HeaderMap& headers, QIODevice* source, QObject* parent);
 			bool waitForBytesWritten(int msecs);

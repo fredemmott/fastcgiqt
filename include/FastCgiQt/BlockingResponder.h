@@ -33,7 +33,7 @@ namespace FastCgiQt
 	 */
 	class BlockingResponder : public AbstractResponder
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			BlockingResponder(SpawnerBase* spawner, const char* responderSlot, QObject* parent = 0);
 			~BlockingResponder();

@@ -25,7 +25,7 @@ namespace FastCgiQt
 	/// @internal Like QThreadPool, but you can specify an object to be move to the worker thread.
 	class ThreadPool : public QObject
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			/// Construct a ThreadPool
 			ThreadPool(QObject* parent = 0);

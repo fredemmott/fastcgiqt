@@ -23,7 +23,7 @@ namespace FastCgiQt
 {
 	class Base64Decoder : public QIODevice
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			Base64Decoder(QIODevice* source, QObject* parent = 0);
 			virtual ~Base64Decoder();

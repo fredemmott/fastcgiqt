@@ -27,7 +27,7 @@ namespace FastCgiQt
 	class RequestRunner;
 	class RequestQueue : public QObject
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			RequestQueue(SpawnerBase* spawner, const char* responderSlot, QObject* parent);
 			void respond(Request*);

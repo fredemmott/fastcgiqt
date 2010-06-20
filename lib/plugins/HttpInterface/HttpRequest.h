@@ -26,7 +26,7 @@ namespace FastCgiQt
 {
 	class HttpRequest : public ClientIODevice
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			HttpRequest(const HeaderMap& standardRequestHeaders, const HeaderMap& standardResponseHeaders, const QStringList& staticDirectories, QTcpSocket* socket, QObject* parent);
 			~HttpRequest();

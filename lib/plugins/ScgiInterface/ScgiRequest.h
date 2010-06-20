@@ -24,7 +24,7 @@ namespace FastCgiQt
 {
 	class ScgiRequest : public CommunicationInterface::Worker
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			ScgiRequest(QTcpSocket* socket, QObject* parent);
 			~ScgiRequest();

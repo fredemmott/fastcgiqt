@@ -22,7 +22,7 @@
 
 class XsltExample : public FastCgiQt::XsltService
 {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		XsltExample(QObject* parent = 0);
 		FastCgiQt::Service::UrlMap urlMap() const;

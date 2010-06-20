@@ -24,7 +24,7 @@ namespace FastCgiQt
 {
 	class FastCgiStream : public ClientIODevice
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			FastCgiStream(const HeaderMap& headers, quint16 requestId, QTcpSocket* output, QObject* parent);
 			~FastCgiStream();

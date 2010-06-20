@@ -25,7 +25,7 @@ namespace FastCgiQt
 {
 	class CommunicationInterface::Worker : public QObject
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		signals:
 			/** This worker is done.
 			 *

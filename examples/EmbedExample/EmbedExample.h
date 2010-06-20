@@ -30,7 +30,7 @@ class QWebView;
 
 class EmbedExample : public QWidget
 {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		EmbedExample(QWidget* parent = 0);
 	private slots:

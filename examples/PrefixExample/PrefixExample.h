@@ -20,7 +20,7 @@
 
 class PrefixExample : public QObject
 {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		PrefixExample(QObject* parent = 0);
 	public slots:

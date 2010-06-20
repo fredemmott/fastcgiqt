@@ -28,7 +28,7 @@ namespace FastCgiQt
 	 */
 	class ThreadPool::Worker : public QObject
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			Worker(QObject* parent);
 			void enqueue(QRunnable*);

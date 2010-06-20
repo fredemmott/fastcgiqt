@@ -22,7 +22,7 @@ namespace FastCgiQt
 {
 	class CgiInterface : public CommunicationInterface
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			CgiInterface(QObject* parent = 0);
 			~CgiInterface();

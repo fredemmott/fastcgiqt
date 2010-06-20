@@ -33,7 +33,7 @@ namespace FastCgiQt
 	 */
 	class ThreadedResponder : public AbstractResponder
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			ThreadedResponder(SpawnerBase* spawner, const char* responderSlot, QObject* parent = 0);
 			~ThreadedResponder();

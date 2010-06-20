@@ -22,7 +22,7 @@ namespace FastCgiQt
 {
 	class MimePartIODevice : public QIODevice
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			MimePartIODevice(QIODevice* source, const QByteArray& boundary, QObject* parent = 0);
 			virtual ~MimePartIODevice();

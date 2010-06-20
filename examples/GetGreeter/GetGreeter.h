@@ -17,7 +17,7 @@
 
 class GetGreeter : public QObject
 {
-	Q_OBJECT;
+	Q_OBJECT
 	public slots:
 		void respond(FastCgiQt::Request* request);
 };

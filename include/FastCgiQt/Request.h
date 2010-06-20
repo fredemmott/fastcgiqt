@@ -45,7 +45,7 @@ namespace FastCgiQt
 	 */
 	class Request : public QIODevice
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			virtual ~Request();
 

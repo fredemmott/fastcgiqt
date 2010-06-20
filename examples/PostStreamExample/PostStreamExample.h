@@ -18,7 +18,7 @@
 
 class PostStreamExample : public QObject
 {
-	Q_OBJECT;
+	Q_OBJECT
 	public:
 		PostStreamExample(QObject* parent = 0);
 		~PostStreamExample();

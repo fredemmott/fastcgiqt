@@ -23,7 +23,7 @@ namespace FastCgiQt
 {
 	class CgiRequest : public ClientIODevice
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			CgiRequest(QObject* parent);
 			~CgiRequest();

@@ -35,7 +35,7 @@ namespace FastCgiQt
 	{
 		Q_GADGET
 		public:
-			Q_ENUMS(Role Flags);
+			Q_ENUMS(Role Flags)
 			/// FastCGI request roles.
 			enum Role
 			{
@@ -44,7 +44,7 @@ namespace FastCgiQt
 				FilterRole     = FCGI_FILTER,     ///< Filter data.
 
 				UnknownRole,	                  ///< The first as-yet unknown role.
-				FirstRole = ResponderRole,        ///< Marker for the lowest-value Role.
+				FirstRole = ResponderRole         ///< Marker for the lowest-value Role.
 			};
 
 			/// Request flags.
@@ -55,7 +55,7 @@ namespace FastCgiQt
 				UnknownFlag,                     ///< The lowest-value unknown flag
 				FirstFlag = KeepConnection       ///< Marker for the lowest-value Flag.
 			};
-			Q_DECLARE_FLAGS(Flags, Flag);
+			Q_DECLARE_FLAGS(Flags, Flag)
 
 			/** Create a BeginRequestRecord.
 			 *

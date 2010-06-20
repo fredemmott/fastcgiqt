@@ -24,7 +24,7 @@ namespace FastCgiQt
 	class ThreadPool;
 	class ThreadedResponder::Private : public RequestQueue
 	{
-		Q_OBJECT;
+		Q_OBJECT
 		public:
 			Private(SpawnerBase* spawner, const char* responderSlot, QObject* parent);
 		protected:
