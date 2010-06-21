@@ -12,23 +12,12 @@ IF("x${CMAKE_BUILD_TYPE}" STREQUAL "x")
 ENDIF()
 IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 	ADD_DEFINITIONS("-DQT_NO_DEBUG_OUTPUT")
-ELSE()
-	IF(${CMAKE_COMPILER_IS_GNUCXX})
-		ADD_DEFINITIONS("-Wall")
-	ENDIF()
 ENDIF()
 
+# Developer options
 OPTION(WARNINGS_AS_ERRORS "Treat all compiler warnings as errors" OFF)
-IF(WARNINGS_AS_ERRORS)
-	IF(${CMAKE_COMPILER_IS_GNUCXX})
-		ADD_DEFINITIONS("-Werror")
-	ENDIF()
-	IF(CMAKE_COMPILER_ID STREQUAL "SunPro")
-		ADD_DEFINITIONS("-errwarn=%all")
-	ENDIF()
-ENDIF()
 
-# Options
+# Configuration options
 OPTION(BUILD_EXAMPLES "Build several example applications" OFF)
 OPTION(WITH_SERVICE_SUPPORT "Build helper classes for service-based applications" ON)
 OPTION(WITH_SQL_SUPPORT "Build helper classes for interacting with databases" ON)
@@ -44,6 +33,25 @@ IF(WITH_SERVICE_SUPPORT)
 ELSE()
 	MESSAGE(STATUS "Service support is *NOT* enabled.")
 ENDIF()
+
+# Platform configuration
+IF(CMAKE_COMPILER_IS_GNUCXX)
+	MESSAGE(STATUS "Applying platform configuration for GCC")
+	ADD_DEFINITIONS("-Wall")
+	IF(WARNINGS_AS_ERRORS)
+		ADD_DEFINITIONS("-Werror")
+	ENDIF()
+ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+	MESSAGE(STATUS "Applying platform configuration for Sun Studio compiler")
+	ADD_DEFINITIONS("-Wall")
+	ADD_DEFINITIONS("-DWITHOUT_FLOCK")
+	IF(WARNINGS_AS_ERRORS)
+		ADD_DEFINITIONS("-errwarn=%all")
+	ENDIF()
+ELSE()
+	MESSAGE(WARNING "Don't have a specific configuration for this compiler: ${CMAKE_CXX_COMPILER_ID}")
+ENDIF()
+
 
 # Find Qt4
 ADD_DEFINITIONS(-DQT_STATICPLUGIN)
