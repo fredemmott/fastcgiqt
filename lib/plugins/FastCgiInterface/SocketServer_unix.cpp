@@ -9,18 +9,23 @@
 
 #include "fastcgi.h"
 
-#include <QtEndian>
+#include <QDebug>
 #include <QFileSystemWatcher>
 #include <QHostAddress>
 #include <QSocketNotifier>
 #include <QTextStream>
+#include <QtEndian>
 
 #include <errno.h>
+#include <fcntl.h>
 #include <sys/file.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <netinet/ip.h>
+#include <strings.h>
+#include <string.h>
 #include <unistd.h>
+#include <string.h>
 
 namespace FastCgiQt
 {
@@ -68,12 +73,36 @@ namespace FastCgiQt
 
 	void SocketServer::Private::lockSocket(int socket)
 	{
+#ifdef WITHOUT_FLOCK
+		struct flock fl;
+		::bzero(&fl, sizeof(fl));
+
+		fl.l_type = F_WRLCK;
+		fl.l_whence = SEEK_SET;
+		fl.l_start = 0;
+		fl.l_len = 0;
+
+		::fcntl(socket, F_SETLKW, &fl);
+#else
 		::flock(socket, LOCK_EX);
+#endif
 	}
 
 	void SocketServer::Private::releaseSocket(int socket)
 	{
+#ifdef WITHOUT_FLOCK
+		struct flock fl;
+		::bzero(&fl, sizeof(fl));
+
+		fl.l_type = F_UNLCK;
+		fl.l_whence = SEEK_SET;
+		fl.l_start = 0;
+		fl.l_len = 0;
+
+		::fcntl(socket, F_SETLK, &fl);
+#else
 		::flock(socket, LOCK_UN);
+#endif
 	}
 
 	bool SocketServer::listen(SocketType type, quint16 parameter)
@@ -150,15 +179,19 @@ namespace FastCgiQt
 
 		// Listen on the socket
 		d->lockSocket(d->m_socket);
+		qDebug() << "Pre ::accept";
 		const int newSocket = ::accept(d->m_socket, reinterpret_cast<sockaddr*>(&sa), &len);
+		qDebug() << "Post ::accept";
 		d->releaseSocket(d->m_socket);
 
 		if(newSocket == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
 		{
+			qDebug() << Q_FUNC_INFO << __LINE__;
 			return 0;
 		}
 		else
 		{
+			qDebug() << Q_FUNC_INFO << __LINE__;
 			QTcpSocket* socket = new QTcpSocket(this);
 			socket->setSocketDescriptor(newSocket);
 			return socket;
