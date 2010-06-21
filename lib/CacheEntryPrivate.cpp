@@ -22,10 +22,10 @@ namespace FastCgiQt
 	{
 	}
 
-	CacheEntry::Private::Private(const QDateTime& timeStamp, const QByteArray& data)
+	CacheEntry::Private::Private(const QDateTime& _timeStamp, const QByteArray& _data)
 	{
-		this->timeStamp = timeStamp;
-		this->data = data;
+		timeStamp = timeStamp;
+		data = data;
 	}
 
 	CacheEntry::Private::Private(const Private& other)
