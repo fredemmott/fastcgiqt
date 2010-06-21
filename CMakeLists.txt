@@ -43,8 +43,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	ENDIF()
 ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
 	MESSAGE(STATUS "Applying platform configuration for Sun Studio compiler")
-	ADD_DEFINITIONS("-Wall")
-	ADD_DEFINITIONS("-DWITHOUT_FLOCK")
+	ADD_DEFINITIONS(
+		"-erroff=nullref"
+		"-errtags=yes"
+		"-DWITHOUT_FLOCK"
+	)
 	IF(WARNINGS_AS_ERRORS)
 		ADD_DEFINITIONS("-errwarn=%all")
 	ENDIF()
