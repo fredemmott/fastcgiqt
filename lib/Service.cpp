@@ -192,7 +192,7 @@ namespace FastCgiQt
 	{
 		///@todo check arguments
 		Q_ASSERT(parameters.count() < 10); // QMetaMethod limitation
-		Q_ASSERT(slot[0] == SLOT()[0]);
+		Q_ASSERT(slot[0] == SLOT("bar")[0]); // check slot code
 		++slot; // chop off the code
 		const int slotIndex = object->metaObject()->indexOfSlot(slot);
 		Q_ASSERT(slotIndex != -1);
