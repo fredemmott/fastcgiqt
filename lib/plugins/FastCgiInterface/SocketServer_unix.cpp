@@ -14,7 +14,6 @@
 #include <QHostAddress>
 #include <QSocketNotifier>
 #include <QTextStream>
-#include <QTimer>
 
 #include <errno.h>
 #include <sys/file.h>
@@ -88,9 +87,6 @@ namespace FastCgiQt
 				return false;
 			}
 			d->m_socket = FCGI_LISTENSOCK_FILENO;
-
-			// Wait for the event loop to start up before running
-			QTimer::singleShot(0, this, SIGNAL(newConnection()));
 		}
 		else
 		{
