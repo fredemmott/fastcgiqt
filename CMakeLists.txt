@@ -44,7 +44,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
 	MESSAGE(STATUS "Applying platform configuration for Sun Studio compiler")
 	ADD_DEFINITIONS(
-		"-erroff=nullref"
+		"-erroff=nullref" # incompatible with qobject_cast<>
 		"-errtags=yes"
 		"-DWITHOUT_FLOCK"
 	)
