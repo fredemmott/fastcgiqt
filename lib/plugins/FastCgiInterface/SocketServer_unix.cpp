@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <netinet/ip.h>
+#include <unistd.h>
 
 namespace FastCgiQt
 {
