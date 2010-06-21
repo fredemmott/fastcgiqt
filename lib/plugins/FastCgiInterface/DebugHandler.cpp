@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QTextStream>
 
 #include <syslog.h>
 
@@ -34,22 +35,27 @@ namespace FastCgiQt
 
 	void DebugHandler::syslogHandler(QtMsgType type, const char* message)
 	{
+		QTextStream err(stderr);
 		static QMutex mutex;
 		QMutexLocker lock(&mutex);
 		QByteArray name = QCoreApplication::applicationName().toUtf8();
-		::openlog(name, LOG_PERROR | LOG_PID, LOG_USER);
+		::openlog(name, LOG_PID, LOG_USER);
 		switch(type)
 		{
 			case QtDebugMsg:
+				err << "DEBUG: " << message << endl;
 				::syslog(LOG_DEBUG, "DEBUG: %s", message);
 				break;
 			case QtWarningMsg:
+				err << "WARNING: " << message << endl;
 				::syslog(LOG_WARNING, "WARNING: %s", message);
 				break;
 			case QtCriticalMsg:
+				err << "CRITICAL: " << message << endl;
 				::syslog(LOG_CRIT, "CRITICAL: %s", message);
 				break;
 			case QtFatalMsg:
+				err << "FATAL: " << message << endl;
 				::syslog(LOG_CRIT, "FATAL: %s", message);
 				abort();
 			default:
