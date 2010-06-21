@@ -179,19 +179,15 @@ namespace FastCgiQt
 
 		// Listen on the socket
 		d->lockSocket(d->m_socket);
-		qDebug() << "Pre ::accept";
 		const int newSocket = ::accept(d->m_socket, reinterpret_cast<sockaddr*>(&sa), &len);
-		qDebug() << "Post ::accept";
 		d->releaseSocket(d->m_socket);
 
 		if(newSocket == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
 		{
-			qDebug() << Q_FUNC_INFO << __LINE__;
 			return 0;
 		}
 		else
 		{
-			qDebug() << Q_FUNC_INFO << __LINE__;
 			QTcpSocket* socket = new QTcpSocket(this);
 			socket->setSocketDescriptor(newSocket);
 			return socket;
