@@ -152,7 +152,7 @@ namespace FastCgiQt
 			QRegExp re(it->first);
 			if(re.exactMatch(urlFragment))
 			{
-				QStringList parameters(re.capturedTexts());
+				parameters = re.capturedTexts();
 				parameters.takeFirst();
 				slot = it->second;
 				break;
