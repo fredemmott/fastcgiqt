@@ -61,6 +61,8 @@ namespace FastCgiQt
 	{
 		for(int i = 0; i < m_threadCount; ++i)
 		{
+			m_threads[i]->quit;
+			m_threads[i]->wait(10000); // 10 seconds
 			delete m_threads[i];
 			delete m_workers[i];
 		}
